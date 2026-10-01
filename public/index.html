@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>在线简历编辑器</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="stylesheet" href="/css/base.css" />
+<link rel="stylesheet" href="/css/templates.css" />
+<link rel="stylesheet" href="/css/timeline.css" />
+<link rel="stylesheet" href="/css/print.css" />
+</head>
+<body class="editing" data-template="classic">
+  <div class="toolbar">
+    <div class="brand"><span class="dot"></span>在线简历编辑器</div>
+
+    <div class="menu" id="fileMenu">
+      <button class="btn ghost menu-btn">简历</button>
+      <div class="menu-panel">
+        <label class="ctl" id="fileCtl">选择
+          <select id="fileSelect"></select>
+        </label>
+        <div class="row">
+          <button class="btn ghost" id="newFileBtn">新建</button>
+          <button class="btn ghost" id="delFileBtn">删除</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu">
+      <button class="btn ghost menu-btn">样式</button>
+      <div class="menu-panel">
+        <label class="ctl">模板
+          <select id="tplSelect">
+            <option value="classic">经典</option>
+            <option value="modern">现代</option>
+            <option value="minimal">极简</option>
+            <option value="elegant">优雅</option>
+            <option value="sidebar">侧边栏</option>
+          </select>
+        </label>
+        <label class="ctl">英文
+          <select id="fontLatin">
+            <option value="system">系统默认</option>
+            <option value="times">Times New Roman</option>
+            <option value="georgia">Georgia</option>
+            <option value="garamond">Garamond</option>
+            <option value="cambria">Cambria</option>
+            <option value="calibri">Calibri</option>
+            <option value="arial">Arial</option>
+            <option value="helvetica">Helvetica</option>
+            <option value="verdana">Verdana</option>
+            <option value="tahoma">Tahoma</option>
+            <option value="courier">Courier New</option>
+            <option value="consolas">Consolas</option>
+            <option value="custom" hidden>自定义字体</option>
+          </select>
+        </label>
+        <label class="ctl">中文
+          <select id="fontCJK">
+            <option value="system">系统默认</option>
+            <option value="yahei">微软雅黑</option>
+            <option value="pingfang">苹方</option>
+            <option value="sourcehan">思源黑体</option>
+            <option value="heiti">黑体</option>
+            <option value="simsun">宋体</option>
+            <option value="sourceserif">思源宋体</option>
+            <option value="kai">楷体</option>
+            <option value="fangsong">仿宋</option>
+            <option value="custom" hidden>自定义字体</option>
+          </select>
+        </label>
+        <div class="row">
+          <button class="btn ghost" id="fontUploadBtn" title="上传 .ttf/.otf/.woff/.woff2，导出 PDF 时嵌入">字体文件</button>
+          <input type="file" id="fontInput" accept=".ttf,.otf,.woff,.woff2,font/*" hidden />
+        </div>
+        <div class="row swatches-row">
+          <div class="swatches" id="swatches"></div>
+          <input type="color" id="accentPicker" class="accent-picker" title="自定义颜色" />
+        </div>
+      </div>
+    </div>
+
+    <div class="menu">
+      <button class="btn ghost menu-btn">时间轴</button>
+      <div class="menu-panel">
+        <div class="row">
+          <button class="btn ghost" id="timelineToggle">时间轴排版</button>
+        </div>
+        <div class="chips" id="timelineTypes"></div>
+        <label class="ctl" id="tlLineCtl">线条
+          <select id="tlLine">
+            <option value="solid">实线</option>
+            <option value="dashed">虚线</option>
+            <option value="dotted">点线</option>
+            <option value="none">无</option>
+          </select>
+        </label>
+        <label class="ctl" id="tlNodeCtl">节点
+          <select id="tlNode">
+            <option value="dot">圆点</option>
+            <option value="arrow">箭头</option>
+            <option value="square">方块</option>
+            <option value="diamond">菱形</option>
+            <option value="none">无</option>
+          </select>
+        </label>
+        <label class="ctl" id="tlLayoutCtl">布局
+          <select id="tlLayout">
+            <option value="right">标题左·日期右</option>
+            <option value="dateLeft">日期左置</option>
+            <option value="stacked">日期在上</option>
+            <option value="card">卡片</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <div class="menu">
+      <button class="btn ghost menu-btn">显示</button>
+      <div class="menu-panel">
+        <button class="btn ghost" id="kwToggle">隐藏关键词</button>
+        <button class="btn ghost" id="photoToggle">隐藏照片</button>
+        <button class="btn ghost" id="toggleEdit">预览模式</button>
+      </div>
+    </div>
+
+    <div class="menu">
+      <button class="btn ghost menu-btn">更多</button>
+      <div class="menu-panel">
+        <label class="ctl">示例
+          <select id="sampleSelect"></select>
+        </label>
+        <div class="row">
+          <button class="btn ghost" id="resetBtn">恢复示例</button>
+          <button class="btn ghost" id="restoreBackupBtn">恢复备份</button>
+        </div>
+      </div>
+    </div>
+
+    <span class="save-state" id="saveState">加载中…</span>
+
+    <label class="ctl">导出
+      <select id="exportFormat">
+        <option value="pdf">PDF</option>
+        <option value="png">PNG</option>
+        <option value="jpg">JPG</option>
+      </select>
+    </label>
+    <button class="btn primary" id="exportBtn">导出</button>
+  </div>
+
+  <div class="stage">
+    <main class="page" id="page"></main>
+    <p class="hint" id="hint">所有内容均可直接点击编辑 · 点击照片框可上传大头照 · 文本保存在 docs/ 目录 · 导出 PDF 时选择「另存为 PDF」</p>
+  </div>
+
+  <script type="text/markdown" id="defaultResume">
+# 张三
+
+嵌入式软件工程师 · 5 年经验 · 裸机 / RTOS
+
+电话：138-0000-0000
+邮箱：zhangsan@example.com
+城市：上海
+学历：本科
+求职情况：离职，随时到岗
+期望岗位：嵌入式软件工程师
+工作地点：上海
+期望薪资：面议
+
+## 个人简介
+
+专注嵌入式软件开发，熟悉裸机固件与 RTOS 应用开发，具备从驱动移植、系统裁剪到低功耗优化的完整落地经验。主导过工业采集、消费电子等多款量产产品的固件开发，注重代码健壮性与可维护性。
+
+## 工作经历
+
+### 某某智能科技有限公司 · 嵌入式软件工程师
+2021.06 – 至今
+- 负责基于 STM32 / GD32 的裸机固件与 FreeRTOS 应用开发，独立完成从需求到量产的全流程。
+- 开发与移植 UART、SPI、I2C、CAN、ADC、DMA 等外设驱动，封装统一 HAL 层，复用率提升 50%。
+- 主导系统低功耗优化，通过 Tickless 空闲与分级休眠，整机待机功耗下降 45%。
+- 搭建 GCC + CMake + Unity 单元测试与 CI 流程，固件缺陷率下降 35%。
+
+### 某某电子技术有限公司 · 嵌入式软件工程师
+2019.07 – 2021.05
+- 基于 RT-Thread 开发传感器采集与通信固件，完成 Modbus RTU / CAN 协议栈对接。
+- 负责 Bootloader 与 OTA 升级方案，支持断点续传与固件校验，升级成功率 99.9%。
+
+## 项目经历
+
+### 工业数据采集终端 · 固件负责人
+2022.03 – 2023.08
+关键词：STM32F4、FreeRTOS、DMA、状态机、看门狗
+- 基于 STM32F4 + FreeRTOS 设计多任务架构，实现 8 路传感器并行采集与实时上报。
+- 实现 DMA + 环形缓冲的无阻塞串口收发，1Mbps 下零丢包，满足工业现场实时性要求。
+- 通过状态机 + 看门狗实现异常自恢复，设备现场运行稳定率提升至 99.5%。
+
+## 教育背景
+
+### 某某大学 · 电子信息工程 · 本科
+2015.09 – 2019.06
+关键词：C 语言、数字电路、模拟电路、单片机原理、自动控制
+
+## 资格证书
+
+### 全国计算机等级考试二级（C 语言） · 教育部考试中心
+2020.03
+- 具备扎实的 C 语言基础与程序设计能力。
+
+## 技能特长
+
+- **语言**：C / C++、汇编、Python、Shell
+- **平台**：STM32、GD32、ESP32、NXP
+- **RTOS**：FreeRTOS、RT-Thread、uC/OS-II
+- **外设**：UART、SPI、I2C、CAN、USB、ADC、DMA
+- **工具**：Keil、IAR、GCC、CMake、Git、OpenOCD
+- **调试**：J-Link、逻辑分析仪、示波器、功耗分析
+  </script>
+
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>

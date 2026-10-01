@@ -1,0 +1,7 @@
+# 简历内容（本地私有，不纳入版本管理）
+docs/*
+
+# 依赖与系统文件
+node_modules/
+.DS_Store
+*.log

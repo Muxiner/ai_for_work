@@ -1,0 +1,97 @@
+/* ================= Timeline layout option ================= */
+.section.timeline-on .item.has-date {
+  margin-bottom: 0;
+  padding-bottom: 14px;
+  padding-left: 20px;
+  position: relative;
+}
+.section.timeline-on .item.has-date .item-date {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* 线条：solid / dashed / dotted / none */
+.section.timeline-on .item.has-date::before {
+  content: "";
+  position: absolute;
+  left: 4px; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--line);
+}
+body[data-tlline="dashed"] .section.timeline-on .item.has-date::before {
+  background: repeating-linear-gradient(to bottom, var(--line) 0 5px, transparent 5px 10px);
+}
+body[data-tlline="dotted"] .section.timeline-on .item.has-date::before {
+  background: repeating-linear-gradient(to bottom, var(--line) 0 2px, transparent 2px 5px);
+}
+body[data-tlline="none"] .section.timeline-on .item.has-date::before { display: none; }
+
+/* 节点：dot / arrow / square / diamond / none */
+.section.timeline-on .item.has-date::after {
+  content: "";
+  position: absolute;
+  left: 0; top: 4px;
+  width: 10px; height: 10px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--accent);
+}
+body[data-tlnode="square"] .section.timeline-on .item.has-date::after {
+  width: 9px; height: 9px; top: 5px;
+  border: none; border-radius: 2px;
+  background: var(--accent);
+}
+body[data-tlnode="diamond"] .section.timeline-on .item.has-date::after {
+  width: 9px; height: 9px; top: 5px;
+  border: none; border-radius: 1px;
+  background: var(--accent);
+  transform: rotate(45deg);
+}
+body[data-tlnode="arrow"] .section.timeline-on .item.has-date::after {
+  left: 1px; top: 3px;
+  width: 0; height: 0;
+  border: none;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 7px solid var(--accent);
+  border-radius: 0;
+  background: none;
+}
+body[data-tlnode="none"] .section.timeline-on .item.has-date::after { display: none; }
+
+/* 布局：right / dateLeft / stacked / card */
+body[data-tllayout="dateLeft"] .section.timeline-on .item.has-date .item-row {
+  display: grid;
+  grid-template-columns: 82px 1fr;
+  column-gap: 12px;
+  align-items: start;
+}
+body[data-tllayout="dateLeft"] .section.timeline-on .item.has-date .item-date {
+  order: -1;
+  text-align: left;
+  white-space: normal;
+}
+body[data-tllayout="dateLeft"] .section.timeline-on .item.has-date .item-kw,
+body[data-tllayout="dateLeft"] .section.timeline-on .item.has-date .item-desc {
+  padding-left: 94px;
+}
+body[data-tllayout="stacked"] .section.timeline-on .item.has-date .item-row {
+  flex-direction: column-reverse;
+  align-items: flex-start;
+  gap: 2px;
+}
+body[data-tllayout="stacked"] .section.timeline-on .item.has-date .item-date {
+  text-align: left;
+}
+body[data-tllayout="card"] .section.timeline-on .item.has-date {
+  margin-bottom: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--accent) 4%, #fff);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, .06);
+}
+body[data-tllayout="card"] .section.timeline-on .item.has-date::before,
+body[data-tllayout="card"] .section.timeline-on .item.has-date::after { display: none; }

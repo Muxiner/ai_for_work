@@ -1,0 +1,88 @@
+/* ================= Template: Modern ================= */
+body[data-template="modern"] { --accent: #4f46e5; }
+body[data-template="modern"] .header {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  align-items: center;
+  margin: calc(-1 * var(--pad-y)) calc(-1 * var(--pad-x)) 22px;
+  padding: calc(var(--pad-y) * .8) var(--pad-x) 14px;
+}
+body[data-template="modern"] .name { color: #fff; }
+body[data-template="modern"] .role { color: rgba(255,255,255,.92); }
+body[data-template="modern"] .contact { color: rgba(255,255,255,.85); }
+body[data-template="modern"] .contact .c::before { color: rgba(255,255,255,.6); }
+body[data-template="modern"] .photo-wrap { box-shadow: 0 0 0 3px rgba(255,255,255,.55); }
+body[data-template="modern"] .section-title { border-left: 4px solid var(--accent); padding-left: 8px; color: var(--accent); }
+body[data-template="modern"] .section-head::after { display: none; }
+body[data-template="modern"] .item-sub { color: var(--accent); }
+body[data-template="modern"] .sec-ico { display: none; }
+body[data-template="modern"] .contact .ico { color: rgba(255,255,255,.8); }
+
+/* ================= Template: Minimal ================= */
+body[data-template="minimal"] { --accent: #111827; }
+body[data-template="minimal"] .header { border-bottom: 1px solid var(--ink); padding-bottom: 14px; }
+body[data-template="minimal"] .name { font-weight: 600; letter-spacing: 1px; font-size: 26px; }
+body[data-template="minimal"] .role { color: var(--muted); font-weight: 500; letter-spacing: 1px; }
+body[data-template="minimal"] .section-title { font-size: 12px; letter-spacing: 3px; color: var(--ink); }
+body[data-template="minimal"] .item-sub { color: var(--muted); }
+body[data-template="minimal"] .item-desc li::marker { color: #9ca3af; }
+body[data-template="minimal"] .contact .c::before { color: #b6bcc6; }
+
+/* ================= Template: Elegant ================= */
+body[data-template="elegant"] { --accent: #b08d57; }
+body[data-template="elegant"] .header {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 20px;
+}
+body[data-template="elegant"] .name { letter-spacing: 5px; font-weight: 700; }
+body[data-template="elegant"] .role { text-transform: uppercase; letter-spacing: 3px; font-size: 11.5px; }
+body[data-template="elegant"] .contact { justify-content: center; }
+body[data-template="elegant"] .section-title { letter-spacing: 3px; font-weight: 700; }
+body[data-template="elegant"] .section-head::after { background: var(--accent); opacity: .45; }
+
+/* ================= Template: Sidebar ================= */
+body[data-template="sidebar"] { --accent: #0ea5e9; }
+body[data-template="sidebar"] .page {
+  padding: 0;
+  --side-w: 58mm;
+  --side-bg: color-mix(in srgb, var(--accent) 12%, #fff);
+  display: grid;
+  grid-template-columns: var(--side-w) 1fr;
+  align-content: start;
+  background: linear-gradient(to right, var(--side-bg) 0 var(--side-w), #fff var(--side-w));
+}
+body[data-template="sidebar"] .content { display: contents; }
+body[data-template="sidebar"] .header {
+  grid-column: 1;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  border: none;
+  padding: 14mm 6mm 4mm;
+  margin: 0;
+}
+body[data-template="sidebar"] .name { font-size: 22px; }
+body[data-template="sidebar"] .role { font-size: 12.5px; }
+body[data-template="sidebar"] .contact { flex-direction: column; gap: 5px; font-size: 11.5px; align-items: center; }
+body[data-template="sidebar"] .contact .c::before { content: attr(data-label) " "; color: #9ca3af; }
+body[data-template="sidebar"] .photo-wrap { width: 30mm; height: 38mm; }
+body[data-template="sidebar"] .content > section {
+  grid-column: 2;
+  padding: 8mm 9mm 0 8mm;
+  margin-bottom: 12px;
+}
+body[data-template="sidebar"] .content > [data-key="skills"] {
+  grid-column: 1;
+  grid-row: 2 / span 200;
+  padding: 4mm 6mm 6mm;
+  margin: 0;
+}
+body[data-template="sidebar"] .section-title { font-size: 12.5px; color: var(--accent); }
+body[data-template="sidebar"] .section-head::after { display: none; }
+body[data-template="sidebar"] .skills-grid { grid-template-columns: 1fr; gap: 7px; font-size: 12px; }
+body[data-template="sidebar"] .skill-text { flex-direction: column; gap: 1px; }

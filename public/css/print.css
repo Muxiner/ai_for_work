@@ -1,0 +1,31 @@
+/* ---------- Print ---------- */
+@page { size: A4; margin: 12mm 15mm; }
+@media print {
+  html, body { background: #fff; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .toolbar, .hint, .add-btn, .del-btn, .photo-del, .item-actions, .section-actions { display: none !important; }
+  .stage { padding: 0; display: block; }
+  .page {
+    width: auto;
+    min-height: auto;
+    padding: 0;
+    box-shadow: none;
+    border-radius: 0;
+    margin: 0;
+  }
+  .photo-wrap:not(.has-photo) { display: none !important; }
+  body.editing [contenteditable]:hover,
+  body.editing [contenteditable]:focus { background: transparent; box-shadow: none; }
+
+  /* 内容跨页时紧凑跟随：仅保证标题行与单条要点完整，其余自然续排 */
+  .section { break-inside: auto; margin-bottom: 16px; }
+  .section-head { break-after: avoid; break-inside: avoid; }
+  .item { break-inside: auto; }
+  .item-row { break-inside: avoid; }
+  .item-desc li { break-inside: avoid; }
+  .item-kw { break-inside: avoid; }
+  p, li { orphans: 2; widows: 2; }
+
+  body[data-template="modern"] .header { margin: 0 0 20px; padding: 6mm 0 12px; }
+  body[data-template="sidebar"] .page { padding: 0; }
+}

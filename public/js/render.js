@@ -165,7 +165,43 @@ export function renderResume(data) {
 
   html += `</div>`;
   page.innerHTML = html;
+  sortDatedSections(page);
   refreshTimeline();
+}
+
+function parseStartKey(dateStr) {
+  const m = String(dateStr == null ? "" : dateStr).match(/^\s*(\d{4})[.\-/年]?(\d{1,2})?/);
+  if (!m) return null;
+  const y = parseInt(m[1], 10);
+  const mo = m[2] ? parseInt(m[2], 10) : 1;
+  return y * 100 + mo;
+}
+
+function sortOneSection(sec) {
+  const items = Array.from(sec.querySelectorAll(":scope > .item"));
+  if (items.length < 2) return;
+  const dated = items.filter((it) => {
+    const d = it.querySelector(".item-date");
+    return d && d.textContent.trim();
+  });
+  if (dated.length !== items.length) return;
+  const keyed = items.map((it) => ({
+    el: it,
+    key: parseStartKey(it.querySelector(".item-date").textContent),
+  }));
+  if (keyed.some((k) => k.key == null)) return;
+  keyed.sort((a, b) => b.key - a.key);
+  const addBtn = sec.querySelector(":scope > .add-btn");
+  keyed.forEach(({ el }) => sec.insertBefore(el, addBtn));
+}
+
+export function sortDatedSections(root) {
+  const scope = root || getPage();
+  if (!scope) return;
+  const sections = scope.classList && scope.classList.contains("section")
+    ? [scope]
+    : Array.from(scope.querySelectorAll(".content > section"));
+  sections.forEach(sortOneSection);
 }
 
 export function refreshTimeline() {

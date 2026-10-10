@@ -1,5 +1,5 @@
 import { state, splitKeywords, keywordsHTML, getPage } from "./state.js";
-import { TEMPLATES, moveSibling, renderSkillText } from "./render.js";
+import { TEMPLATES, moveSibling, renderSkillText, sortDatedSections } from "./render.js";
 import { scheduleSave } from "./persist.js";
 import { applyPhoto, photoKey, compressImage } from "./photo.js";
 
@@ -19,6 +19,12 @@ export function bindEditor() {
     }
     if (el.classList.contains("skill-text")) {
       renderSkillText(el);
+      scheduleSave();
+      return;
+    }
+    const section = el.closest ? el.closest(".section") : null;
+    if (section) {
+      sortDatedSections(section);
       scheduleSave();
     }
   }, true);
@@ -53,6 +59,7 @@ export function bindEditor() {
         node.innerHTML = TEMPLATES[tpl] || TEMPLATES.experience;
       }
       add.parentElement.insertBefore(node, add);
+      sortDatedSections(add.parentElement);
       scheduleSave();
       return;
     }
@@ -67,6 +74,7 @@ export function bindEditor() {
         const section = mv.closest(".section");
         if (section) moveSibling(section, "section", dir);
       }
+      sortDatedSections(mv.closest(".section"));
       scheduleSave();
       return;
     }
@@ -74,7 +82,11 @@ export function bindEditor() {
     const del = e.target.closest(".del-btn");
     if (del) {
       const target = del.closest(".item, .skill, .c-wrap");
-      if (target) target.remove();
+      if (target) {
+        const parent = target.parentElement;
+        target.remove();
+        sortDatedSections(parent);
+      }
       scheduleSave();
     }
   });

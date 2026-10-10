@@ -155,6 +155,7 @@ index.html / public/** 被修改 ──fs.watch──► SSE {reload:true} ─�
   - 节点 `timelineNode`：dot / arrow / square / diamond / none（`data-tlnode`）
   - 布局 `timelineLayout`：right / dateLeft / stacked / card（`data-tllayout`）
 - **编辑交互**：所有文本 `contenteditable`；条目悬停出现 `↑ ↓ ×`；章节标题悬停出现 `↑ ↓`；各章节「+ 添加」；技能/联系方式可单独删除
+- **时间自动排序**：某章节内所有条目都带日期时，按日期（起始年月）倒序自动排序；在文档里改 `.md`、在页面里增删/移动/编辑失焦后均会重新排序（`js/render.js` 的 `sortDatedSections`）
 - **多简历**：顶栏下拉切换、新建、删除
 - **示例简历**：顶栏「示例」下拉来自服务端 `samples/*.md`（嵌入式软件工程师 / 硬件工程师 / 软件工程师 / 行政职员 / 应届毕业生 / 外贸专员 / 外贸助理），点「恢复示例」拉取所选示例并覆盖当前简历；新增职业示例只需往 `samples/` 放一个 `.md`
 - **覆盖保护**：套用示例 / 删除简历前会自动备份到 `docs/.backups/<文件名>.<时间戳>.md`；顶栏「恢复备份」可用最近一次备份还原当前简历

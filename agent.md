@@ -38,7 +38,7 @@ npm run serve      # = node server.js，不自动重启
     ├── index.html         # 结构（工具栏 + 页面容器 + 默认模板）
     ├── css/
     │   ├── base.css       # 变量/重置/工具栏/页面/页眉/照片/区块/编辑控件/标签
-    │   ├── templates.css  # 模板：modern / minimal / elegant / sidebar
+    │   ├── templates.css  # 模板：classic / modern / tech / gradient / minimal / center / card / compact / elegant / sidebar
     │   ├── timeline.css   # 时间轴：线条 / 节点 / 布局
     │   └── print.css      # @page 与打印样式
     └── js/                # ES Modules
@@ -140,7 +140,7 @@ index.html / public/** 被修改 ──fs.watch──► SSE {reload:true} ─�
 
 ## 前端功能一览
 
-- **模板**：classic / modern / minimal / elegant / sidebar（`body[data-template]`）
+- **模板**：classic / modern / tech / gradient / minimal / center / card / compact / elegant / sidebar（`body[data-template]`，样式在 `css/templates.css`）
 - **字体（中英文分开）**：英文 `fontLatin` + 中文 `fontCJK`，JS 组合成 `--font`（英文列表在前、中文在后、末尾通用族），`body.style.setProperty("--font", …)`
   - 英文：system/times/georgia/garamond/cambria/calibri/arial/helvetica/verdana/tahoma/courier/consolas/custom
   - 中文：system/yahei/pingfang/sourcehan/heiti/simsun/sourceserif/kai/fangsong/custom

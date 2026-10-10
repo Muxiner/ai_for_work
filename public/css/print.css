@@ -26,6 +26,8 @@
   .item-kw { break-inside: avoid; }
   p, li { orphans: 2; widows: 2; }
 
-  body[data-template="modern"] .header { margin: 0 0 20px; padding: 6mm 0 12px; }
+  body[data-template="modern"] .header,
+  body[data-template="tech"] .header,
+  body[data-template="gradient"] .header { margin: 0 0 20px; padding: 8mm 0 12px; }
   body[data-template="sidebar"] .page { padding: 0; }
 }

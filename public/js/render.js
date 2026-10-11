@@ -200,6 +200,34 @@ export function renderResume(data) {
   page.innerHTML = html;
   sortDatedSections(page);
   refreshTimeline();
+  renderSidePanel();
+  applyHiddenSections();
+}
+
+export function applyHiddenSections() {
+  const page = getPage();
+  if (!page) return;
+  const hidden = state.settings.hiddenSections || [];
+  page.querySelectorAll(".content > section").forEach((sec) => {
+    const t = sec.querySelector(".section-title");
+    const title = t ? t.textContent.trim() : "";
+    sec.classList.toggle("sec-hidden", hidden.includes(title));
+  });
+}
+
+export function renderSidePanel() {
+  const list = document.getElementById("sideList");
+  if (!list) return;
+  const page = getPage();
+  const hidden = state.settings.hiddenSections || [];
+  const secs = Array.from(page.querySelectorAll(".content > section"));
+  list.innerHTML = secs.map((sec, i) => {
+    const t = sec.querySelector(".section-title");
+    const title = t ? t.textContent.trim() : "项目 " + (i + 1);
+    const icon = SECTION_ICON[title] ? svgIcon(SECTION_ICON[title]) : svgIcon("dot");
+    const checked = hidden.includes(title) ? "" : " checked";
+    return `<label class="side-item"><input type="checkbox" data-title="${esc(title)}"${checked} />${icon}<span>${esc(title)}</span></label>`;
+  }).join("");
 }
 
 function parseStartKey(dateStr) {

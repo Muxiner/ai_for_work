@@ -1,6 +1,6 @@
 import { state, KEYS, SWATCHES } from "./state.js";
 import { applyFont, updateCustomFontOptions, registerCustomFont, idbSet, loadCustomFont } from "./fonts.js";
-import { renderTimelineTypes, refreshTimeline } from "./render.js";
+import { renderTimelineTypes, refreshTimeline, applyHiddenSections } from "./render.js";
 import { fileToDataURL } from "./photo.js";
 
 export function persistSettings() {
@@ -84,6 +84,14 @@ export function applySettings() {
   updateSwatchActive();
   renderTimelineTypes();
   refreshTimeline();
+
+  const panel = document.getElementById("sidePanel");
+  if (panel) panel.classList.toggle("open", !!s.panelOpen);
+  const panelToggle = document.getElementById("panelToggle");
+  if (panelToggle) {
+    panelToggle.textContent = s.panelOpen ? "收起项目列表" : "项目列表";
+    panelToggle.classList.toggle("active", !!s.panelOpen);
+  }
 }
 
 function on(id, event, handler) {
@@ -177,6 +185,32 @@ export function bindControls() {
     applySettings();
     persistSettings();
   });
+
+  on("panelToggle", "click", () => {
+    state.settings.panelOpen = !state.settings.panelOpen;
+    applySettings();
+    persistSettings();
+  });
+  on("sideClose", "click", () => {
+    state.settings.panelOpen = false;
+    applySettings();
+    persistSettings();
+  });
+
+  const sideList = document.getElementById("sideList");
+  if (sideList) {
+    sideList.addEventListener("change", (e) => {
+      const cb = e.target.closest('input[type="checkbox"]');
+      if (!cb) return;
+      const title = cb.dataset.title;
+      const arr = state.settings.hiddenSections || (state.settings.hiddenSections = []);
+      const i = arr.indexOf(title);
+      if (cb.checked) { if (i >= 0) arr.splice(i, 1); }
+      else { if (i < 0) arr.push(title); }
+      applyHiddenSections();
+      persistSettings();
+    });
+  }
 
   loadCustomFont();
 }

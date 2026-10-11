@@ -31,7 +31,7 @@ export const LABEL_ICON = {
 };
 
 export const SECTION_ICON = {
-  "个人简介": "user", "自我评价": "user", "自我介绍": "user", "个人评价": "user", "自我鉴定": "user",
+  "个人简介": "user", "自我评价": "user", "自我介绍": "user", "个人评价": "user", "自我鉴定": "user", "自我描述": "user",
   "工作经历": "briefcase", "实习经历": "briefcase",
   "项目经历": "layers", "科研经历": "book", "论文发表": "book",
   "教育背景": "cap", "培训经历": "cap", "校园经历": "user",

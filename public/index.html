@@ -124,6 +124,7 @@
     <div class="menu">
       <button class="btn ghost menu-btn">显示</button>
       <div class="menu-panel">
+        <button class="btn ghost" id="panelToggle">项目列表</button>
         <button class="btn ghost" id="kwToggle">隐藏关键词</button>
         <button class="btn ghost" id="photoToggle">隐藏照片</button>
         <button class="btn ghost" id="toggleEdit">预览模式</button>
@@ -154,6 +155,14 @@
     </label>
     <button class="btn primary" id="exportBtn">导出</button>
   </div>
+
+  <aside class="side-panel" id="sidePanel">
+    <div class="side-head">
+      <span>显示项目</span>
+      <button class="side-close" id="sideClose" title="收起">×</button>
+    </div>
+    <div class="side-list" id="sideList"></div>
+  </aside>
 
   <div class="stage">
     <main class="page" id="page"></main>

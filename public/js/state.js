@@ -19,6 +19,8 @@ export const DEFAULT_SETTINGS = {
   timelineLine: "solid",
   timelineNode: "dot",
   timelineLayout: "right",
+  hiddenSections: [],
+  panelOpen: false,
 };
 
 export const state = {
@@ -59,6 +61,7 @@ export const SECTION_KEYS = {
   "自我评价": "selfeval",
   "个人评价": "selfeval",
   "自我鉴定": "selfeval",
+  "自我描述": "selfeval",
 };
 
 export const TYPE_LABELS = {
@@ -110,4 +113,8 @@ export function safeFileName(s) {
 export function setStatus(msg) {
   const el = document.getElementById("saveState");
   if (el) el.textContent = msg;
+}
+
+export function saveSettings() {
+  try { localStorage.setItem(KEYS.SETTINGS, JSON.stringify(state.settings)); } catch (e) {}
 }

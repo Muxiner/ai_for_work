@@ -168,6 +168,7 @@ index.html / public/** 被修改 ──fs.watch──► SSE {reload:true} ─�
   - 面板开合状态存于 `settings.panelOpen`；隐藏项在预览/导出（PDF/PNG/JPG）中同样不显示
 - **示例简历**：顶栏「示例」下拉来自服务端 `samples/*.md`（嵌入式软件工程师 / 硬件工程师 / 软件工程师 / 行政职员 / 应届毕业生 / 外贸专员 / 外贸助理），点「恢复示例」拉取所选示例并覆盖当前简历；新增职业示例只需往 `samples/` 放一个 `.md`
 - **覆盖保护**：套用示例 / 删除简历前会自动备份到 `docs/.backups/<文件名>.<时间戳>.md`；顶栏「恢复备份」可用最近一次备份还原当前简历
+- **防空写/防丢失**：客户端首次渲染完成前（`ready`）不保存，页面无内容（无姓名且无章节）时 `save()/flush()` 跳过写入；`loadResume` 读到空内容时回退默认模板；服务端 `POST /api/resume` 拒绝以空内容覆盖非空文件（409），并在覆盖前按每分钟一次自动备份
 - **导出**：顶栏「导出格式」下拉选 PDF / PNG / JPG + 「导出」按钮
   - PDF：`window.print()`，导出前把 `document.title` 设为「姓名-岗位」作为默认文件名
   - PNG/JPG：`renderImageDataUrl(type)` 用 **SVG `<foreignObject>` + canvas** 渲染（浏览器真实渲染引擎，无需依赖、支持 `color-mix`/`:has`/伪元素/自定义字体），2 倍分辨率，`toDataURL` 后下载；文件名同为「姓名-岗位」

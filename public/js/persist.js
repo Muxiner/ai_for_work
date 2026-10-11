@@ -7,6 +7,15 @@ import * as api from "./api.js";
 let saveTimer = null;
 let listTimer = null;
 let syncing = false;
+let ready = false;
+
+function pageHasContent() {
+  const page = document.getElementById("page");
+  if (!page) return false;
+  const name = page.querySelector(".name");
+  const sections = page.querySelectorAll(".content > section");
+  return !!((name && name.textContent.trim()) || sections.length > 0);
+}
 
 export function isNoSync() {
   try { return new URLSearchParams(location.search).has("nosync"); } catch (e) { return false; }
@@ -30,6 +39,8 @@ export async function save() {
   try { localStorage.setItem(KEYS.MD, md); } catch (e) {}
   state.dirty = false;
   state.lastSaveAt = Date.now();
+  if (!ready) { setStatus("尚未就绪"); return; }
+  if (!pageHasContent()) { setStatus("内容为空，已跳过保存"); return; }
   if (!state.hasServer || !state.currentFile || isNoSync()) { setStatus(isNoSync() ? "只读模式（nosync）" : "已保存到本地"); return; }
   try {
     const ok = await api.writeResume(state.currentFile, md);
@@ -40,7 +51,8 @@ export async function save() {
 }
 
 export function flush() {
-  if (!state.hasServer || !state.dirty || !state.currentFile || isNoSync()) return;
+  if (!ready || !state.hasServer || !state.dirty || !state.currentFile || isNoSync()) return;
+  if (!pageHasContent()) return;
   api.beacon(state.currentFile, serialize());
 }
 window.addEventListener("pagehide", flush);
@@ -119,10 +131,12 @@ export async function loadResume(file) {
     try { md = await api.readResume(state.currentFile); } catch (e) {}
   }
   if (md == null) md = localStorage.getItem(KEYS.MD) || defaultMarkdown();
+  if (!String(md).trim()) md = defaultMarkdown();
   renderResume(parseMarkdown(md));
   applyPhoto();
   syncEditableState();
   state.dirty = false;
+  ready = true;
   const sel = document.getElementById("fileSelect");
   if (sel && state.currentFile) sel.value = state.currentFile;
 }

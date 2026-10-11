@@ -145,6 +145,14 @@ function listBackups(file) {
   }
 }
 
+const lastAutoBackup = new Map();
+function maybeAutoBackup(file) {
+  const now = Date.now();
+  if (now - (lastAutoBackup.get(file) || 0) < 60000) return;
+  lastAutoBackup.set(file, now);
+  createBackup(file);
+}
+
 function sendJson(res, obj, code) {
   res.writeHead(code || 200, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
   res.end(JSON.stringify(obj));
@@ -320,6 +328,14 @@ const server = http.createServer((req, res) => {
 
     if (req.method === "POST") {
       readBody(req, (body) => {
+        let existing = "";
+        try { existing = fs.readFileSync(full, "utf8"); } catch (e) {}
+        if (existing.trim() && !String(body).trim()) {
+          res.writeHead(409, { "Content-Type": "text/plain; charset=utf-8" });
+          res.end("empty content rejected");
+          return;
+        }
+        if (existing.trim()) maybeAutoBackup(file);
         fs.writeFile(full, body, (err) => {
           if (err) { res.writeHead(500); res.end("write failed"); return; }
           sendJson(res, { ok: true, file });

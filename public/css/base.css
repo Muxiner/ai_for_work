@@ -40,7 +40,6 @@ html, body {
   flex-wrap: wrap;
   padding: 11px 20px;
   background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: saturate(180%) blur(12px);
   border-bottom: 1px solid var(--line);
 }
 .toolbar .brand {
@@ -89,8 +88,25 @@ html, body {
   z-index: 100;
 }
 .menu.open .menu-panel { display: flex; }
-.menu-panel .ctl { width: 100%; justify-content: space-between; }
-.menu-panel .ctl select { flex: 1; min-width: 0; }
+.menu.panel-menu .menu-panel {
+  position: fixed;
+  top: 64px;
+  right: 0;
+  bottom: 0;
+  left: auto;
+  width: 300px;
+  min-width: 0;
+  max-height: none;
+  border: none;
+  border-left: 1px solid var(--line);
+  border-radius: 0;
+  box-shadow: -2px 0 14px rgba(15, 23, 42, .07);
+  z-index: 45;
+  overflow: auto;
+}
+.menu.panel-menu .menu-btn::after { content: ""; }
+.menu.panel-menu.open .menu-btn { border-color: var(--accent); color: var(--accent); }
+.menu-panel .ctl { width: 100%; justify-content: space-between; }.menu-panel .ctl select { flex: 1; min-width: 0; }
 .menu-panel .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .menu-panel .btn { flex: none; }
 .menu-panel .swatches-row { justify-content: flex-start; }

@@ -71,6 +71,16 @@ export async function deleteResume(file) {
   return res.ok;
 }
 
+export async function renameResume(from, to) {
+  const res = await fetch(
+    "/api/rename?file=" + encodeURIComponent(from) + "&to=" + encodeURIComponent(to),
+    { method: "POST" }
+  );
+  if (res.status === 409) return { error: "exists" };
+  if (!res.ok) return { error: "failed" };
+  return await res.json();
+}
+
 export function beacon(file, md) {
   try {
     navigator.sendBeacon("/api/resume?file=" + encodeURIComponent(file), md);

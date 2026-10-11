@@ -14,19 +14,34 @@ import { bindExport, renderImageDataUrl } from "./exporter.js";
 window.__renderImageDataUrl = renderImageDataUrl;
 window.__serialize = serialize;
 
+function renderSampleList() {
+  const list = document.getElementById("sampleList");
+  if (!list) return;
+  list.innerHTML = (state.sampleFiles || [])
+    .map((f) => `<button type="button" class="file-item${f === state.sampleFile ? " active" : ""}" data-sample="${esc(f)}">${esc(f.replace(/\.md$/i, ""))}</button>`)
+    .join("");
+}
+
 async function populateSamples() {
-  const sel = document.getElementById("sampleSelect");
-  if (!sel) return;
+  const list = document.getElementById("sampleList");
+  if (!list) return;
   let files = [];
   try { files = await api.listSamples(); } catch (e) {}
+  state.sampleFiles = files;
   if (!files.length) {
-    const ctl = sel.closest(".ctl");
-    if (ctl) ctl.style.display = "none";
+    const t = list.previousElementSibling;
+    if (t && t.classList.contains("panel-title")) t.style.display = "none";
+    list.style.display = "none";
     return;
   }
-  sel.innerHTML = files
-    .map((f) => `<option value="${esc(f)}">${esc(f.replace(/\.md$/i, ""))}</option>`)
-    .join("");
+  if (!state.sampleFile || !files.includes(state.sampleFile)) state.sampleFile = files[0];
+  renderSampleList();
+  list.addEventListener("click", (e) => {
+    const b = e.target.closest(".file-item");
+    if (!b) return;
+    state.sampleFile = b.dataset.sample;
+    renderSampleList();
+  });
 }
 
 function bindFileControls() {
@@ -86,9 +101,8 @@ function bindFileControls() {
   }
 
   if (resetBtn) {
-    const sampleSelect = document.getElementById("sampleSelect");
     resetBtn.addEventListener("click", async () => {
-      const file = sampleSelect ? sampleSelect.value : "";
+      const file = state.sampleFile || "";
       let md = null;
       if (file) { try { md = await api.readSample(file); } catch (e) {} }
       if (!md) md = defaultMarkdown();
@@ -103,6 +117,29 @@ function bindFileControls() {
       syncEditableState();
       await save();
       setStatus(backup ? "已套用示例（原内容已备份）" : "已套用示例");
+    });
+  }
+
+  const renameFileBtn = document.getElementById("renameFileBtn");
+  if (renameFileBtn) {
+    renameFileBtn.addEventListener("click", async () => {
+      if (!state.currentFile) return;
+      const cur = state.currentFile.replace(/\.md$/i, "");
+      const name = prompt("重命名简历：", cur);
+      if (name == null || !name.trim() || name.trim() === cur) return;
+      if (state.dirty) await save();
+      const oldFile = state.currentFile;
+      const r = await api.renameResume(oldFile, name.trim());
+      if (r.error === "exists") { alert("同名文件已存在"); return; }
+      if (r.error) { alert("重命名失败"); return; }
+      try {
+        const pk = KEYS.PHOTO + ":" + oldFile;
+        const data = localStorage.getItem(pk);
+        if (data) { localStorage.setItem(KEYS.PHOTO + ":" + r.file, data); localStorage.removeItem(pk); }
+      } catch (e) {}
+      await loadFileList();
+      await loadResume(r.file);
+      setStatus("已重命名为 " + r.file);
     });
   }
 

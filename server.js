@@ -273,6 +273,36 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  if (url === "/api/rename" && req.method === "POST") {
+    const from = safeName(u.searchParams.get("file") || "");
+    let to = u.searchParams.get("to") || "";
+    if (!/\.md$/i.test(to)) to += ".md";
+    const toSafe = safeName(to);
+    if (!from || !toSafe) { res.writeHead(400); res.end("bad name"); return; }
+    const fromPath = path.join(RESUMES_DIR, from);
+    const toPath = path.join(RESUMES_DIR, toSafe);
+    if (!fs.existsSync(fromPath)) { res.writeHead(404); res.end("not found"); return; }
+    if (fs.existsSync(toPath)) { res.writeHead(409); res.end("exists"); return; }
+    try {
+      fs.renameSync(fromPath, toPath);
+      const oldPrefix = from.replace(/\.md$/i, "") + ".";
+      const newPrefix = toSafe.replace(/\.md$/i, "") + ".";
+      try {
+        fs.readdirSync(BACKUP_DIR)
+          .filter((f) => f.startsWith(oldPrefix))
+          .forEach((f) => {
+            fs.renameSync(path.join(BACKUP_DIR, f), path.join(BACKUP_DIR, newPrefix + f.slice(oldPrefix.length)));
+          });
+      } catch (e) {}
+    } catch (e) {
+      res.writeHead(500);
+      res.end("rename failed");
+      return;
+    }
+    sendJson(res, { ok: true, file: toSafe });
+    return;
+  }
+
   if (url === "/api/backup" && req.method === "POST") {
     const file = safeName(u.searchParams.get("file") || "");
     if (!file) { res.writeHead(400); res.end("bad file"); return; }

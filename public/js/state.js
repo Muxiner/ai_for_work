@@ -30,6 +30,8 @@ export const state = {
   lastSaveAt: 0,
   currentFile: null,
   files: [],
+  sampleFiles: [],
+  sampleFile: null,
   settings: { ...DEFAULT_SETTINGS },
   hasCustomFont: false,
   customFontDataUrl: null,

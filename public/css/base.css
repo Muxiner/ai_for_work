@@ -194,16 +194,31 @@ html, body {
   padding: 0;
   border: 2px solid #fff;
   border-radius: 50%;
-  box-shadow: 0 0 0 1px var(--line);
   cursor: pointer;
-  background: conic-gradient(#ef4444, #f59e0b, #eab308, #22c55e, #06b6d4, #3b82f6, #8b5cf6, #ec4899, #ef4444);
-  transition: transform .12s ease;
+  display: block;
 }
-.accent-picker:hover { transform: scale(1.12); }
-.accent-picker.active { box-shadow: 0 0 0 2px var(--ink); }
 .accent-picker::-webkit-color-swatch-wrapper { padding: 0; }
 .accent-picker::-webkit-color-swatch { border: none; border-radius: 50%; }
 .accent-picker::-moz-color-swatch { border: none; border-radius: 50%; }
+.color-custom {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  margin-top: 2px;
+}
+.color-custom:hover { color: var(--ink); }
+.color-custom-ring {
+  display: inline-flex;
+  padding: 2px;
+  border-radius: 50%;
+  background: conic-gradient(#ef4444, #f59e0b, #eab308, #22c55e, #06b6d4, #3b82f6, #8b5cf6, #ec4899, #ef4444);
+}
+.color-custom.active { color: var(--accent); }
+.color-custom.active .color-custom-ring { box-shadow: 0 0 0 2px var(--ink); }
 .swatch.auto {
   background: conic-gradient(#2563eb, #e11d48, #d97706, #16a34a, #2563eb);
   position: relative;

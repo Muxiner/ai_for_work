@@ -45,7 +45,8 @@ export function updateSwatchActive() {
   if (picker) {
     const computed = getComputedStyle(document.body).getPropertyValue("--accent").trim() || "#2563eb";
     picker.value = current || computed;
-    picker.classList.toggle("active", !!current && !SWATCHES.includes(current));
+    const label = picker.closest(".color-custom");
+    if (label) label.classList.toggle("active", !!current && !SWATCHES.includes(current));
   }
 }
 

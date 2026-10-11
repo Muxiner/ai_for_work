@@ -166,7 +166,7 @@ export function renderResume(data) {
 
 export function sectionMarkup(sec) {
   let html = `<section class="section" data-key="${esc(sec.key)}">`;
-  const secIcon = SECTION_ICON[sec.title] ? `<span class="sec-ico">${svgIcon(SECTION_ICON[sec.title])}</span>` : "";
+  const secIcon = `<span class="sec-ico">${svgIcon(SECTION_ICON[sec.title] || "dot")}</span>`;
   html += `<div class="section-head">${secIcon}<h2 class="section-title" contenteditable="true">${esc(sec.title)}</h2>${sectionActions()}</div>`;
 
   if (sec.key === "skills") {

@@ -13,10 +13,9 @@ body[data-template="modern"] .role { color: rgba(255,255,255,.92); }
 body[data-template="modern"] .contact { color: rgba(255,255,255,.85); }
 body[data-template="modern"] .contact .c::before { color: rgba(255,255,255,.6); }
 body[data-template="modern"] .photo-wrap { box-shadow: 0 0 0 3px rgba(255,255,255,.55); }
-body[data-template="modern"] .section-title { border-left: 4px solid var(--accent); padding-left: 8px; color: var(--accent); }
+body[data-template="modern"] .section-title { color: var(--accent); }
 body[data-template="modern"] .section-head::after { display: none; }
 body[data-template="modern"] .item-sub { color: var(--accent); }
-body[data-template="modern"] .sec-ico { display: none; }
 body[data-template="modern"] .contact .ico { color: rgba(255,255,255,.8); }
 
 /* ================= Template: Minimal ================= */

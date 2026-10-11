@@ -33,10 +33,11 @@ export const LABEL_ICON = {
 export const SECTION_ICON = {
   "个人简介": "user", "自我评价": "user", "自我介绍": "user", "个人评价": "user", "自我鉴定": "user", "自我描述": "user",
   "工作经历": "briefcase", "实习经历": "briefcase",
-  "项目经历": "layers", "科研经历": "book", "论文发表": "book",
+  "项目经历": "layers", "项目经验": "layers", "科研经历": "book", "论文发表": "book",
   "教育背景": "cap", "教育经历": "cap", "培训经历": "cap", "校园经历": "user",
   "技能特长": "sliders", "专业技能": "sliders", "语言能力": "chat",
-  "资格证书": "award", "获得荣誉": "trophy", "荣誉奖项": "trophy", "获奖情况": "trophy",
+  "资格证书": "award", "资质证书": "award", "证书": "award",
+  "获得荣誉": "trophy", "荣誉奖项": "trophy", "获奖情况": "trophy", "获奖经历": "trophy",
   "组织经历": "users", "社团活动": "users", "在校经历": "users",
   "求职意向": "target",
 };

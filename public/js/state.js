@@ -71,7 +71,7 @@ export const SECTION_CATALOG = [
   { title: "工作经历", key: "experience" },
   { title: "实习经历", key: "experience" },
   { title: "项目经历", key: "projects" },
-  { title: "教育背景", key: "education" },
+  { title: "教育经历", key: "education" },
   { title: "资格证书", key: "certificates" },
   { title: "获得荣誉", key: "honors" },
   { title: "技能特长", key: "skills" },
@@ -81,7 +81,7 @@ export const SECTION_CATALOG = [
 export const TYPE_LABELS = {
   experience: "工作经历",
   projects: "项目经历",
-  education: "教育背景",
+  education: "教育经历",
   certificates: "资格证书",
 };
 

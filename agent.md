@@ -115,7 +115,7 @@ index.html / public/** 被修改 ──fs.watch──► SSE {reload:true} ─�
 ## 项目经历
 （同上）
 
-## 教育背景
+## 教育经历
 ### 学校 · 专业 · 学历
 2019.09 – 2023.06
 关键词：主修课程
@@ -154,14 +154,14 @@ index.html / public/** 被修改 ──fs.watch──► SSE {reload:true} ─�
 - **关键词开关**：`body.hide-keywords` 隐藏所有关键词行（不改 md 数据）
 - **时间轴**：`body.timeline` + 章节 `timeline-on` 类
   - 仅当章节内**带日期条目 ≥ 2** 时启用
-  - 可选内容类型（`timelineTypes`）：工作经历/项目经历/教育背景/资格证书
+  - 可选内容类型（`timelineTypes`）：工作经历/项目经历/教育经历/资格证书
   - 线条 `timelineLine`：solid / dashed / dotted / none（`data-tlline`）
   - 节点 `timelineNode`：dot / arrow / square / diamond / none（`data-tlnode`）
   - 布局 `timelineLayout`：right / dateLeft / stacked / card（`data-tllayout`）
 - **编辑交互**：所有文本 `contenteditable`；条目悬停出现 `↑ ↓ ×`；章节标题悬停出现 `↑ ↓`；各章节「+ 添加」；技能/联系方式可单独删除
 - **时间自动排序**：某章节内所有条目都带日期时，按日期（起始年月）倒序自动排序；在文档里改 `.md`、在页面里增删/移动/编辑失焦后均会重新排序（`js/render.js` 的 `sortDatedSections`）
 - **多简历**：顶栏下拉切换、新建、删除
-- **项目列表（左侧面板）**：顶栏「显示 → 项目列表」展开左侧面板，列出**标准章节目录**（求职意向 / 个人简介 / 自我评价 / 工作经历 / 实习经历 / 项目经历 / 教育背景 / 资格证书 / 获得荣誉 / 技能特长 / 在校经历，均带图标）以及简历中已有的自定义章节。
+- **项目列表（左侧面板）**：顶栏「显示 → 项目列表」展开左侧面板，列出**标准章节目录**（求职意向 / 个人简介 / 自我评价 / 工作经历 / 实习经历 / 项目经历 / 教育经历 / 资格证书 / 获得荣誉 / 技能特长 / 在校经历，均带图标）以及简历中已有的自定义章节。
   - 勾选**已有**章节 → 显示；取消 → 隐藏（按标题存于 `settings.hiddenSections`）
   - 勾选**缺失**章节 → 自动新增该章节（默认内容，`render.js` 的 `addSection`）
   - 面板开合状态存于 `settings.panelOpen`；隐藏项在预览/导出（PDF/PNG/JPG）中同样不显示

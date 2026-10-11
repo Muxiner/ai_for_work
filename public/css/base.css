@@ -109,6 +109,29 @@ html, body {
 .menu-panel .ctl { width: 100%; justify-content: space-between; }.menu-panel .ctl select { flex: 1; min-width: 0; }
 .menu-panel .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .menu-panel .btn { flex: none; }
+.panel-title { font-size: 12px; font-weight: 700; color: var(--muted); }
+.file-list { display: flex; flex-direction: column; gap: 4px; }
+.file-item {
+  text-align: left;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all .12s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.file-item:hover { border-color: #cbd5e1; background: #f8fafc; }
+.file-item.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 700;
+  background: color-mix(in srgb, var(--accent) 8%, #fff);
+}
 .menu-panel .swatches-row { justify-content: flex-start; }
 .menu-panel { max-height: calc(100vh - 90px); overflow: auto; }
 

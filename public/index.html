@@ -17,12 +17,19 @@
     <div class="menu panel-menu" id="fileMenu">
       <button class="btn ghost menu-btn">简历</button>
       <div class="menu-panel">
-        <label class="ctl" id="fileCtl">选择
-          <select id="fileSelect"></select>
-        </label>
+        <div class="panel-title">简历</div>
+        <div class="file-list" id="fileList"></div>
         <div class="row">
           <button class="btn ghost" id="newFileBtn">新建</button>
           <button class="btn ghost" id="delFileBtn">删除</button>
+        </div>
+        <div class="panel-title">示例</div>
+        <label class="ctl">选择
+          <select id="sampleSelect"></select>
+        </label>
+        <div class="row">
+          <button class="btn ghost" id="resetBtn">恢复示例</button>
+          <button class="btn ghost" id="restoreBackupBtn">恢复备份</button>
         </div>
       </div>
     </div>
@@ -136,19 +143,6 @@
         <button class="btn ghost" id="kwToggle">隐藏关键词</button>
         <button class="btn ghost" id="photoToggle">隐藏照片</button>
         <button class="btn ghost" id="toggleEdit">预览模式</button>
-      </div>
-    </div>
-
-    <div class="menu panel-menu">
-      <button class="btn ghost menu-btn">更多</button>
-      <div class="menu-panel">
-        <label class="ctl">示例
-          <select id="sampleSelect"></select>
-        </label>
-        <div class="row">
-          <button class="btn ghost" id="resetBtn">恢复示例</button>
-          <button class="btn ghost" id="restoreBackupBtn">恢复备份</button>
-        </div>
       </div>
     </div>
 

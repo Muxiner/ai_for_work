@@ -113,12 +113,11 @@ export async function loadFileList() {
 }
 
 export function renderFileSelect() {
-  const sel = document.getElementById("fileSelect");
-  if (!sel) return;
-  sel.innerHTML = state.files
-    .map((f) => `<option value="${esc(f)}">${esc(f.replace(/\.md$/i, ""))}</option>`)
+  const list = document.getElementById("fileList");
+  if (!list) return;
+  list.innerHTML = state.files
+    .map((f) => `<button type="button" class="file-item${f === state.currentFile ? " active" : ""}" data-file="${esc(f)}">${esc(f.replace(/\.md$/i, ""))}</button>`)
     .join("");
-  if (state.currentFile) sel.value = state.currentFile;
 }
 
 export async function loadResume(file) {
@@ -137,6 +136,5 @@ export async function loadResume(file) {
   syncEditableState();
   state.dirty = false;
   ready = true;
-  const sel = document.getElementById("fileSelect");
-  if (sel && state.currentFile) sel.value = state.currentFile;
+  renderFileSelect();
 }

@@ -30,16 +30,20 @@ async function populateSamples() {
 }
 
 function bindFileControls() {
-  const fileSelect = document.getElementById("fileSelect");
+  const fileList = document.getElementById("fileList");
   const newFileBtn = document.getElementById("newFileBtn");
   const delFileBtn = document.getElementById("delFileBtn");
   const toggleBtn = document.getElementById("toggleEdit");
   const resetBtn = document.getElementById("resetBtn");
 
-  if (fileSelect) {
-    fileSelect.addEventListener("change", async () => {
+  if (fileList) {
+    fileList.addEventListener("click", async (e) => {
+      const b = e.target.closest(".file-item");
+      if (!b) return;
+      const file = b.dataset.file;
+      if (!file || file === state.currentFile) return;
       if (state.dirty) await save();
-      await loadResume(fileSelect.value);
+      await loadResume(file);
       setStatus("已切换到 " + state.currentFile);
     });
   }

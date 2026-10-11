@@ -4,6 +4,11 @@ import { renderTimelineTypes, refreshTimeline, applyHiddenSections, addSection, 
 import { fileToDataURL } from "./photo.js";
 import { scheduleSave } from "./persist.js";
 
+const SZ_CONTROLS = [
+  ["szL1", "l1"], ["szL2", "l2"], ["szL3", "l3"],
+  ["szName", "name"], ["szRole", "role"], ["szContact", "contact"],
+];
+
 export function persistSettings() {
   try { localStorage.setItem(KEYS.SETTINGS, JSON.stringify(state.settings)); } catch (e) {}
 }
@@ -93,6 +98,19 @@ export function applySettings() {
     panelToggle.textContent = s.panelOpen ? "收起项目列表" : "项目列表";
     panelToggle.classList.toggle("active", !!s.panelOpen);
   }
+
+  const sz = s.sizes || {};
+  const SZ_VARS = { l1: "sz-1", l2: "sz-2", l3: "sz-3", name: "sz-name", role: "sz-role", contact: "sz-contact" };
+  Object.keys(SZ_VARS).forEach((k) => {
+    if (sz[k] != null) document.body.style.setProperty("--" + SZ_VARS[k], sz[k] + "px");
+  });
+  SZ_CONTROLS.forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (sz[key] != null) el.value = sz[key];
+    const lbl = document.getElementById(id + "v");
+    if (lbl) lbl.textContent = el.value;
+  });
 }
 
 function on(id, event, handler) {
@@ -191,6 +209,17 @@ export function bindControls() {
     state.settings.panelOpen = !state.settings.panelOpen;
     applySettings();
     persistSettings();
+  });
+
+  SZ_CONTROLS.forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("input", () => {
+      state.settings.sizes = state.settings.sizes || {};
+      state.settings.sizes[key] = parseFloat(el.value);
+      applySettings();
+      persistSettings();
+    });
   });
   on("sideClose", "click", () => {
     state.settings.panelOpen = false;

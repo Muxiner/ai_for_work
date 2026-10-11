@@ -145,7 +145,7 @@ index.html / public/** 被修改 ──fs.watch──► SSE {reload:true} ─�
 ## 前端功能一览
 
 - **模板**：classic / modern / tech / gradient / minimal / center / card / compact / elegant / sidebar（`body[data-template]`，样式在 `css/templates.css`）
-- **字号层级**：`--fs-1`（章节标题，最大）/ `--fs-2`（条目·职位·时间·列表项）/ `--fs-3`（详情要点，最小）随深度递减，各章节同层级字号一致；模板用 `--fs-scale` 整体缩放以保持层级
+- **字号层级与自定义**：基础字号 `--sz-1/2/3`（章节标题 / 条目·列表项 / 详情要点）与 `--sz-name/role/contact`，再经模板 `--fs-scale` 缩放；「样式」菜单内有滑块可实时调整各层级及姓名/职位/联系方式字号，存于 `settings.sizes`。
 - **字体（中英文分开）**：英文 `fontLatin` + 中文 `fontCJK`，JS 组合成 `--font`（英文列表在前、中文在后、末尾通用族），`body.style.setProperty("--font", …)`
   - 英文：system/times/georgia/garamond/cambria/calibri/arial/helvetica/verdana/tahoma/courier/consolas/custom
   - 中文：system/yahei/pingfang/sourcehan/heiti/simsun/sourceserif/kai/fangsong/custom

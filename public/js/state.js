@@ -21,6 +21,7 @@ export const DEFAULT_SETTINGS = {
   timelineLayout: "right",
   hiddenSections: [],
   panelOpen: false,
+  sizes: { l1: 15, l2: 13, l3: 11.5, name: 30, role: 15, contact: 12.5 },
 };
 
 export const state = {

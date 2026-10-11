@@ -10,10 +10,9 @@
   --pad-y: 18mm;
   --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
   /* 层级字号：1=章节标题（最大），2=条目/列表项，3=详情要点（最小），随深度递减 */
+  --sz-1: 15px; --sz-2: 13px; --sz-3: 11.5px;
+  --sz-name: 30px; --sz-role: 15px; --sz-contact: 12.5px;
   --fs-scale: 1;
-  --fs-1: calc(15px * var(--fs-scale));
-  --fs-2: calc(13px * var(--fs-scale));
-  --fs-3: calc(11.5px * var(--fs-scale));
 }
 
 * { box-sizing: border-box; }
@@ -95,6 +94,25 @@ html, body {
 .menu-panel .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .menu-panel .btn { flex: none; }
 .menu-panel .swatches-row { justify-content: flex-start; }
+.menu-panel { max-height: calc(100vh - 90px); overflow: auto; }
+
+.size-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+.size-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.size-row label { width: 30px; flex: none; }
+.size-row input[type="range"] { flex: 1; accent-color: var(--accent); min-width: 0; }
+.size-val { width: 34px; text-align: right; flex: none; color: var(--ink); }
 
 .ctl {
   display: inline-flex;
@@ -235,9 +253,9 @@ html, body {
   margin-bottom: 22px;
 }
 .head-main { flex: 1; min-width: 0; }
-.name { font-size: 30px; font-weight: 800; letter-spacing: .5px; line-height: 1.15; outline: none; }
-.role { font-size: 15px; color: var(--accent); font-weight: 600; margin-top: 6px; outline: none; }
-.contact { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 12.5px; color: var(--muted); }
+.name { font-size: calc(var(--sz-name) * var(--fs-scale)); font-weight: 800; letter-spacing: .5px; line-height: 1.15; outline: none; }
+.role { font-size: calc(var(--sz-role) * var(--fs-scale)); color: var(--accent); font-weight: 600; margin-top: 6px; outline: none; }
+.contact { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: calc(var(--sz-contact) * var(--fs-scale)); color: var(--muted); }
 .contact .c { outline: none; }
 .contact .c::before { content: attr(data-label) "："; color: #9ca3af; }
 .c-wrap { display: inline-flex; align-items: center; gap: 4px; }
@@ -285,7 +303,7 @@ body.photo-off .photo-wrap { display: none; }
 .section { margin-bottom: 20px; position: relative; }
 .section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
 .section-title {
-  font-size: var(--fs-1); font-weight: 800; color: var(--ink);
+  font-size: calc(var(--sz-1) * var(--fs-scale)); font-weight: 800; color: var(--ink);
   letter-spacing: .4px; outline: none; text-transform: uppercase; white-space: nowrap;
 }
 .section-head::after { content: ""; flex: 1; height: 1px; background: var(--line); }
@@ -293,15 +311,15 @@ body.photo-off .photo-wrap { display: none; }
 .item { margin-bottom: 14px; outline: none; position: relative; }
 .item:last-child { margin-bottom: 0; }
 .item-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
-.item-title { font-size: var(--fs-2); font-weight: 700; outline: none; }
-.item-sub { font-size: var(--fs-2); color: var(--accent); font-weight: 600; outline: none; }
-.item-date { font-size: var(--fs-2); color: var(--accent); white-space: nowrap; outline: none; }
-.item-desc { margin: 6px 0 0; padding-left: 18px; font-size: var(--fs-3); line-height: 1.7; color: #374151; outline: none; }
-  p.item-desc { font-size: var(--fs-2); }
+.item-title { font-size: calc(var(--sz-2) * var(--fs-scale)); font-weight: 700; outline: none; }
+.item-sub { font-size: calc(var(--sz-2) * var(--fs-scale)); color: var(--accent); font-weight: 600; outline: none; }
+.item-date { font-size: calc(var(--sz-2) * var(--fs-scale)); color: var(--accent); white-space: nowrap; outline: none; }
+.item-desc { margin: 6px 0 0; padding-left: 18px; font-size: calc(var(--sz-3) * var(--fs-scale)); line-height: 1.7; color: #374151; outline: none; }
+  p.item-desc { font-size: calc(var(--sz-2) * var(--fs-scale)); }
 .item-desc li { margin-bottom: 3px; outline: none; }
 .item-desc li::marker { color: var(--accent); }
 
-.item-kw { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; font-size: var(--fs-3); }
+.item-kw { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; font-size: calc(var(--sz-3) * var(--fs-scale)); }
 body.hide-keywords .item-kw { display: none; }
 .kw-label { color: var(--muted); font-weight: 700; }
 .item-kw-text { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 5px; outline: none; color: var(--muted); }
@@ -314,7 +332,7 @@ body.hide-keywords .item-kw { display: none; }
   white-space: nowrap;
 }
 
-.skills-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 24px; font-size: var(--fs-2); }
+.skills-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 24px; font-size: calc(var(--sz-2) * var(--fs-scale)); }
 .skill { display: flex; gap: 8px; outline: none; align-items: flex-start; }
 .skill-text { display: flex; gap: 8px; outline: none; }
 .skill b { color: var(--accent); font-weight: 700; white-space: nowrap; }
@@ -332,7 +350,7 @@ body.hide-keywords .item-kw { display: none; }
 .honor-list { list-style: none; margin: 0; padding: 0; }
 .honor { display: flex; align-items: baseline; gap: 8px; padding: 3px 0; position: relative; }
 .honor::before { content: "•"; color: var(--accent); font-weight: 700; }
-.honor-text { flex: 1; outline: none; font-size: var(--fs-2); }
+.honor-text { flex: 1; outline: none; font-size: calc(var(--sz-2) * var(--fs-scale)); }
 .honor-actions {
   display: none;
   gap: 2px;
@@ -353,7 +371,7 @@ body.editing .honor:focus-within .honor-actions { display: flex; }
 }
 body.editing .honor .del-btn { display: block; }
 
-.intent-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 24px; font-size: var(--fs-2); }
+.intent-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 24px; font-size: calc(var(--sz-2) * var(--fs-scale)); }
 .intent-item { display: flex; align-items: baseline; gap: 6px; position: relative; }
 .intent-label { color: var(--accent); font-weight: 700; white-space: nowrap; outline: none; }
 .intent-label::after { content: "："; color: var(--muted); }

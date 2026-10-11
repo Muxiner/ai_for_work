@@ -41,7 +41,7 @@ export function parseMarkdown(md) {
       const parts = t.slice(4).split(" · ");
       item = { title: parts[0] || "", sub: parts.slice(1).join(" · "), date: "", keywords: [], bullets: [] };
       if (!section) {
-        section = { title: "经历", key: "custom-0", items: [], skills: [], paragraphs: [], honors: [], bullets: [] };
+        section = { title: "经历", key: "custom-0", items: [], skills: [], paragraphs: [], honors: [], bullets: [], fields: [] };
         data.sections.push(section);
       }
       section.items.push(item);
@@ -53,7 +53,7 @@ export function parseMarkdown(md) {
       section = {
         title,
         key: SECTION_KEYS[title] || ("custom-" + data.sections.length),
-        items: [], skills: [], paragraphs: [], honors: [], bullets: [],
+        items: [], skills: [], paragraphs: [], honors: [], bullets: [], fields: [],
       };
       data.sections.push(section);
       item = null;
@@ -83,6 +83,9 @@ export function parseMarkdown(md) {
         section.honors.push(content);
       } else if (section.key === "selfeval") {
         section.bullets.push(content);
+      } else if (section.key === "intent") {
+        const m = content.match(/^([^:：]{1,12})\s*[:：]\s*(.*)$/);
+        section.fields.push(m ? { label: m[1].trim(), value: m[2].trim() } : { label: content, value: "" });
       } else if (item) {
         item.bullets.push(content);
       } else {
@@ -159,6 +162,18 @@ export function serialize() {
       sec.querySelectorAll(".honor .honor-text").forEach((h) => {
         const v = domToMd(h).trim();
         if (v) out.push("- " + v);
+      });
+      out.push("");
+      return;
+    }
+
+    if (key === "intent") {
+      sec.querySelectorAll(".intent-item").forEach((it) => {
+        const label = it.querySelector(".intent-label");
+        const value = it.querySelector(".intent-value");
+        const l = label ? label.textContent.trim() : "";
+        const v = value ? domToMd(value).trim() : "";
+        if (l || v) out.push("- " + l + "：" + v);
       });
       out.push("");
       return;

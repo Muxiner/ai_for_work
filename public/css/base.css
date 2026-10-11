@@ -295,6 +295,20 @@ body.editing .honor:focus-within .honor-actions { display: flex; }
 }
 body.editing .honor .del-btn { display: block; }
 
+.intent-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 24px; font-size: 12.5px; }
+.intent-item { display: flex; align-items: baseline; gap: 6px; position: relative; }
+.intent-label { color: var(--accent); font-weight: 700; white-space: nowrap; outline: none; }
+.intent-label::after { content: "："; color: var(--muted); }
+.intent-value { flex: 1; outline: none; }
+.intent-item .del-btn {
+  position: static;
+  width: 18px; height: 18px;
+  font-size: 12px;
+  flex: none;
+  margin-left: 4px;
+}
+body.editing .intent-item .del-btn { display: block; }
+
 /* ---------- Inline controls (edit mode only) ---------- */
 .add-btn, .del-btn {
   display: none;

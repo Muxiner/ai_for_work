@@ -48,25 +48,39 @@ export function bindEditor() {
     const add = e.target.closest(".add-btn");
     if (add) {
       const tpl = add.dataset.tpl;
-      let node;
+      const section = add.closest(".section");
+      const ensure = (sel, tag, cls) => {
+        let el = section.querySelector(sel);
+        if (!el) {
+          el = document.createElement(tag);
+          el.className = cls;
+          add.parentElement.insertBefore(el, add);
+        }
+        return el;
+      };
+      let node, container = null;
       if (tpl === "skill") {
         node = document.createElement("div");
         node.className = "skill";
         node.innerHTML = TEMPLATES.skill;
-      } else if (tpl === "honor") {
+        container = ensure(".skills-grid", "div", "skills-grid");
+      } else if (tpl === "honor" || tpl === "selfeval") {
         node = document.createElement("li");
         node.className = "honor";
-        node.innerHTML = TEMPLATES.honor;
-      } else if (tpl === "selfeval") {
-        node = document.createElement("li");
-        node.className = "honor";
-        node.innerHTML = TEMPLATES.selfeval;
+        node.innerHTML = TEMPLATES[tpl];
+        container = ensure(".honor-list", "ul", "honor-list");
+      } else if (tpl === "intent") {
+        node = document.createElement("div");
+        node.className = "intent-item";
+        node.innerHTML = TEMPLATES.intent;
+        container = ensure(".intent-grid", "div", "intent-grid");
       } else {
         node = document.createElement("div");
         node.className = "item";
         node.innerHTML = TEMPLATES[tpl] || TEMPLATES.experience;
       }
-      add.parentElement.insertBefore(node, add);
+      if (container) container.appendChild(node);
+      else add.parentElement.insertBefore(node, add);
       sortDatedSections(add.parentElement);
       scheduleSave();
       return;
@@ -91,7 +105,7 @@ export function bindEditor() {
 
     const del = e.target.closest(".del-btn");
     if (del) {
-      const target = del.closest(".item, .skill, .c-wrap, .honor");
+      const target = del.closest(".item, .skill, .c-wrap, .honor, .intent-item");
       if (target) {
         const parent = target.parentElement;
         target.remove();

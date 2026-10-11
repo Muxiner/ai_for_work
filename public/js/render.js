@@ -48,6 +48,7 @@ export const TEMPLATES = {
   skill: `<span class="skill-text" contenteditable="true"><b>分类</b><span class="skill-tags"><span class="skill-tag">技能关键词</span></span></span><button class="del-btn" title="删除" contenteditable="false">×</button>`,
   honor: `<span class="honor-text" contenteditable="true">荣誉名称</span>` + honorActions(),
   selfeval: `<span class="honor-text" contenteditable="true">要点描述</span>` + honorActions(),
+  intent: `<span class="intent-label" contenteditable="true">意向岗位</span><span class="intent-value" contenteditable="true">工程师</span><button class="del-btn" title="删除" contenteditable="false">×</button>`,
 };
 
 export function photoMarkup() {
@@ -181,6 +182,12 @@ export function renderResume(data) {
       const list = bullets ? `<ul class="honor-list">${bullets}</ul>` : "";
       html += `<div class="item">${itemActions(false)}${para}${list}</div>`;
       html += `<button class="add-btn" data-tpl="selfeval">+ 添加要点</button>`;
+    } else if (sec.key === "intent") {
+      const fields = (sec.fields || []).map((f) =>
+        `<div class="intent-item"><span class="intent-label" contenteditable="true">${esc(f.label)}</span><span class="intent-value" contenteditable="true">${inlineMd(f.value)}</span><button class="del-btn" title="删除" contenteditable="false">×</button></div>`
+      ).join("");
+      html += `<div class="intent-grid">${fields}</div>`;
+      html += `<button class="add-btn" data-tpl="intent">+ 添加意向</button>`;
     } else {
       html += sec.items.map(itemMarkup).join("");
       html += `<button class="add-btn" data-tpl="${esc(sec.key)}">+ 添加条目</button>`;

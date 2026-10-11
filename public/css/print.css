@@ -1,5 +1,5 @@
 /* ---------- Print ---------- */
-@page { size: A4; margin: 12mm 15mm; }
+@page { size: A4; margin: 12mm 0; }
 @media print {
   html, body { background: #fff; }
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -8,7 +8,7 @@
   .page {
     width: auto;
     min-height: auto;
-    padding: 0;
+    padding: 0 15mm;
     box-shadow: none;
     border-radius: 0;
     margin: 0;
@@ -28,6 +28,6 @@
 
   body[data-template="modern"] .header,
   body[data-template="tech"] .header,
-  body[data-template="gradient"] .header { margin: 0 0 20px; padding: 8mm 0 12px; }
+  body[data-template="gradient"] .header { margin: 0 -15mm 20px; padding: 8mm 15mm 12px; }
   body[data-template="sidebar"] .page { padding: 0; }
 }

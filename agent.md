@@ -134,7 +134,8 @@ index.html / public/** 被修改 ──fs.watch──► SSE {reload:true} ─�
 - 首个无冒号段落 → 职位；`标签：值` → 基本信息（标签通用，图标按 `LABEL_ICON` 匹配，未知用默认点）。
 - 日期行：`/^\d{4}/`。
 - 关键词行：`^(关键词|关键字|技术栈|主修课程|标签)[:：]`，分隔符 `、,，;；/|`。
-- 章节 key 映射见 `SECTION_KEYS`：`summary / experience / projects / education / skills / certificates / intent / custom-N`。
+- 章节 key 映射见 `SECTION_KEYS`：`summary / experience / projects / education / skills / certificates / honors / intent / custom-N`。
+- `## 获得荣誉`（key=`honors`）下的 `- ` 列表渲染为**荣誉列表**（每条可增删/排序）。
 
 序列化（`serialize`）反向生成，DOM 顺序即输出顺序（顺序调整会持久化）。
 

@@ -45,6 +45,10 @@ export const SECTION_KEYS = {
   "技能特长": "skills",
   "资格证书": "certificates",
   "求职意向": "intent",
+  "获得荣誉": "honors",
+  "荣誉奖项": "honors",
+  "获奖情况": "honors",
+  "所获荣誉": "honors",
 };
 
 export const TYPE_LABELS = {

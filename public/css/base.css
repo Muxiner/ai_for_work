@@ -271,6 +271,30 @@ body.hide-keywords .item-kw { display: none; }
   white-space: nowrap;
 }
 
+.honor-list { list-style: none; margin: 0; padding: 0; }
+.honor { display: flex; align-items: baseline; gap: 8px; padding: 3px 0; position: relative; }
+.honor::before { content: "•"; color: var(--accent); font-weight: 700; }
+.honor-text { flex: 1; outline: none; }
+.honor-actions {
+  display: none;
+  gap: 2px;
+  align-items: center;
+  padding: 2px;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 1px 5px rgba(15, 23, 42, .16);
+}
+body.editing .honor:hover .honor-actions,
+body.editing .honor:focus-within .honor-actions { display: flex; }
+.honor-actions .move-btn { width: 20px; height: 20px; }
+.honor-actions .del-btn {
+  position: static;
+  width: 20px; height: 20px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+body.editing .honor .del-btn { display: block; }
+
 /* ---------- Inline controls (edit mode only) ---------- */
 .add-btn, .del-btn {
   display: none;

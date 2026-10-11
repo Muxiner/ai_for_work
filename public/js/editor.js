@@ -53,6 +53,10 @@ export function bindEditor() {
         node = document.createElement("div");
         node.className = "skill";
         node.innerHTML = TEMPLATES.skill;
+      } else if (tpl === "honor") {
+        node = document.createElement("li");
+        node.className = "honor";
+        node.innerHTML = TEMPLATES.honor;
       } else {
         node = document.createElement("div");
         node.className = "item";
@@ -69,7 +73,9 @@ export function bindEditor() {
       e.stopPropagation();
       const dir = mv.dataset.move;
       const item = mv.closest(".item");
+      const honor = mv.closest(".honor");
       if (item) moveSibling(item, "item", dir);
+      else if (honor) moveSibling(honor, "honor", dir);
       else {
         const section = mv.closest(".section");
         if (section) moveSibling(section, "section", dir);
@@ -81,7 +87,7 @@ export function bindEditor() {
 
     const del = e.target.closest(".del-btn");
     if (del) {
-      const target = del.closest(".item, .skill, .c-wrap");
+      const target = del.closest(".item, .skill, .c-wrap, .honor");
       if (target) {
         const parent = target.parentElement;
         target.remove();

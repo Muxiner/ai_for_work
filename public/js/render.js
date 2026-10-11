@@ -46,6 +46,7 @@ export const TEMPLATES = {
       <div class="item-date" contenteditable="true">2024.06</div>
     </div>`,
   skill: `<span class="skill-text" contenteditable="true"><b>分类</b><span class="skill-tags"><span class="skill-tag">技能关键词</span></span></span><button class="del-btn" title="删除" contenteditable="false">×</button>`,
+  honor: `<span class="honor-text" contenteditable="true">荣誉名称</span>` + honorActions(),
 };
 
 export function photoMarkup() {
@@ -70,6 +71,14 @@ export function sectionActions() {
     `<button class="move-btn" data-move="up" title="上移">${svgIcon("up")}</button>` +
     `<button class="move-btn" data-move="down" title="下移">${svgIcon("down")}</button>` +
     `</div>`;
+}
+
+function honorActions() {
+  return `<span class="honor-actions">` +
+    `<button class="move-btn" data-move="up" title="上移">${svgIcon("up")}</button>` +
+    `<button class="move-btn" data-move="down" title="下移">${svgIcon("down")}</button>` +
+    `<button class="del-btn" title="删除">×</button>` +
+    `</span>`;
 }
 
 export function skillTagsHTML(value) {
@@ -155,6 +164,12 @@ export function renderResume(data) {
       html += `<button class="add-btn" data-tpl="skill">+ 添加技能</button>`;
     } else if (sec.key === "summary") {
       html += `<div class="item">${itemActions(false)}<p class="item-desc" contenteditable="true" style="padding-left:0;margin:0;">${esc(sec.paragraphs.join(" "))}</p></div>`;
+    } else if (sec.key === "honors") {
+      const honors = (sec.honors || []).map((h) =>
+        `<li class="honor"><span class="honor-text" contenteditable="true">${esc(h)}</span>${honorActions()}</li>`
+      ).join("");
+      html += `<ul class="honor-list">${honors}</ul>`;
+      html += `<button class="add-btn" data-tpl="honor">+ 添加荣誉</button>`;
     } else {
       html += sec.items.map(itemMarkup).join("");
       html += `<button class="add-btn" data-tpl="${esc(sec.key)}">+ 添加条目</button>`;

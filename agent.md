@@ -145,7 +145,8 @@ index.html / public/** 被修改 ──fs.watch──► SSE {reload:true} ─�
 ## 前端功能一览
 
 - **模板**：classic / modern / tech / gradient / minimal / center / card / compact / elegant / sidebar（`body[data-template]`，样式在 `css/templates.css`）
-- **字号层级与自定义**：基础字号 `--sz-1/2/3`（章节标题 / 条目·列表项 / 详情要点）与 `--sz-name/role/contact`，再经模板 `--fs-scale` 缩放；「样式」菜单内有滑块可实时调整各层级及姓名/职位/联系方式字号，存于 `settings.sizes`。
+- **字号层级与自定义**：基础字号 `--sz-1/2/3`（章节标题 / 条目 / 详情要点）与 `--sz-name/role/contact`，再经模板 `--fs-scale` 缩放；「样式」菜单内有滑块可实时调整各层级及姓名/职位/联系方式字号，存于 `settings.sizes`。
+  - **按深度取字号**：每个章节的**最深层**一律用第 3 级字号；无第三级的「二级章节」其条目行也用第 3 级（`.section.depth-2`），含第三级的「三级章节」条目行用第 2 级、详情用第 3 级（`.section.depth-3`）
 - **字体（中英文分开）**：英文 `fontLatin` + 中文 `fontCJK`，JS 组合成 `--font`（英文列表在前、中文在后、末尾通用族），`body.style.setProperty("--font", …)`
   - 英文：system/times/georgia/garamond/cambria/calibri/arial/helvetica/verdana/tahoma/courier/consolas/custom
   - 中文：system/yahei/pingfang/sourcehan/heiti/simsun/sourceserif/kai/fangsong/custom

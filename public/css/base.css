@@ -331,8 +331,12 @@ body.photo-off .photo-wrap { display: none; }
 .item-title { font-size: calc(var(--sz-2) * var(--fs-scale)); font-weight: 700; outline: none; }
 .item-sub { font-size: calc(var(--sz-2) * var(--fs-scale)); color: var(--accent); font-weight: 600; outline: none; }
 .item-date { font-size: calc(var(--sz-2) * var(--fs-scale)); color: var(--accent); white-space: nowrap; outline: none; }
+/* 二级章节（无第三级）：条目行使用第三级（最小）字号 */
+.section.depth-2 .item-title,
+.section.depth-2 .item-sub,
+.section.depth-2 .item-date { font-size: calc(var(--sz-3) * var(--fs-scale)); }
 .item-desc { margin: 6px 0 0; padding-left: 18px; font-size: calc(var(--sz-3) * var(--fs-scale)); line-height: 1.7; color: #374151; outline: none; }
-  p.item-desc { font-size: calc(var(--sz-2) * var(--fs-scale)); }
+  p.item-desc { font-size: calc(var(--sz-3) * var(--fs-scale)); }
 .item-desc li { margin-bottom: 3px; outline: none; }
 .item-desc li::marker { color: var(--accent); }
 
@@ -349,7 +353,7 @@ body.hide-keywords .item-kw { display: none; }
   white-space: nowrap;
 }
 
-.skills-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 24px; font-size: calc(var(--sz-2) * var(--fs-scale)); }
+.skills-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 24px; font-size: calc(var(--sz-3) * var(--fs-scale)); }
 .skill { display: flex; gap: 8px; outline: none; align-items: flex-start; }
 .skill-text { display: flex; gap: 8px; outline: none; }
 .skill b { color: var(--accent); font-weight: 700; white-space: nowrap; }
@@ -367,7 +371,7 @@ body.hide-keywords .item-kw { display: none; }
 .honor-list { list-style: none; margin: 0; padding: 0; }
 .honor { display: flex; align-items: baseline; gap: 8px; padding: 3px 0; position: relative; }
 .honor::before { content: "•"; color: var(--accent); font-weight: 700; }
-.honor-text { flex: 1; outline: none; font-size: calc(var(--sz-2) * var(--fs-scale)); }
+.honor-text { flex: 1; outline: none; font-size: calc(var(--sz-3) * var(--fs-scale)); }
 .honor-actions {
   display: none;
   gap: 2px;
@@ -388,7 +392,7 @@ body.editing .honor:focus-within .honor-actions { display: flex; }
 }
 body.editing .honor .del-btn { display: block; }
 
-.intent-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 24px; font-size: calc(var(--sz-2) * var(--fs-scale)); }
+.intent-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 24px; font-size: calc(var(--sz-3) * var(--fs-scale)); }
 .intent-item { display: flex; align-items: baseline; gap: 6px; position: relative; }
 .intent-label { color: var(--accent); font-weight: 700; white-space: nowrap; outline: none; }
 .intent-label::after { content: "："; color: var(--muted); }

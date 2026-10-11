@@ -1,4 +1,4 @@
-import { state, esc, keywordsHTML, getPage, TYPE_LABELS } from "./state.js";
+import { state, esc, inlineMd, keywordsHTML, getPage, TYPE_LABELS } from "./state.js";
 import { svgIcon, LABEL_ICON, SECTION_ICON } from "./icons.js";
 
 export const TEMPLATES = {
@@ -110,7 +110,7 @@ export function renderSkillText(el) {
 
 export function itemMarkup(it) {
   const bullets = it.bullets.length
-    ? `<ul class="item-desc" contenteditable="true">${it.bullets.map((b) => `<li>${esc(b)}</li>`).join("")}</ul>`
+    ? `<ul class="item-desc" contenteditable="true">${it.bullets.map((b) => `<li>${inlineMd(b)}</li>`).join("")}</ul>`
     : "";
   const kws = (it.keywords && it.keywords.length)
     ? `<div class="item-kw"><span class="kw-label">关键词</span><span class="item-kw-text" contenteditable="true">${keywordsHTML(it.keywords)}</span></div>`
@@ -119,8 +119,8 @@ export function itemMarkup(it) {
     ${itemActions(true)}
     <div class="item-row">
       <div>
-        <div class="item-title" contenteditable="true">${esc(it.title)}</div>
-        ${it.sub ? `<div class="item-sub" contenteditable="true">${esc(it.sub)}</div>` : ""}
+        <div class="item-title" contenteditable="true">${inlineMd(it.title)}</div>
+        ${it.sub ? `<div class="item-sub" contenteditable="true">${inlineMd(it.sub)}</div>` : ""}
       </div>
       ${it.date ? `<div class="item-date" contenteditable="true">${esc(it.date)}</div>` : ""}
     </div>
@@ -164,19 +164,19 @@ export function renderResume(data) {
       html += `<div class="skills-grid">${skills}</div>`;
       html += `<button class="add-btn" data-tpl="skill">+ 添加技能</button>`;
     } else if (sec.key === "summary") {
-      html += `<div class="item">${itemActions(false)}<p class="item-desc" contenteditable="true" style="padding-left:0;margin:0;">${esc(sec.paragraphs.join(" "))}</p></div>`;
+      html += `<div class="item">${itemActions(false)}<p class="item-desc" contenteditable="true" style="padding-left:0;margin:0;">${inlineMd(sec.paragraphs.join(" "))}</p></div>`;
     } else if (sec.key === "honors") {
       const honors = (sec.honors || []).map((h) =>
-        `<li class="honor"><span class="honor-text" contenteditable="true">${esc(h)}</span>${honorActions()}</li>`
+        `<li class="honor"><span class="honor-text" contenteditable="true">${inlineMd(h)}</span>${honorActions()}</li>`
       ).join("");
       html += `<ul class="honor-list">${honors}</ul>`;
       html += `<button class="add-btn" data-tpl="honor">+ 添加荣誉</button>`;
     } else if (sec.key === "selfeval") {
       const para = sec.paragraphs.length
-        ? `<p class="item-desc selfeval-para" contenteditable="true" style="padding-left:0;margin:0;">${sec.paragraphs.map(esc).join("<br>")}</p>`
+        ? `<p class="item-desc selfeval-para" contenteditable="true" style="padding-left:0;margin:0;">${sec.paragraphs.map(inlineMd).join("<br>")}</p>`
         : "";
       const bullets = (sec.bullets || []).map((b) =>
-        `<li class="honor"><span class="honor-text" contenteditable="true">${esc(b)}</span>${honorActions()}</li>`
+        `<li class="honor"><span class="honor-text" contenteditable="true">${inlineMd(b)}</span>${honorActions()}</li>`
       ).join("");
       const list = bullets ? `<ul class="honor-list">${bullets}</ul>` : "";
       html += `<div class="item">${itemActions(false)}${para}${list}</div>`;

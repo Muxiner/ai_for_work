@@ -5,6 +5,29 @@ function bulletContent(t) {
   return m ? m[1].trim() : null;
 }
 
+function domToMd(node) {
+  let out = "";
+  node.childNodes.forEach((n) => {
+    if (n.nodeType === 3) { out += n.textContent; return; }
+    if (n.nodeType !== 1) return;
+    const tag = n.tagName.toLowerCase();
+    const inner = domToMd(n);
+    if (tag === "strong" || tag === "b") out += "**" + inner + "**";
+    else if (tag === "em" || tag === "i") out += "*" + inner + "*";
+    else if (tag === "code") out += "`" + inner + "`";
+    else if (tag === "del" || tag === "s" || tag === "strike") out += "~~" + inner + "~~";
+    else if (tag === "a") out += "[" + inner + "](" + (n.getAttribute("href") || "") + ")";
+    else if (tag === "br") out += "\n";
+    else out += inner;
+  });
+  return out;
+}
+
+function mdOf(sel, root) {
+  const el = (root || document).querySelector(sel);
+  return el ? domToMd(el).trim() : "";
+}
+
 export function parseMarkdown(md) {
   const data = { name: "", role: "", contacts: [], sections: [] };
   let section = null, item = null;
@@ -115,13 +138,13 @@ export function serialize() {
     }
 
     if (key === "summary") {
-      out.push(txt(".item-desc", sec), "");
+      out.push(mdOf(".item-desc", sec), "");
       return;
     }
 
     if (key === "honors") {
       sec.querySelectorAll(".honor .honor-text").forEach((h) => {
-        const v = h.textContent.trim();
+        const v = domToMd(h).trim();
         if (v) out.push("- " + v);
       });
       out.push("");
@@ -129,12 +152,12 @@ export function serialize() {
     }
 
     if (key === "selfeval") {
-      const paraEl = sec.querySelector(".selfeval-para");
-      if (paraEl) {
-        paraEl.innerText.split("\n").map((s) => s.trim()).filter(Boolean).forEach((l) => out.push(l));
+      const paraText = mdOf(".selfeval-para", sec);
+      if (paraText) {
+        paraText.split("\n").map((s) => s.trim()).filter(Boolean).forEach((l) => out.push(l));
       }
       sec.querySelectorAll(".honor .honor-text").forEach((h) => {
-        const v = h.textContent.trim();
+        const v = domToMd(h).trim();
         if (v) out.push("- " + v);
       });
       out.push("");
@@ -142,8 +165,8 @@ export function serialize() {
     }
 
     sec.querySelectorAll(".item").forEach((item) => {
-      const title = txt(".item-title", item);
-      const sub = txt(".item-sub", item);
+      const title = mdOf(".item-title", item);
+      const sub = mdOf(".item-sub", item);
       const date = txt(".item-date", item);
       out.push("### " + [title, sub].filter(Boolean).join(" · "));
       if (date) out.push(date);
@@ -152,7 +175,7 @@ export function serialize() {
         const kws = splitKeywords(kwEl.textContent);
         if (kws.length) out.push("关键词：" + kws.join("、"));
       }
-      item.querySelectorAll(".item-desc li").forEach((li) => out.push("- " + li.textContent.trim()));
+      item.querySelectorAll(".item-desc li").forEach((li) => out.push("- " + domToMd(li).trim()));
       out.push("");
     });
   });

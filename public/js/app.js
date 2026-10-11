@@ -1,6 +1,6 @@
 import { state, KEYS, setStatus, esc } from "./state.js";
 import * as api from "./api.js";
-import { parseMarkdown } from "./markdown.js";
+import { parseMarkdown, serialize } from "./markdown.js";
 import { renderResume, syncEditableState } from "./render.js";
 import { applyPhoto } from "./photo.js";
 import {
@@ -12,6 +12,7 @@ import { bindEditor } from "./editor.js";
 import { bindExport, renderImageDataUrl } from "./exporter.js";
 
 window.__renderImageDataUrl = renderImageDataUrl;
+window.__serialize = serialize;
 
 async function populateSamples() {
   const sel = document.getElementById("sampleSelect");

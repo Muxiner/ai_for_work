@@ -137,6 +137,7 @@ index.html / public/** 被修改 ──fs.watch──► SSE {reload:true} ─�
 - 章节 key 映射见 `SECTION_KEYS`：`summary / experience / projects / education / skills / certificates / honors / selfeval / intent / custom-N`。
 - `## 获得荣誉`（key=`honors`）下的 `- ` 列表渲染为**荣誉列表**（每条可增删/排序）。
 - `## 自我评价`（key=`selfeval`）支持**列表**（`- ` 要点）或**大段文字**（普通段落）两种形式，可混用。
+- **行内 Markdown**：条目标题/副标题、要点、简介、自我评价、荣誉等文本支持 `**加粗**`、`*斜体*`、`` `代码` ``、`~~删除线~~`；渲染为 HTML，保存时再还原为 Markdown（`state.js` 的 `inlineMd` → `markdown.js` 的 `domToMd`）。
 
 序列化（`serialize`）反向生成，DOM 顺序即输出顺序（顺序调整会持久化）。
 

@@ -9,6 +9,11 @@
   --pad-x: 16mm;
   --pad-y: 18mm;
   --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  /* 层级字号：1=章节标题（最大），2=条目/列表项，3=详情要点（最小），随深度递减 */
+  --fs-scale: 1;
+  --fs-1: calc(15px * var(--fs-scale));
+  --fs-2: calc(13px * var(--fs-scale));
+  --fs-3: calc(11.5px * var(--fs-scale));
 }
 
 * { box-sizing: border-box; }
@@ -280,7 +285,7 @@ body.photo-off .photo-wrap { display: none; }
 .section { margin-bottom: 20px; position: relative; }
 .section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
 .section-title {
-  font-size: 15px; font-weight: 800; color: var(--ink);
+  font-size: var(--fs-1); font-weight: 800; color: var(--ink);
   letter-spacing: .4px; outline: none; text-transform: uppercase; white-space: nowrap;
 }
 .section-head::after { content: ""; flex: 1; height: 1px; background: var(--line); }
@@ -288,14 +293,15 @@ body.photo-off .photo-wrap { display: none; }
 .item { margin-bottom: 14px; outline: none; position: relative; }
 .item:last-child { margin-bottom: 0; }
 .item-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
-.item-title { font-size: 14px; font-weight: 700; outline: none; }
-.item-sub { font-size: 12.5px; color: var(--accent); font-weight: 600; outline: none; }
-.item-date { font-size: 12px; color: var(--accent); white-space: nowrap; outline: none; }
-.item-desc { margin: 6px 0 0; padding-left: 18px; font-size: 12.5px; line-height: 1.7; color: #374151; outline: none; }
+.item-title { font-size: var(--fs-2); font-weight: 700; outline: none; }
+.item-sub { font-size: var(--fs-2); color: var(--accent); font-weight: 600; outline: none; }
+.item-date { font-size: var(--fs-2); color: var(--accent); white-space: nowrap; outline: none; }
+.item-desc { margin: 6px 0 0; padding-left: 18px; font-size: var(--fs-3); line-height: 1.7; color: #374151; outline: none; }
+  p.item-desc { font-size: var(--fs-2); }
 .item-desc li { margin-bottom: 3px; outline: none; }
 .item-desc li::marker { color: var(--accent); }
 
-.item-kw { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; font-size: 11.5px; }
+.item-kw { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; font-size: var(--fs-3); }
 body.hide-keywords .item-kw { display: none; }
 .kw-label { color: var(--muted); font-weight: 700; }
 .item-kw-text { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 5px; outline: none; color: var(--muted); }
@@ -308,7 +314,7 @@ body.hide-keywords .item-kw { display: none; }
   white-space: nowrap;
 }
 
-.skills-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 24px; font-size: 12.5px; }
+.skills-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 24px; font-size: var(--fs-2); }
 .skill { display: flex; gap: 8px; outline: none; align-items: flex-start; }
 .skill-text { display: flex; gap: 8px; outline: none; }
 .skill b { color: var(--accent); font-weight: 700; white-space: nowrap; }
@@ -326,7 +332,7 @@ body.hide-keywords .item-kw { display: none; }
 .honor-list { list-style: none; margin: 0; padding: 0; }
 .honor { display: flex; align-items: baseline; gap: 8px; padding: 3px 0; position: relative; }
 .honor::before { content: "•"; color: var(--accent); font-weight: 700; }
-.honor-text { flex: 1; outline: none; }
+.honor-text { flex: 1; outline: none; font-size: var(--fs-2); }
 .honor-actions {
   display: none;
   gap: 2px;
@@ -347,7 +353,7 @@ body.editing .honor:focus-within .honor-actions { display: flex; }
 }
 body.editing .honor .del-btn { display: block; }
 
-.intent-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 24px; font-size: 12.5px; }
+.intent-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 24px; font-size: var(--fs-2); }
 .intent-item { display: flex; align-items: baseline; gap: 6px; position: relative; }
 .intent-label { color: var(--accent); font-weight: 700; white-space: nowrap; outline: none; }
 .intent-label::after { content: "："; color: var(--muted); }

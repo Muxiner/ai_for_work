@@ -47,6 +47,7 @@ export const TEMPLATES = {
     </div>`,
   skill: `<span class="skill-text" contenteditable="true"><b>分类</b><span class="skill-tags"><span class="skill-tag">技能关键词</span></span></span><button class="del-btn" title="删除" contenteditable="false">×</button>`,
   honor: `<span class="honor-text" contenteditable="true">荣誉名称</span>` + honorActions(),
+  selfeval: `<span class="honor-text" contenteditable="true">要点描述</span>` + honorActions(),
 };
 
 export function photoMarkup() {
@@ -170,6 +171,16 @@ export function renderResume(data) {
       ).join("");
       html += `<ul class="honor-list">${honors}</ul>`;
       html += `<button class="add-btn" data-tpl="honor">+ 添加荣誉</button>`;
+    } else if (sec.key === "selfeval") {
+      const para = sec.paragraphs.length
+        ? `<p class="item-desc selfeval-para" contenteditable="true" style="padding-left:0;margin:0;">${sec.paragraphs.map(esc).join("<br>")}</p>`
+        : "";
+      const bullets = (sec.bullets || []).map((b) =>
+        `<li class="honor"><span class="honor-text" contenteditable="true">${esc(b)}</span>${honorActions()}</li>`
+      ).join("");
+      const list = bullets ? `<ul class="honor-list">${bullets}</ul>` : "";
+      html += `<div class="item">${itemActions(false)}${para}${list}</div>`;
+      html += `<button class="add-btn" data-tpl="selfeval">+ 添加要点</button>`;
     } else {
       html += sec.items.map(itemMarkup).join("");
       html += `<button class="add-btn" data-tpl="${esc(sec.key)}">+ 添加条目</button>`;

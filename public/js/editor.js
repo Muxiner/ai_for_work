@@ -57,6 +57,10 @@ export function bindEditor() {
         node = document.createElement("li");
         node.className = "honor";
         node.innerHTML = TEMPLATES.honor;
+      } else if (tpl === "selfeval") {
+        node = document.createElement("li");
+        node.className = "honor";
+        node.innerHTML = TEMPLATES.selfeval;
       } else {
         node = document.createElement("div");
         node.className = "item";

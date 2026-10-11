@@ -49,6 +49,9 @@ export const SECTION_KEYS = {
   "荣誉奖项": "honors",
   "获奖情况": "honors",
   "所获荣誉": "honors",
+  "自我评价": "selfeval",
+  "个人评价": "selfeval",
+  "自我鉴定": "selfeval",
 };
 
 export const TYPE_LABELS = {

@@ -1,5 +1,10 @@
 import { SECTION_KEYS, splitKeywords, txt } from "./state.js";
 
+function bulletContent(t) {
+  const m = t.match(/^(?:[-•·]\s*|\*\s)(.*)$/);
+  return m ? m[1].trim() : null;
+}
+
 export function parseMarkdown(md) {
   const data = { name: "", role: "", contacts: [], sections: [] };
   let section = null, item = null;
@@ -13,7 +18,7 @@ export function parseMarkdown(md) {
       const parts = t.slice(4).split(" · ");
       item = { title: parts[0] || "", sub: parts.slice(1).join(" · "), date: "", keywords: [], bullets: [] };
       if (!section) {
-        section = { title: "经历", key: "custom-0", items: [], skills: [], paragraphs: [], honors: [] };
+        section = { title: "经历", key: "custom-0", items: [], skills: [], paragraphs: [], honors: [], bullets: [] };
         data.sections.push(section);
       }
       section.items.push(item);
@@ -25,7 +30,7 @@ export function parseMarkdown(md) {
       section = {
         title,
         key: SECTION_KEYS[title] || ("custom-" + data.sections.length),
-        items: [], skills: [], paragraphs: [], honors: [],
+        items: [], skills: [], paragraphs: [], honors: [], bullets: [],
       };
       data.sections.push(section);
       item = null;
@@ -45,13 +50,16 @@ export function parseMarkdown(md) {
       continue;
     }
 
-    if (t.startsWith("- ")) {
-      const content = t.slice(2).trim();
+    const bc = bulletContent(t);
+    if (bc != null) {
+      const content = bc;
       if (section.key === "skills") {
         const m = content.match(/^\*\*(.+?)\*\*\s*[:：]?\s*(.*)$/);
         section.skills.push(m ? { label: m[1], value: m[2] } : { label: "", value: content });
       } else if (section.key === "honors") {
         section.honors.push(content);
+      } else if (section.key === "selfeval") {
+        section.bullets.push(content);
       } else if (item) {
         item.bullets.push(content);
       } else {
@@ -112,6 +120,19 @@ export function serialize() {
     }
 
     if (key === "honors") {
+      sec.querySelectorAll(".honor .honor-text").forEach((h) => {
+        const v = h.textContent.trim();
+        if (v) out.push("- " + v);
+      });
+      out.push("");
+      return;
+    }
+
+    if (key === "selfeval") {
+      const paraEl = sec.querySelector(".selfeval-para");
+      if (paraEl) {
+        paraEl.innerText.split("\n").map((s) => s.trim()).filter(Boolean).forEach((l) => out.push(l));
+      }
       sec.querySelectorAll(".honor .honor-text").forEach((h) => {
         const v = h.textContent.trim();
         if (v) out.push("- " + v);

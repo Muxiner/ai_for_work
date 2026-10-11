@@ -24,10 +24,9 @@
           <button class="btn ghost" id="renameFileBtn">重命名</button>
           <button class="btn ghost" id="delFileBtn">删除</button>
         </div>
-        <div class="panel-title">示例</div>
+        <div class="panel-title">示例（点击预览）</div>
         <div class="file-list" id="sampleList"></div>
         <div class="row">
-          <button class="btn ghost" id="resetBtn">恢复示例</button>
           <button class="btn ghost" id="restoreBackupBtn">恢复备份</button>
         </div>
       </div>
@@ -166,6 +165,11 @@
   </aside>
 
   <div class="stage">
+    <div class="preview-banner" id="previewBanner" hidden>
+      <span class="preview-text">示例预览：<b id="previewName"></b> · 只读，不会修改你的简历</span>
+      <button class="btn primary" id="dupSampleBtn">基于示例新建</button>
+      <button class="btn ghost" id="exitPreviewBtn">返回我的简历</button>
+    </div>
     <main class="page" id="page"></main>
     <p class="hint" id="hint">所有内容均可直接点击编辑 · 点击照片框可上传大头照 · 文本保存在 docs/ 目录 · 导出 PDF 时选择「另存为 PDF」</p>
   </div>

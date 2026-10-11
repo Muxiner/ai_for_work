@@ -2,10 +2,9 @@ import { state, KEYS, setStatus, esc } from "./state.js";
 import * as api from "./api.js";
 import { parseMarkdown, serialize } from "./markdown.js";
 import { renderResume, syncEditableState } from "./render.js";
-import { applyPhoto } from "./photo.js";
 import {
   save, loadFileList, renderFileSelect, loadResume,
-  startAutoSave, startSync, defaultMarkdown,
+  startAutoSave, startSync,
 } from "./persist.js";
 import { renderSwatches, applySettings, bindControls } from "./settings.js";
 import { bindEditor } from "./editor.js";
@@ -18,7 +17,7 @@ function renderSampleList() {
   const list = document.getElementById("sampleList");
   if (!list) return;
   list.innerHTML = (state.sampleFiles || [])
-    .map((f) => `<button type="button" class="file-item${f === state.sampleFile ? " active" : ""}" data-sample="${esc(f)}">${esc(f.replace(/\.md$/i, ""))}</button>`)
+    .map((f) => `<button type="button" class="file-item${f === state.samplePreview ? " active" : ""}" data-sample="${esc(f)}">${esc(f.replace(/\.md$/i, ""))}</button>`)
     .join("");
 }
 
@@ -34,14 +33,64 @@ async function populateSamples() {
     list.style.display = "none";
     return;
   }
-  if (!state.sampleFile || !files.includes(state.sampleFile)) state.sampleFile = files[0];
   renderSampleList();
   list.addEventListener("click", (e) => {
     const b = e.target.closest(".file-item");
     if (!b) return;
-    state.sampleFile = b.dataset.sample;
-    renderSampleList();
+    enterSamplePreview(b.dataset.sample);
   });
+}
+
+function setPreviewUI(on, name) {
+  const banner = document.getElementById("previewBanner");
+  if (banner) banner.hidden = !on;
+  const pn = document.getElementById("previewName");
+  if (pn) pn.textContent = name || "";
+  document.body.classList.toggle("sample-preview", on);
+}
+
+function clearPreview() {
+  if (!state.samplePreview) return;
+  state.samplePreview = null;
+  setPreviewUI(false);
+  document.body.classList.remove("sample-preview");
+  if (state._prevEditing !== false) document.body.classList.add("editing");
+  renderSampleList();
+}
+
+async function enterSamplePreview(file) {
+  if (!file) return;
+  let md = null;
+  try { md = await api.readSample(file); } catch (e) {}
+  if (!md) { alert("示例读取失败"); return; }
+  if (!state.samplePreview) state._prevEditing = document.body.classList.contains("editing");
+  state.samplePreview = file;
+  document.body.classList.remove("editing");
+  renderResume(parseMarkdown(md));
+  syncEditableState();
+  setPreviewUI(true, file.replace(/\.md$/i, ""));
+  renderSampleList();
+  setStatus("示例预览：" + file.replace(/\.md$/i, ""));
+}
+
+async function duplicateSample() {
+  const src = state.samplePreview;
+  if (!src) return;
+  const name = prompt("基于该示例新建简历，文件名：", src.replace(/\.md$/i, "") + "-副本");
+  if (name == null || !name.trim()) return;
+  const md = await api.readSample(src);
+  if (!md) { alert("示例读取失败"); return; }
+  const r = await api.createResume(name.trim());
+  if (r.error === "exists") { alert("同名文件已存在"); return; }
+  if (r.error) { alert("创建失败"); return; }
+  await api.writeResume(r.file, md);
+  state.samplePreview = null;
+  setPreviewUI(false);
+  document.body.classList.remove("sample-preview");
+  document.body.classList.add("editing");
+  await loadFileList();
+  await loadResume(r.file);
+  setStatus("已基于示例新建 " + r.file);
 }
 
 function bindFileControls() {
@@ -49,14 +98,15 @@ function bindFileControls() {
   const newFileBtn = document.getElementById("newFileBtn");
   const delFileBtn = document.getElementById("delFileBtn");
   const toggleBtn = document.getElementById("toggleEdit");
-  const resetBtn = document.getElementById("resetBtn");
 
   if (fileList) {
     fileList.addEventListener("click", async (e) => {
       const b = e.target.closest(".file-item");
       if (!b) return;
       const file = b.dataset.file;
-      if (!file || file === state.currentFile) return;
+      if (!file) return;
+      if (file === state.currentFile && !state.samplePreview) return;
+      clearPreview();
       if (state.dirty) await save();
       await loadResume(file);
       setStatus("已切换到 " + state.currentFile);
@@ -100,23 +150,14 @@ function bindFileControls() {
     });
   }
 
-  if (resetBtn) {
-    resetBtn.addEventListener("click", async () => {
-      const file = state.sampleFile || "";
-      let md = null;
-      if (file) { try { md = await api.readSample(file); } catch (e) {} }
-      if (!md) md = defaultMarkdown();
-      const label = file ? file.replace(/\.md$/i, "") : "默认";
-      if (!confirm("确定要用「" + label + "」示例覆盖当前简历吗？\n（当前内容会自动备份，可用「恢复备份」还原）")) return;
-      let backup = null;
-      if (state.hasServer && state.currentFile) {
-        try { backup = await api.backupResume(state.currentFile); } catch (e) {}
-      }
-      renderResume(parseMarkdown(md));
-      applyPhoto();
-      syncEditableState();
-      await save();
-      setStatus(backup ? "已套用示例（原内容已备份）" : "已套用示例");
+  const dupSampleBtn = document.getElementById("dupSampleBtn");
+  if (dupSampleBtn) dupSampleBtn.addEventListener("click", duplicateSample);
+  const exitPreviewBtn = document.getElementById("exitPreviewBtn");
+  if (exitPreviewBtn) {
+    exitPreviewBtn.addEventListener("click", async () => {
+      clearPreview();
+      await loadResume(state.currentFile);
+      setStatus("已返回 " + (state.currentFile || ""));
     });
   }
 

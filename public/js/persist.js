@@ -27,6 +27,7 @@ export function defaultMarkdown() {
 }
 
 export function scheduleSave() {
+  if (state.samplePreview) return;
   state.dirty = true;
   refreshTimeline();
   setStatus("保存中…");
@@ -35,6 +36,7 @@ export function scheduleSave() {
 }
 
 export async function save() {
+  if (state.samplePreview) { setStatus("示例预览（只读）"); return; }
   const md = serialize();
   try { localStorage.setItem(KEYS.MD, md); } catch (e) {}
   state.dirty = false;
@@ -51,7 +53,7 @@ export async function save() {
 }
 
 export function flush() {
-  if (!ready || !state.hasServer || !state.dirty || !state.currentFile || isNoSync()) return;
+  if (!ready || state.samplePreview || !state.hasServer || !state.dirty || !state.currentFile || isNoSync()) return;
   if (!pageHasContent()) return;
   api.beacon(state.currentFile, serialize());
 }
@@ -59,7 +61,7 @@ window.addEventListener("pagehide", flush);
 window.addEventListener("beforeunload", flush);
 
 export async function syncFromFile(file) {
-  if (!state.hasServer || syncing || !state.currentFile) return;
+  if (!state.hasServer || syncing || !state.currentFile || state.samplePreview) return;
   if (file && file !== state.currentFile) return;
   if (Date.now() - state.lastSaveAt < 1200) return;
   syncing = true;

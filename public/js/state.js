@@ -32,6 +32,7 @@ export const state = {
   files: [],
   sampleFiles: [],
   sampleFile: null,
+  samplePreview: null,
   settings: { ...DEFAULT_SETTINGS },
   hasCustomFont: false,
   customFontDataUrl: null,

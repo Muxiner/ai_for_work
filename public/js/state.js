@@ -64,6 +64,20 @@ export const SECTION_KEYS = {
   "自我描述": "selfeval",
 };
 
+export const SECTION_CATALOG = [
+  { title: "求职意向", key: "intent" },
+  { title: "个人简介", key: "summary" },
+  { title: "自我评价", key: "selfeval" },
+  { title: "工作经历", key: "experience" },
+  { title: "实习经历", key: "experience" },
+  { title: "项目经历", key: "projects" },
+  { title: "教育背景", key: "education" },
+  { title: "资格证书", key: "certificates" },
+  { title: "获得荣誉", key: "honors" },
+  { title: "技能特长", key: "skills" },
+  { title: "在校经历", key: "custom" },
+];
+
 export const TYPE_LABELS = {
   experience: "工作经历",
   projects: "项目经历",

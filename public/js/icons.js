@@ -37,7 +37,7 @@ export const SECTION_ICON = {
   "教育背景": "cap", "培训经历": "cap", "校园经历": "user",
   "技能特长": "sliders", "专业技能": "sliders", "语言能力": "chat",
   "资格证书": "award", "获得荣誉": "trophy", "荣誉奖项": "trophy", "获奖情况": "trophy",
-  "组织经历": "users", "社团活动": "users",
+  "组织经历": "users", "社团活动": "users", "在校经历": "users",
   "求职意向": "target",
 };
 

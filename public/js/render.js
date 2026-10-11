@@ -1,4 +1,5 @@
-import { state, esc, inlineMd, keywordsHTML, getPage, TYPE_LABELS } from "./state.js";
+import { state, esc, inlineMd, keywordsHTML, getPage, TYPE_LABELS, SECTION_KEYS, SECTION_CATALOG } from "./state.js";
+import { parseMarkdown } from "./markdown.js";
 import { svgIcon, LABEL_ICON, SECTION_ICON } from "./icons.js";
 
 export const TEMPLATES = {
@@ -153,52 +154,90 @@ export function renderResume(data) {
   </header>
   <div class="content">`;
 
-  data.sections.forEach((sec) => {
-    html += `<section class="section" data-key="${esc(sec.key)}">`;
-    const secIcon = SECTION_ICON[sec.title] ? `<span class="sec-ico">${svgIcon(SECTION_ICON[sec.title])}</span>` : "";
-    html += `<div class="section-head">${secIcon}<h2 class="section-title" contenteditable="true">${esc(sec.title)}</h2>${sectionActions()}</div>`;
-
-    if (sec.key === "skills") {
-      const skills = sec.skills
-        .map((s) => `<div class="skill"><span class="skill-text" contenteditable="true"><b>${esc(s.label)}</b><span class="skill-tags">${skillTagsHTML(s.value)}</span></span><button class="del-btn" title="删除" contenteditable="false">×</button></div>`)
-        .join("");
-      html += `<div class="skills-grid">${skills}</div>`;
-      html += `<button class="add-btn" data-tpl="skill">+ 添加技能</button>`;
-    } else if (sec.key === "summary") {
-      html += `<div class="item">${itemActions(false)}<p class="item-desc" contenteditable="true" style="padding-left:0;margin:0;">${inlineMd(sec.paragraphs.join(" "))}</p></div>`;
-    } else if (sec.key === "honors") {
-      const honors = (sec.honors || []).map((h) =>
-        `<li class="honor"><span class="honor-text" contenteditable="true">${inlineMd(h)}</span>${honorActions()}</li>`
-      ).join("");
-      html += `<ul class="honor-list">${honors}</ul>`;
-      html += `<button class="add-btn" data-tpl="honor">+ 添加荣誉</button>`;
-    } else if (sec.key === "selfeval") {
-      const para = sec.paragraphs.length
-        ? `<p class="item-desc selfeval-para" contenteditable="true" style="padding-left:0;margin:0;">${sec.paragraphs.map(inlineMd).join("<br>")}</p>`
-        : "";
-      const bullets = (sec.bullets || []).map((b) =>
-        `<li class="honor"><span class="honor-text" contenteditable="true">${inlineMd(b)}</span>${honorActions()}</li>`
-      ).join("");
-      const list = bullets ? `<ul class="honor-list">${bullets}</ul>` : "";
-      html += `<div class="item">${itemActions(false)}${para}${list}</div>`;
-      html += `<button class="add-btn" data-tpl="selfeval">+ 添加要点</button>`;
-    } else if (sec.key === "intent") {
-      const fields = (sec.fields || []).map((f) =>
-        `<div class="intent-item"><span class="intent-label" contenteditable="true">${esc(f.label)}</span><span class="intent-value" contenteditable="true">${inlineMd(f.value)}</span><button class="del-btn" title="删除" contenteditable="false">×</button></div>`
-      ).join("");
-      html += `<div class="intent-grid">${fields}</div>`;
-      html += `<button class="add-btn" data-tpl="intent">+ 添加意向</button>`;
-    } else {
-      html += sec.items.map(itemMarkup).join("");
-      html += `<button class="add-btn" data-tpl="${esc(sec.key)}">+ 添加条目</button>`;
-    }
-
-    html += `</section>`;
-  });
+  data.sections.forEach((sec) => { html += sectionMarkup(sec); });
 
   html += `</div>`;
   page.innerHTML = html;
   sortDatedSections(page);
+  refreshTimeline();
+  renderSidePanel();
+  applyHiddenSections();
+}
+
+export function sectionMarkup(sec) {
+  let html = `<section class="section" data-key="${esc(sec.key)}">`;
+  const secIcon = SECTION_ICON[sec.title] ? `<span class="sec-ico">${svgIcon(SECTION_ICON[sec.title])}</span>` : "";
+  html += `<div class="section-head">${secIcon}<h2 class="section-title" contenteditable="true">${esc(sec.title)}</h2>${sectionActions()}</div>`;
+
+  if (sec.key === "skills") {
+    const skills = sec.skills
+      .map((s) => `<div class="skill"><span class="skill-text" contenteditable="true"><b>${esc(s.label)}</b><span class="skill-tags">${skillTagsHTML(s.value)}</span></span><button class="del-btn" title="删除" contenteditable="false">×</button></div>`)
+      .join("");
+    html += `<div class="skills-grid">${skills}</div>`;
+    html += `<button class="add-btn" data-tpl="skill">+ 添加技能</button>`;
+  } else if (sec.key === "summary") {
+    html += `<div class="item">${itemActions(false)}<p class="item-desc" contenteditable="true" style="padding-left:0;margin:0;">${inlineMd(sec.paragraphs.join(" "))}</p></div>`;
+  } else if (sec.key === "honors") {
+    const honors = (sec.honors || []).map((h) =>
+      `<li class="honor"><span class="honor-text" contenteditable="true">${inlineMd(h)}</span>${honorActions()}</li>`
+    ).join("");
+    html += `<ul class="honor-list">${honors}</ul>`;
+    html += `<button class="add-btn" data-tpl="honor">+ 添加荣誉</button>`;
+  } else if (sec.key === "selfeval") {
+    const para = sec.paragraphs.length
+      ? `<p class="item-desc selfeval-para" contenteditable="true" style="padding-left:0;margin:0;">${sec.paragraphs.map(inlineMd).join("<br>")}</p>`
+      : "";
+    const bullets = (sec.bullets || []).map((b) =>
+      `<li class="honor"><span class="honor-text" contenteditable="true">${inlineMd(b)}</span>${honorActions()}</li>`
+    ).join("");
+    const list = bullets ? `<ul class="honor-list">${bullets}</ul>` : "";
+    html += `<div class="item">${itemActions(false)}${para}${list}</div>`;
+    html += `<button class="add-btn" data-tpl="selfeval">+ 添加要点</button>`;
+  } else if (sec.key === "intent") {
+    const fields = (sec.fields || []).map((f) =>
+      `<div class="intent-item"><span class="intent-label" contenteditable="true">${esc(f.label)}</span><span class="intent-value" contenteditable="true">${inlineMd(f.value)}</span><button class="del-btn" title="删除" contenteditable="false">×</button></div>`
+    ).join("");
+    html += `<div class="intent-grid">${fields}</div>`;
+    html += `<button class="add-btn" data-tpl="intent">+ 添加意向</button>`;
+  } else {
+    html += sec.items.map(itemMarkup).join("");
+    html += `<button class="add-btn" data-tpl="${esc(sec.key)}">+ 添加条目</button>`;
+  }
+
+  html += `</section>`;
+  return html;
+}
+
+const DEFAULT_SECTION_BODY = {
+  summary: "请在此填写个人简介。",
+  selfeval: "- 要点一\n- 要点二",
+  experience: "### 公司名称 · 职位名称\n2024.01 – 至今\n- 工作内容与成果。",
+  projects: "### 项目名称 · 担任角色\n2024.01 – 2024.06\n- 项目描述与成果。",
+  education: "### 学校名称 · 专业 · 学历\n2019.09 – 2023.06",
+  certificates: "### 证书名称 · 颁发机构\n2024.06",
+  honors: "- 荣誉名称",
+  skills: "- **分类**：技能关键词",
+  intent: "- 意向岗位：工程师",
+  custom: "- 内容",
+};
+
+export function sectionExists(title) {
+  return !!Array.from(getPage().querySelectorAll(".content > section")).find((sec) => {
+    const t = sec.querySelector(".section-title");
+    return (t ? t.textContent.trim() : "") === title;
+  });
+}
+
+export function addSection(title) {
+  const key = SECTION_KEYS[title] || ("custom-" + Date.now());
+  const body = DEFAULT_SECTION_BODY[key] || DEFAULT_SECTION_BODY.custom;
+  const parsed = parseMarkdown("## " + title + "\n\n" + body + "\n").sections[0];
+  parsed.title = title;
+  parsed.key = key;
+  const content = getPage().querySelector(".content");
+  if (!content) return;
+  content.insertAdjacentHTML("beforeend", sectionMarkup(parsed));
+  sortDatedSections(getPage());
   refreshTimeline();
   renderSidePanel();
   applyHiddenSections();
@@ -215,19 +254,33 @@ export function applyHiddenSections() {
   });
 }
 
+function sideItemHTML(title, checked) {
+  const icon = SECTION_ICON[title] ? svgIcon(SECTION_ICON[title]) : svgIcon("dot");
+  return `<label class="side-item"><input type="checkbox" data-title="${esc(title)}"${checked ? " checked" : ""} />${icon}<span>${esc(title)}</span></label>`;
+}
+
 export function renderSidePanel() {
   const list = document.getElementById("sideList");
   if (!list) return;
   const page = getPage();
   const hidden = state.settings.hiddenSections || [];
-  const secs = Array.from(page.querySelectorAll(".content > section"));
-  list.innerHTML = secs.map((sec, i) => {
+  const presentTitles = new Set();
+  page.querySelectorAll(".content > section").forEach((sec) => {
     const t = sec.querySelector(".section-title");
-    const title = t ? t.textContent.trim() : "项目 " + (i + 1);
-    const icon = SECTION_ICON[title] ? svgIcon(SECTION_ICON[title]) : svgIcon("dot");
-    const checked = hidden.includes(title) ? "" : " checked";
-    return `<label class="side-item"><input type="checkbox" data-title="${esc(title)}"${checked} />${icon}<span>${esc(title)}</span></label>`;
-  }).join("");
+    presentTitles.add(t ? t.textContent.trim() : "");
+  });
+  const rows = [];
+  const seen = new Set();
+  SECTION_CATALOG.forEach(({ title }) => {
+    seen.add(title);
+    const exists = presentTitles.has(title);
+    rows.push(sideItemHTML(title, exists && !hidden.includes(title)));
+  });
+  presentTitles.forEach((title) => {
+    if (!title || seen.has(title)) return;
+    rows.push(sideItemHTML(title, !hidden.includes(title)));
+  });
+  list.innerHTML = rows.join("");
 }
 
 function parseStartKey(dateStr) {

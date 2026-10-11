@@ -1,7 +1,8 @@
 import { state, KEYS, SWATCHES } from "./state.js";
 import { applyFont, updateCustomFontOptions, registerCustomFont, idbSet, loadCustomFont } from "./fonts.js";
-import { renderTimelineTypes, refreshTimeline, applyHiddenSections } from "./render.js";
+import { renderTimelineTypes, refreshTimeline, applyHiddenSections, addSection, sectionExists } from "./render.js";
 import { fileToDataURL } from "./photo.js";
+import { scheduleSave } from "./persist.js";
 
 export function persistSettings() {
   try { localStorage.setItem(KEYS.SETTINGS, JSON.stringify(state.settings)); } catch (e) {}
@@ -205,9 +206,15 @@ export function bindControls() {
       const title = cb.dataset.title;
       const arr = state.settings.hiddenSections || (state.settings.hiddenSections = []);
       const i = arr.indexOf(title);
-      if (cb.checked) { if (i >= 0) arr.splice(i, 1); }
-      else { if (i < 0) arr.push(title); }
-      applyHiddenSections();
+      if (cb.checked) {
+        if (i >= 0) arr.splice(i, 1);
+        if (!sectionExists(title)) addSection(title);
+        else { applyHiddenSections(); refreshTimeline(); }
+      } else {
+        if (i < 0) arr.push(title);
+        applyHiddenSections();
+      }
+      scheduleSave();
       persistSettings();
     });
   }

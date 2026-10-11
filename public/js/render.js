@@ -254,9 +254,12 @@ export function applyHiddenSections() {
   });
 }
 
-function sideItemHTML(title, checked) {
+function sideRowHTML(title, checked, order, total) {
   const icon = SECTION_ICON[title] ? svgIcon(SECTION_ICON[title]) : svgIcon("dot");
-  return `<label class="side-item"><input type="checkbox" data-title="${esc(title)}"${checked ? " checked" : ""} />${icon}<span>${esc(title)}</span></label>`;
+  const num = order != null
+    ? `<input type="number" class="side-order" data-title="${esc(title)}" min="1" max="${total}" value="${order}" title="输入序号调整顺序" />`
+    : `<span class="side-order side-order-empty"></span>`;
+  return `<div class="side-row">${num}<label class="side-item"><input type="checkbox" data-title="${esc(title)}"${checked ? " checked" : ""} />${icon}<span>${esc(title)}</span></label></div>`;
 }
 
 export function renderSidePanel() {
@@ -264,23 +267,40 @@ export function renderSidePanel() {
   if (!list) return;
   const page = getPage();
   const hidden = state.settings.hiddenSections || [];
-  const presentTitles = new Set();
-  page.querySelectorAll(".content > section").forEach((sec) => {
+  const secs = Array.from(page.querySelectorAll(".content > section"));
+  const presentTitles = secs.map((sec) => {
     const t = sec.querySelector(".section-title");
-    presentTitles.add(t ? t.textContent.trim() : "");
+    return t ? t.textContent.trim() : "";
   });
+  const presentSet = new Set(presentTitles);
   const rows = [];
-  const seen = new Set();
-  SECTION_CATALOG.forEach(({ title }) => {
-    seen.add(title);
-    const exists = presentTitles.has(title);
-    rows.push(sideItemHTML(title, exists && !hidden.includes(title)));
+  presentTitles.forEach((title, i) => {
+    rows.push(sideRowHTML(title, !hidden.includes(title), i + 1, secs.length));
   });
-  presentTitles.forEach((title) => {
-    if (!title || seen.has(title)) return;
-    rows.push(sideItemHTML(title, !hidden.includes(title)));
-  });
+  const extras = SECTION_CATALOG.filter((c) => !presentSet.has(c.title));
+  if (extras.length) {
+    rows.push(`<div class="side-sep">可添加</div>`);
+    extras.forEach((c) => rows.push(sideRowHTML(c.title, false, null, secs.length)));
+  }
   list.innerHTML = rows.join("");
+}
+
+export function moveSectionTo(title, pos) {
+  const content = getPage().querySelector(".content");
+  if (!content) return;
+  const secs = Array.from(content.querySelectorAll(":scope > section"));
+  const from = secs.findIndex((s) => {
+    const t = s.querySelector(".section-title");
+    return (t ? t.textContent.trim() : "") === title;
+  });
+  if (from < 0) return;
+  let to = parseInt(pos, 10);
+  if (isNaN(to)) return;
+  to = Math.max(1, Math.min(secs.length, to)) - 1;
+  const [el] = secs.splice(from, 1);
+  secs.splice(to, 0, el);
+  secs.forEach((s) => content.appendChild(s));
+  renderSidePanel();
 }
 
 function parseStartKey(dateStr) {

@@ -216,7 +216,24 @@ html, body {
 }
 .side-close:hover { color: var(--ink); }
 .side-list { overflow: auto; padding: 8px; }
+.side-row { display: flex; align-items: center; gap: 6px; }
+.side-order {
+  width: 34px;
+  flex: none;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 4px 4px;
+  font-size: 12px;
+  text-align: center;
+  color: var(--ink);
+  background: #fff;
+}
+.side-order:focus { outline: none; border-color: var(--accent); }
+.side-order-empty { width: 34px; flex: none; border: none; }
+.side-sep { margin: 8px 8px 4px; font-size: 11px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 8px; }
 .side-item {
+  flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 8px;

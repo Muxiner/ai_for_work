@@ -1,6 +1,6 @@
 import { state, KEYS, SWATCHES } from "./state.js";
 import { applyFont, updateCustomFontOptions, registerCustomFont, idbSet, loadCustomFont } from "./fonts.js";
-import { renderTimelineTypes, refreshTimeline, applyHiddenSections, addSection, sectionExists } from "./render.js";
+import { renderTimelineTypes, refreshTimeline, applyHiddenSections, addSection, sectionExists, moveSectionTo } from "./render.js";
 import { fileToDataURL } from "./photo.js";
 import { scheduleSave } from "./persist.js";
 
@@ -230,6 +230,11 @@ export function bindControls() {
   const sideList = document.getElementById("sideList");
   if (sideList) {
     sideList.addEventListener("change", (e) => {
+      if (e.target.classList && e.target.classList.contains("side-order")) {
+        moveSectionTo(e.target.dataset.title, e.target.value);
+        scheduleSave();
+        return;
+      }
       const cb = e.target.closest('input[type="checkbox"]');
       if (!cb) return;
       const title = cb.dataset.title;

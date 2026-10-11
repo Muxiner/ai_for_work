@@ -175,7 +175,7 @@ index.html / public/** 被修改 ──fs.watch──► SSE {reload:true} ─�
 
 ## 打印 / PDF（关键约束）
 
-- `@page { size: A4; margin: 12mm 0 }` + `.page` 打印时 `padding: 0 15mm`（左右内边距对每页都生效），保证每页统一边距；页眉色块（modern/tech/gradient）用 `margin: 0 -15mm` 左右**通栏满幅**。
+- 打印分页：`@page { size: A4; margin: 12mm 0 }` + `@page :first { margin-top: 0 }`；`.page` 打印时 `padding: 12mm 15mm 0`（左右内边距每页生效，顶部内边距只在首页）。页眉色块模板（modern/tech/gradient）把 `.page` 顶部内边距置 0 并用 `margin: 0 -15mm`，实现页眉**上下左右通栏满幅**；其余模板靠 `.page` 顶部内边距保证首页 12mm 上边距。
 - 内容**紧密跨页**：`.section`/`.item` 允许分页，仅 `.section-head`/`.item-row`/`li`/`.item-kw` 禁止断开。
 - `print-color-adjust: exact` 强制打印背景色（色块页眉、时间轴、关键词标签）。
 - 打印时隐藏：`.toolbar .hint .add-btn .del-btn .photo-del .item-actions .section-actions`。

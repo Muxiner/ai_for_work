@@ -1,5 +1,6 @@
 /* ---------- Print ---------- */
 @page { size: A4; margin: 12mm 0; }
+@page :first { margin-top: 0; }
 @media print {
   html, body { background: #fff; }
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -8,11 +9,14 @@
   .page {
     width: auto;
     min-height: auto;
-    padding: 0 15mm;
+    padding: 12mm 15mm 0;
     box-shadow: none;
     border-radius: 0;
     margin: 0;
   }
+  body[data-template="modern"] .page,
+  body[data-template="tech"] .page,
+  body[data-template="gradient"] .page { padding-top: 0; }
   .photo-wrap:not(.has-photo) { display: none !important; }
   body.editing [contenteditable]:hover,
   body.editing [contenteditable]:focus { background: transparent; box-shadow: none; }

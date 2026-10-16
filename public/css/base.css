@@ -578,3 +578,7 @@ body.editing [contenteditable]:focus {
   border-color: var(--accent);
   color: var(--accent);
 }
+
+/* 普通自定义章节也保留独立段落和列表项。 */
+.section-paragraph { margin: 6px 0; }
+.section-paragraph[data-bullet="true"]::before { content: "• "; }

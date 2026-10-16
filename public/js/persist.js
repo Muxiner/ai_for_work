@@ -7,6 +7,8 @@ import * as api from "./api.js";
 let saveTimer = null;
 let listTimer = null;
 let syncing = false;
+let saveTask = null;
+let loadGeneration = 0;
 let ready = false;
 
 function pageHasContent() {
@@ -26,36 +28,75 @@ export function defaultMarkdown() {
   return el ? el.textContent : "";
 }
 
+function cacheKey(file) {
+  return KEYS.MD + ":" + (file || "local");
+}
+
+function cacheDraft(file, md) {
+  try { localStorage.setItem(cacheKey(file), md); return true; }
+  catch (e) { return false; }
+}
+
 export function scheduleSave() {
-  if (state.samplePreview) return;
+  if (state.samplePreview || isNoSync()) return;
   state.dirty = true;
+  if (ready && pageHasContent()) cacheDraft(state.currentFile, serialize());
   refreshTimeline();
   setStatus("保存中…");
   clearTimeout(saveTimer);
   saveTimer = setTimeout(save, 500);
 }
 
-export async function save() {
-  if (state.samplePreview) { setStatus("示例预览（只读）"); return; }
-  const md = serialize();
-  try { localStorage.setItem(KEYS.MD, md); } catch (e) {}
-  state.dirty = false;
-  state.lastSaveAt = Date.now();
-  if (!ready) { setStatus("尚未就绪"); return; }
-  if (!pageHasContent()) { setStatus("内容为空，已跳过保存"); return; }
-  if (!state.hasServer || !state.currentFile || isNoSync()) { setStatus(isNoSync() ? "只读模式（nosync）" : "已保存到本地"); return; }
-  try {
-    const ok = await api.writeResume(state.currentFile, md);
-    setStatus(ok ? "已保存到 " + state.currentFile : "保存失败");
-  } catch (e) {
-    setStatus("保存失败（已存本地）");
+async function saveCurrent() {
+  if (state.samplePreview || isNoSync()) return false;
+  if (!ready || !pageHasContent()) {
+    setStatus("尚未就绪或内容为空，未保存");
+    return false;
   }
+  const file = state.currentFile;
+  const generation = loadGeneration;
+  const md = serialize();
+  const cached = cacheDraft(file, md);
+  let ok = false;
+  try {
+    ok = state.hasServer && file ? await api.writeResume(file, md) : cached;
+  } catch (e) {
+    ok = false;
+  }
+  if (generation !== loadGeneration || file !== state.currentFile) return ok;
+  if (ok) {
+    state.dirty = serialize() !== md;
+    state.lastSaveAt = Date.now();
+    try {
+      if (state.hasServer && file && localStorage.getItem(cacheKey(file)) === md) localStorage.removeItem(cacheKey(file));
+    } catch (e) {}
+    setStatus(state.dirty ? "仍有修改待保存" : (state.hasServer && file ? "已保存到 " + file : "已保存到本地"));
+  } else {
+    state.dirty = true;
+    setStatus(api.hasConflict(file) ? "文件已被修改，请先导出当前内容再重新加载" :
+      (cached ? "保存失败，草稿已存本地，将重试" : "保存失败，草稿未能缓存，请勿关闭页面"));
+  }
+  return ok;
+}
+
+export async function save() {
+  clearTimeout(saveTimer);
+  if (saveTask) {
+    const ok = await saveTask;
+    return ok && state.dirty ? save() : ok;
+  }
+  saveTask = saveCurrent();
+  try { return await saveTask; }
+  finally { saveTask = null; }
 }
 
 export function flush() {
   if (!ready || state.samplePreview || !state.hasServer || !state.dirty || !state.currentFile || isNoSync()) return;
   if (!pageHasContent()) return;
-  api.beacon(state.currentFile, serialize());
+  const md = serialize();
+  cacheDraft(state.currentFile, md);
+  // An in-flight write already owns the current revision. Avoid racing a beacon.
+  if (!saveTask) api.beacon(state.currentFile, md);
 }
 window.addEventListener("pagehide", flush);
 window.addEventListener("beforeunload", flush);
@@ -63,16 +104,20 @@ window.addEventListener("beforeunload", flush);
 export async function syncFromFile(file) {
   if (!state.hasServer || syncing || !state.currentFile || state.samplePreview) return;
   if (file && file !== state.currentFile) return;
-  if (Date.now() - state.lastSaveAt < 1200) return;
+  if (saveTask) return;
+  const currentFile = state.currentFile;
+  const generation = loadGeneration;
   syncing = true;
   try {
-    const md = await api.readResume(state.currentFile);
+    const md = await api.readResume(currentFile, false);
+    if (generation !== loadGeneration || currentFile !== state.currentFile || state.samplePreview || saveTask) return;
     if (md == null) return;
-    if (md.trim() === serialize().trim()) return;
+    if (md.trim() === serialize().trim()) { api.acceptRevision(currentFile, md); return; }
     if (state.dirty) {
       setStatus("文件被外部修改（本页有未保存改动）");
       return;
     }
+    api.acceptRevision(currentFile, md);
     renderResume(parseMarkdown(md));
     applyPhoto();
     syncEditableState();
@@ -89,7 +134,9 @@ export function scheduleListRefresh() {
 }
 
 export async function reloadPage() {
-  if (state.dirty) { try { await save(); } catch (e) {} }
+  if (state.samplePreview) return;
+  if (state.dirty && !(await save())) return;
+  if (state.dirty) return;
   location.reload();
 }
 
@@ -102,7 +149,7 @@ export function startSync() {
   api.subscribe((msg) => {
     if (msg.reload) { reloadPage(); return; }
     scheduleListRefresh();
-    if (msg.file && msg.file === state.currentFile) syncFromFile(msg.file);
+    if (msg.resync || (msg.file && msg.file === state.currentFile)) syncFromFile(msg.file);
   });
 }
 
@@ -123,20 +170,47 @@ export function renderFileSelect() {
 }
 
 export async function loadResume(file) {
-  state.currentFile = file || null;
-  if (state.currentFile) {
-    try { localStorage.setItem(KEYS.FILE, state.currentFile); } catch (e) {}
-  }
+  const generation = ++loadGeneration;
+  const target = file || null;
+  const previous = ready ? serialize() : null;
+  let recovered = false;
   let md = null;
-  if (state.hasServer && state.currentFile) {
-    try { md = await api.readResume(state.currentFile); } catch (e) {}
+  if (state.hasServer && target) {
+    try { md = await api.readResume(target, false); } catch (e) {}
+    if (generation !== loadGeneration) return false;
+    if (md == null) {
+      setStatus("读取失败，已保留当前简历");
+      return false;
+    }
+  } else {
+    try { md = localStorage.getItem(cacheKey(target)); } catch (e) {}
   }
-  if (md == null) md = localStorage.getItem(KEYS.MD) || defaultMarkdown();
-  if (!String(md).trim()) md = defaultMarkdown();
+  if (generation !== loadGeneration) return false;
+  if (ready && !state.samplePreview && (state.dirty || serialize() !== previous)) {
+    setStatus("加载期间有新修改，已保留当前简历，请保存后重试");
+    return false;
+  }
+  if (target && state.hasServer) {
+    api.acceptRevision(target, md);
+    try {
+      const draft = localStorage.getItem(cacheKey(target));
+      if (draft && draft !== md && confirm("发现「" + target + "」的未保存草稿，是否恢复？")) {
+        md = draft;
+        recovered = true;
+      }
+    } catch (e) {}
+  }
+  if (md == null || !String(md).trim()) md = defaultMarkdown();
+  clearTimeout(saveTimer);
+  state.currentFile = target;
+  if (target) {
+    try { localStorage.setItem(KEYS.FILE, target); } catch (e) {}
+  }
   renderResume(parseMarkdown(md));
   applyPhoto();
   syncEditableState();
-  state.dirty = false;
+  state.dirty = recovered;
   ready = true;
   renderFileSelect();
+  return true;
 }

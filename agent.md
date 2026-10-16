@@ -67,7 +67,9 @@ index.html / public/** 被修改 ──fs.watch──► SSE {reload:true} ─�
 ```
 
 - 本地缓存：`localStorage`（设置、当前文件、按文件存的照片、离线兜底 md）。
-- 防冲突：页面有未保存改动（`dirty`）时，外部文件变更不覆盖；自身保存产生的事件按时间戳忽略，避免回环与光标跳动。
+- 防冲突：页面有未保存改动（`dirty`）时，外部文件变更不覆盖；写入使用 `ETag` / `If-Match` 校验，旧版本返回 412。异步加载只应用最后一次选择，保存请求串行执行。
+- 草稿按 `resume-md-v1:<file>` 缓存，离线文档使用 `resume-md-v1:local`；保存成功后清除对应在线草稿。读取失败保留当前文档，恢复草稿需用户选择。
+- 服务仅监听 `127.0.0.1`；Host 与写请求 Origin 校验用于本机服务，不支持直接对外部署。
 
 ## 服务端 API（server.js）
 
@@ -76,7 +78,7 @@ index.html / public/** 被修改 ──fs.watch──► SSE {reload:true} ─�
 | GET | `/api/resumes` | 列出 `docs/` 所有 `.md` → `{ files: [] }` |
 | POST | `/api/resumes` | 新建简历，body `{ name }`，用默认模板创建，409 表示同名 |
 | GET | `/api/resume?file=x.md` | 读取简历内容 |
-| POST | `/api/resume?file=x.md` | 覆盖写入简历 |
+| POST | `/api/resume?file=x.md` | 必须携带读取时的 `If-Match`；版本不符返回 412；beacon 用 `revision` 查询参数 |
 | DELETE | `/api/resume?file=x.md` | 删除简历 |
 | GET | `/api/samples` | 列出 `samples/` 所有 `.md` → `{ files: [] }` |
 | GET | `/api/sample?file=x.md` | 读取示例内容（只读） |
@@ -161,7 +163,7 @@ index.html / public/** 被修改 ──fs.watch──► SSE {reload:true} ─�
   - 节点 `timelineNode`：dot / arrow / square / diamond / none（`data-tlnode`）
   - 布局 `timelineLayout`：right / dateLeft / stacked / card（`data-tllayout`）
 - **编辑交互**：所有文本 `contenteditable`；条目悬停出现 `↑ ↓ ×`；章节标题悬停出现 `↑ ↓`；各章节「+ 添加」；技能/联系方式可单独删除
-- **时间自动排序**：某章节内所有条目都带日期时，按日期（起始年月）倒序自动排序；在文档里改 `.md`、在页面里增删/移动/编辑失焦后均会重新排序（`js/render.js` 的 `sortDatedSections`）
+- **条目顺序**：遵循 Markdown / DOM 顺序，手动上下移动后持久化，不再自动按日期覆盖用户排序。
 - **多简历**：按钮列表切换、新建、**重命名**（`POST /api/rename`）、删除
 - **顶栏收纳**：分组按钮「简历 / 样式 / 时间轴」以**右侧滑出面板**呈现（`public/index.html` 中 `div.menu.panel-menu > .menu-panel`，CSS 用 `position: fixed` 定位到右侧，同一时刻仅展开一个）；「简历」面板把**简历列表（按钮切换/新建/重命名/删除）+ 示例（按钮预览/恢复备份）**合并在一起；「项目列表 / 隐藏关键词 / 隐藏照片 / 预览模式」直接内联在顶栏；「导出」为内联
 - **项目列表（左侧面板）**：顶栏「显示 → 项目列表」展开左侧面板，列出**标准章节目录**（求职意向 / 个人简介 / 自我评价 / 工作经历 / 实习经历 / 项目经历 / 教育经历 / 资格证书 / 获得荣誉 / 技能特长 / 在校经历，均带图标）以及简历中已有的自定义章节。
@@ -190,7 +192,7 @@ index.html / public/** 被修改 ──fs.watch──► SSE {reload:true} ─�
 | `resume-settings-v1` | 模板/字体/配色/照片开关/关键词/时间轴等全部设置 |
 | `resume-file-v1` | 当前简历文件名 |
 | `resume-photo-v1:<file>` | 该简历的照片 dataURL |
-| `resume-md-v1` | 无服务时的离线兜底内容 |
+| `resume-md-v1:<file>` / `resume-md-v1:local` | 按文件隔离的未保存草稿 / 离线内容 |
 
 ## 扩展指南
 
@@ -211,7 +213,7 @@ index.html / public/** 被修改 ──fs.watch──► SSE {reload:true} ─�
 - 节点使用 `:has`、`color-mix`、CSS 变量，需较新浏览器（Chrome 105+/Safari 15.4+）。
 - `?nosync=1` 参数可禁用自动保存与 SSE，并且**不写入文件**（只读模式，便于无头截图/打印测试）。
 - 修改 `public/**` 后页面会自动刷新（SSE）；修改 `.md` 会自动同步（SSE）。
-- 无测试框架；可用无头 Chromium 验证：
+- `npm test` 使用 Node 内置测试工具，覆盖关键保存与服务端行为；测试不监听端口。浏览器排版、打印导出需另外验证，可用无头 Chromium：
   ```bash
   "/Applications/Chromium.app/Contents/MacOS/Chromium" --headless=new \
     --virtual-time-budget=6000 --dump-dom "http://localhost:5173/?nosync=1"

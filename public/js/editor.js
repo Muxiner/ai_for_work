@@ -1,5 +1,5 @@
 import { state, splitKeywords, keywordsHTML, getPage } from "./state.js";
-import { TEMPLATES, moveSibling, renderSkillText, sortDatedSections } from "./render.js";
+import { TEMPLATES, moveSibling, renderSkillText } from "./render.js";
 import { scheduleSave } from "./persist.js";
 import { applyPhoto, photoKey, compressImage } from "./photo.js";
 
@@ -10,6 +10,7 @@ export function bindEditor() {
   page.addEventListener("input", scheduleSave);
 
   page.addEventListener("blur", (e) => {
+    if (state.samplePreview || new URLSearchParams(location.search).has("nosync")) return;
     const el = e.target;
     if (!el || !el.classList) return;
     if (el.classList.contains("item-kw-text")) {
@@ -24,12 +25,13 @@ export function bindEditor() {
     }
     const section = el.closest ? el.closest(".section") : null;
     if (section) {
-      sortDatedSections(section);
       scheduleSave();
     }
   }, true);
 
   page.addEventListener("click", (e) => {
+    if (state.samplePreview || new URLSearchParams(location.search).has("nosync") ||
+        !document.body.classList.contains("editing")) return;
     if (document.body.classList.contains("editing")) {
       if (e.target.closest(".photo-del")) {
         e.stopPropagation();
@@ -81,7 +83,6 @@ export function bindEditor() {
       }
       if (container) container.appendChild(node);
       else add.parentElement.insertBefore(node, add);
-      sortDatedSections(add.parentElement);
       scheduleSave();
       return;
     }
@@ -98,7 +99,6 @@ export function bindEditor() {
         const section = mv.closest(".section");
         if (section) moveSibling(section, "section", dir);
       }
-      sortDatedSections(mv.closest(".section"));
       scheduleSave();
       return;
     }
@@ -107,21 +107,22 @@ export function bindEditor() {
     if (del) {
       const target = del.closest(".item, .skill, .c-wrap, .honor, .intent-item");
       if (target) {
-        const parent = target.parentElement;
         target.remove();
-        sortDatedSections(parent);
       }
       scheduleSave();
     }
   });
 
   page.addEventListener("change", async (e) => {
+    if (state.samplePreview || new URLSearchParams(location.search).has("nosync")) return;
     if (e.target.id !== "photoInput") return;
     const file = e.target.files && e.target.files[0];
     if (!file) return;
     try {
+      const key = photoKey();
       const dataUrl = await compressImage(file);
-      localStorage.setItem(photoKey(), dataUrl);
+      localStorage.setItem(key, dataUrl);
+      if (key !== photoKey() || state.samplePreview) return;
       applyPhoto();
       scheduleSave();
     } catch (err) {

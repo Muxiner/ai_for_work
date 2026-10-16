@@ -1,6 +1,7 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 
 const PORT = process.env.PORT || 5173;
 const ROOT = __dirname;
@@ -68,7 +69,7 @@ const MIME = {
 /* ---------------- helpers ---------------- */
 
 function ensureResumesDir() {
-  try { fs.mkdirSync(RESUMES_DIR, { recursive: true }); } catch (e) {}
+  fs.mkdirSync(RESUMES_DIR, { recursive: true });
 }
 
 function listResumes() {
@@ -105,7 +106,7 @@ function safeName(name) {
   const trimmed = name.trim();
   const base = path.basename(trimmed);
   if (base !== trimmed) return null;
-  if (base.includes("..")) return null;
+  if (base.includes("..") || /[\x00-\x1f\x7f]/.test(base)) return null;
   if (!/^[^\/\\:*?"<>|]+\.md$/i.test(base)) return null;
   return base;
 }
@@ -116,7 +117,12 @@ function ensureBackupDir() {
 
 function backupName(file) {
   const ts = new Date().toISOString().replace(/[:.]/g, "-");
-  return file.replace(/\.md$/i, "") + "." + ts + ".md";
+  return file.replace(/\.md$/i, "") + "." + ts + "-" + crypto.randomBytes(4).toString("hex") + ".md";
+}
+
+function isBackupFor(name, file) {
+  const prefix = file.replace(/\.md$/i, "") + ".";
+  return name.startsWith(prefix) && /^\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z(?:-[a-f0-9]+)?\.md$/.test(name.slice(prefix.length));
 }
 
 function createBackup(file) {
@@ -134,10 +140,9 @@ function createBackup(file) {
 
 function listBackups(file) {
   try {
-    const prefix = file.replace(/\.md$/i, "") + ".";
     return fs
       .readdirSync(BACKUP_DIR)
-      .filter((f) => f.startsWith(prefix) && f.toLowerCase().endsWith(".md"))
+      .filter((f) => isBackupFor(f, file))
       .sort()
       .reverse();
   } catch (e) {
@@ -148,9 +153,30 @@ function listBackups(file) {
 const lastAutoBackup = new Map();
 function maybeAutoBackup(file) {
   const now = Date.now();
-  if (now - (lastAutoBackup.get(file) || 0) < 60000) return;
+  if (now - (lastAutoBackup.get(file) || 0) < 60000) return true;
+  if (!createBackup(file)) return false;
   lastAutoBackup.set(file, now);
-  createBackup(file);
+  return true;
+}
+
+function revision(data) {
+  return '"' + crypto.createHash("sha256").update(data).digest("hex") + '"';
+}
+
+function atomicWrite(full, data) {
+  const temporary = full + "." + crypto.randomBytes(8).toString("hex") + ".tmp";
+  let fd;
+  try {
+    fd = fs.openSync(temporary, "wx", 0o600);
+    fs.writeFileSync(fd, data);
+    fs.fsyncSync(fd);
+    fs.closeSync(fd);
+    fd = undefined;
+    fs.renameSync(temporary, full);
+  } finally {
+    if (fd !== undefined) fs.closeSync(fd);
+    try { fs.unlinkSync(temporary); } catch (e) { if (e.code !== "ENOENT") console.error("临时文件清理失败", e.message); }
+  }
 }
 
 function sendJson(res, obj, code) {
@@ -158,13 +184,32 @@ function sendJson(res, obj, code) {
   res.end(JSON.stringify(obj));
 }
 
-function readBody(req, cb) {
+function readBody(req, res, cb) {
   let body = "";
+  let bytes = 0;
+  let rejected = false;
+  req.setEncoding("utf8");
   req.on("data", (chunk) => {
+    if (rejected) return;
+    bytes += Buffer.byteLength(chunk);
+    if (bytes > 8 * 1024 * 1024) {
+      rejected = true;
+      res.writeHead(413);
+      res.end("body too large");
+      return;
+    }
     body += chunk;
-    if (body.length > 8 * 1024 * 1024) req.destroy();
   });
-  req.on("end", () => cb(body));
+  req.on("error", () => { rejected = true; });
+  req.on("end", () => {
+    if (rejected) return;
+    try { cb(body); }
+    catch (e) {
+      console.error("请求处理失败", e.message);
+      if (!res.headersSent) res.writeHead(500);
+      res.end("internal error");
+    }
+  });
 }
 
 /* ---------------- SSE ---------------- */
@@ -182,7 +227,8 @@ function broadcast(payload) {
   }
 }
 
-let watchTimer = null;
+const watchTimers = new Map();
+ensureResumesDir();
 let reloadTimer = null;
 
 try {
@@ -191,20 +237,45 @@ try {
     const name = filename.toLowerCase();
     if (!name.endsWith(".md")) return;
     if (IGNORED_MD.has(name)) return;
-    clearTimeout(watchTimer);
-    watchTimer = setTimeout(() => broadcast({ file: filename }), 150);
+    clearTimeout(watchTimers.get(filename));
+    watchTimers.set(filename, setTimeout(() => {
+      watchTimers.delete(filename);
+      broadcast({ file: filename });
+    }, 150));
   });
 } catch (e) {
   console.warn("简历目录监听失败：", e.message);
 }
 
+function scheduleReload() {
+  clearTimeout(reloadTimer);
+  reloadTimer = setTimeout(() => broadcast({ reload: true }), 150);
+}
+
 try {
-  fs.watch(PUBLIC_DIR, { recursive: true }, () => {
-    clearTimeout(reloadTimer);
-    reloadTimer = setTimeout(() => broadcast({ reload: true }), 150);
-  });
+  fs.watch(PUBLIC_DIR, { recursive: true }, scheduleReload);
 } catch (e) {
-  console.warn("前端目录监听失败：", e.message);
+  // Node 18 on Linux does not support recursive fs.watch.
+  const watched = new Map();
+  function watchTree(dir) {
+    if (!watched.has(dir)) {
+      const watcher = fs.watch(dir, (event) => {
+        scheduleReload();
+        if (event === "rename") {
+          for (const [name, handle] of watched) {
+            if (!fs.existsSync(name)) { handle.close(); watched.delete(name); }
+          }
+          try { watchTree(PUBLIC_DIR); } catch (error) { console.warn("目录监听更新失败", error.message); }
+        }
+      });
+      watched.set(dir, watcher);
+    }
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (entry.isDirectory()) watchTree(path.join(dir, entry.name));
+    }
+  }
+  try { watchTree(PUBLIC_DIR); }
+  catch (error) { console.warn("前端目录监听失败：", error.message); }
 }
 
 setInterval(() => {
@@ -216,7 +287,23 @@ setInterval(() => {
 /* ---------------- server ---------------- */
 
 const server = http.createServer((req, res) => {
-  const u = new URL(req.url || "/", "http://localhost");
+  try { handleRequest(req, res); }
+  catch (e) {
+    console.error("请求处理失败", e.message);
+    if (!res.headersSent) res.writeHead(e instanceof URIError || e instanceof TypeError ? 400 : 500);
+    res.end("invalid request");
+  }
+});
+
+function handleRequest(req, res) {
+  const host = req.headers.host || "";
+  if (!/^(localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/i.test(host)) {
+    res.writeHead(403); res.end("invalid host"); return;
+  }
+  if (!["GET", "HEAD"].includes(req.method) && req.headers.origin && req.headers.origin !== "http://" + host) {
+    res.writeHead(403); res.end("invalid origin"); return;
+  }
+  const u = new URL(req.url || "/", "http://" + host);
   const url = u.pathname;
 
   if (url === "/api/events") {
@@ -239,19 +326,22 @@ const server = http.createServer((req, res) => {
       return;
     }
     if (req.method === "POST") {
-      readBody(req, (body) => {
-        let name = "";
-        try { name = JSON.parse(body).name || ""; } catch (e) {}
-        name = String(name).trim() || "新建简历";
+      readBody(req, res, (body) => {
+        let input;
+        try { input = JSON.parse(body); }
+        catch (e) { res.writeHead(400); res.end("invalid JSON"); return; }
+        if (!input || Array.isArray(input) || typeof input !== "object" ||
+            (input.name !== undefined && typeof input.name !== "string")) {
+          res.writeHead(400); res.end("invalid name"); return;
+        }
+        let name = (input.name || "").trim() || "新建简历";
         if (!/\.md$/i.test(name)) name += ".md";
         const safe = safeName(name);
         if (!safe) { res.writeHead(400); res.end("bad name"); return; }
         const full = path.join(RESUMES_DIR, safe);
         if (fs.existsSync(full)) { res.writeHead(409); res.end("exists"); return; }
-        fs.writeFile(full, DEFAULT_MD, (err) => {
-          if (err) { res.writeHead(500); res.end("write failed"); return; }
-          sendJson(res, { ok: true, file: safe });
-        });
+        fs.writeFileSync(full, DEFAULT_MD, { flag: "wx", mode: 0o600 });
+        sendJson(res, { ok: true, file: safe, revision: revision(DEFAULT_MD) });
       });
       return;
     }
@@ -289,7 +379,7 @@ const server = http.createServer((req, res) => {
       const newPrefix = toSafe.replace(/\.md$/i, "") + ".";
       try {
         fs.readdirSync(BACKUP_DIR)
-          .filter((f) => f.startsWith(oldPrefix))
+          .filter((f) => isBackupFor(f, from))
           .forEach((f) => {
             fs.renameSync(path.join(BACKUP_DIR, f), path.join(BACKUP_DIR, newPrefix + f.slice(oldPrefix.length)));
           });
@@ -307,7 +397,7 @@ const server = http.createServer((req, res) => {
     const file = safeName(u.searchParams.get("file") || "");
     if (!file) { res.writeHead(400); res.end("bad file"); return; }
     const backup = createBackup(file);
-    sendJson(res, { ok: !!backup, backup });
+    sendJson(res, { ok: !!backup, backup }, backup ? 200 : 500);
     return;
   }
 
@@ -322,13 +412,14 @@ const server = http.createServer((req, res) => {
     const file = safeName(u.searchParams.get("file") || "");
     const backup = safeName(u.searchParams.get("backup") || "");
     if (!file || !backup) { res.writeHead(400); res.end("bad params"); return; }
-    const prefix = file.replace(/\.md$/i, "") + ".";
-    if (!backup.startsWith(prefix)) { res.writeHead(400); res.end("bad backup"); return; }
+    if (!isBackupFor(backup, file)) { res.writeHead(400); res.end("bad backup"); return; }
     const src = path.join(BACKUP_DIR, backup);
     if (!fs.existsSync(src)) { res.writeHead(404); res.end("not found"); return; }
-    createBackup(file);
+    if (fs.existsSync(path.join(RESUMES_DIR, file)) && !createBackup(file)) {
+      res.writeHead(500); res.end("backup failed"); return;
+    }
     try {
-      fs.copyFileSync(src, path.join(RESUMES_DIR, file));
+      atomicWrite(path.join(RESUMES_DIR, file), fs.readFileSync(src));
     } catch (e) {
       res.writeHead(500);
       res.end("restore failed");
@@ -350,36 +441,46 @@ const server = http.createServer((req, res) => {
           res.end("not found");
           return;
         }
-        res.writeHead(200, { "Content-Type": "text/markdown; charset=utf-8", "Cache-Control": "no-store" });
+        res.writeHead(200, { "Content-Type": "text/markdown; charset=utf-8", "Cache-Control": "no-store", ETag: revision(data) });
         res.end(data);
       });
       return;
     }
 
     if (req.method === "POST") {
-      readBody(req, (body) => {
-        let existing = "";
-        try { existing = fs.readFileSync(full, "utf8"); } catch (e) {}
+      readBody(req, res, (body) => {
+        let existing;
+        try { existing = fs.readFileSync(full, "utf8"); }
+        catch (e) { if (e.code !== "ENOENT") throw e; }
+        const expected = req.headers["if-match"] || u.searchParams.get("revision");
+        if (existing === undefined || !expected || expected !== revision(existing)) {
+          res.writeHead(412); res.end("file changed; reload before saving"); return;
+        }
         if (existing.trim() && !String(body).trim()) {
           res.writeHead(409, { "Content-Type": "text/plain; charset=utf-8" });
           res.end("empty content rejected");
           return;
         }
-        if (existing.trim()) maybeAutoBackup(file);
-        fs.writeFile(full, body, (err) => {
-          if (err) { res.writeHead(500); res.end("write failed"); return; }
-          sendJson(res, { ok: true, file });
-        });
+        if (existing.trim() && !maybeAutoBackup(file)) {
+          res.writeHead(500); res.end("backup failed"); return;
+        }
+        atomicWrite(full, body);
+        res.setHeader("ETag", revision(body));
+        sendJson(res, { ok: true, file });
       });
       return;
     }
 
     if (req.method === "DELETE") {
-      createBackup(file);
-      fs.unlink(full, (err) => {
-        if (err) { res.writeHead(404); res.end("not found"); return; }
-        sendJson(res, { ok: true });
-      });
+      if (fs.existsSync(full) && !createBackup(file)) {
+        res.writeHead(500); res.end("backup failed"); return;
+      }
+      try { fs.unlinkSync(full); }
+      catch (e) {
+        if (e.code !== "ENOENT") throw e;
+        res.writeHead(404); res.end("not found"); return;
+      }
+      sendJson(res, { ok: true });
       return;
     }
 
@@ -389,8 +490,9 @@ const server = http.createServer((req, res) => {
   }
 
   const rel = url === "/" ? "/index.html" : url;
-  const full = path.join(PUBLIC_DIR, path.normalize(decodeURIComponent(rel)));
-  if (!full.startsWith(PUBLIC_DIR)) {
+  const full = path.resolve(PUBLIC_DIR, "." + decodeURIComponent(rel));
+  const relative = path.relative(PUBLIC_DIR, full);
+  if (relative === ".." || relative.startsWith(".." + path.sep) || path.isAbsolute(relative)) {
     res.writeHead(403);
     res.end();
     return;
@@ -408,13 +510,12 @@ const server = http.createServer((req, res) => {
     });
     res.end(data);
   });
-});
+}
 
-server.timeout = 0;
-ensureResumesDir();
-server.listen(PORT, () => {
+server.requestTimeout = 30000;
+server.listen(PORT, "127.0.0.1", () => {
   const files = listResumes();
-  console.log(`简历编辑器已启动： http://localhost:${PORT}`);
+  console.log(`简历编辑器已启动： http://localhost:${server.address().port}`);
   console.log(`前端目录： ${PUBLIC_DIR}`);
   console.log(`简历目录（${files.length}）： ${RESUMES_DIR}`);
 });

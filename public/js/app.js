@@ -4,7 +4,7 @@ import { parseMarkdown, serialize } from "./markdown.js";
 import { renderResume, syncEditableState } from "./render.js";
 import {
   save, loadFileList, renderFileSelect, loadResume,
-  startAutoSave, startSync,
+  startAutoSave, startSync, isNoSync,
 } from "./persist.js";
 import { renderSwatches, applySettings, bindControls } from "./settings.js";
 import { bindEditor } from "./editor.js";
@@ -49,20 +49,39 @@ function setPreviewUI(on, name) {
   document.body.classList.toggle("sample-preview", on);
 }
 
+let previewRequest = 0;
+
+async function preserveCurrent() {
+  if (state.samplePreview || !state.dirty) return true;
+  return (await save()) && !state.dirty;
+}
+
+function canMutate() {
+  if (!state.samplePreview && !isNoSync()) return true;
+  setStatus(isNoSync() ? "只读模式（nosync）" : "示例预览，请先返回我的简历");
+  return false;
+}
+
 function clearPreview() {
+  previewRequest++;
   if (!state.samplePreview) return;
   state.samplePreview = null;
   setPreviewUI(false);
   document.body.classList.remove("sample-preview");
   if (state._prevEditing !== false) document.body.classList.add("editing");
+  syncEditableState();
   renderSampleList();
 }
 
 async function enterSamplePreview(file) {
-  if (!file) return;
+  if (!file || !(await preserveCurrent())) return;
+  const request = ++previewRequest;
+  const currentFile = state.currentFile;
   let md = null;
   try { md = await api.readSample(file); } catch (e) {}
+  if (request !== previewRequest || currentFile !== state.currentFile) return;
   if (!md) { alert("示例读取失败"); return; }
+  if (!(await preserveCurrent()) || request !== previewRequest) return;
   if (!state.samplePreview) state._prevEditing = document.body.classList.contains("editing");
   state.samplePreview = file;
   document.body.classList.remove("editing");
@@ -74,6 +93,7 @@ async function enterSamplePreview(file) {
 }
 
 async function duplicateSample() {
+  if (isNoSync()) return;
   const src = state.samplePreview;
   if (!src) return;
   const name = prompt("基于该示例新建简历，文件名：", src.replace(/\.md$/i, "") + "-副本");
@@ -83,13 +103,10 @@ async function duplicateSample() {
   const r = await api.createResume(name.trim());
   if (r.error === "exists") { alert("同名文件已存在"); return; }
   if (r.error) { alert("创建失败"); return; }
-  await api.writeResume(r.file, md);
-  state.samplePreview = null;
-  setPreviewUI(false);
-  document.body.classList.remove("sample-preview");
-  document.body.classList.add("editing");
+  if (!(await api.writeResume(r.file, md))) { alert("示例保存失败，请重试。"); return; }
   await loadFileList();
-  await loadResume(r.file);
+  if (!(await loadResume(r.file))) return;
+  clearPreview();
   setStatus("已基于示例新建 " + r.file);
 }
 
@@ -106,36 +123,39 @@ function bindFileControls() {
       const file = b.dataset.file;
       if (!file) return;
       if (file === state.currentFile && !state.samplePreview) return;
+      if (!(await preserveCurrent())) return;
+      previewRequest++;
+      if (!(await loadResume(file))) return;
       clearPreview();
-      if (state.dirty) await save();
-      await loadResume(file);
       setStatus("已切换到 " + state.currentFile);
     });
   }
 
   if (newFileBtn) {
     newFileBtn.addEventListener("click", async () => {
+      if (!canMutate()) return;
       const name = prompt("新建简历文件名（如：张三-嵌入式）：", "");
       if (name == null || !name.trim()) return;
-      if (state.dirty) await save();
+      if (!(await preserveCurrent())) return;
       const r = await api.createResume(name.trim());
       if (r.error === "exists") { alert("同名文件已存在"); return; }
       if (r.error) { alert("创建失败"); return; }
       await loadFileList();
-      await loadResume(r.file);
+      if (!(await loadResume(r.file))) return;
       setStatus("已新建 " + r.file);
     });
   }
 
   if (delFileBtn) {
     delFileBtn.addEventListener("click", async () => {
+      if (!canMutate() || !(await preserveCurrent())) return;
       if (!state.currentFile) return;
       if (!confirm("确定删除 " + state.currentFile + " 吗？该操作不可撤销。")) return;
       const ok = await api.deleteResume(state.currentFile);
       if (!ok) { alert("删除失败"); return; }
       try { localStorage.removeItem(KEYS.PHOTO + ":" + state.currentFile); } catch (e) {}
       await loadFileList();
-      await loadResume(state.files[0] || null);
+      if (!(await loadResume(state.files[0] || null))) return;
       setStatus("已删除");
     });
   }
@@ -155,8 +175,8 @@ function bindFileControls() {
   const exitPreviewBtn = document.getElementById("exitPreviewBtn");
   if (exitPreviewBtn) {
     exitPreviewBtn.addEventListener("click", async () => {
+      if (!(await loadResume(state.currentFile))) return;
       clearPreview();
-      await loadResume(state.currentFile);
       setStatus("已返回 " + (state.currentFile || ""));
     });
   }
@@ -164,11 +184,12 @@ function bindFileControls() {
   const renameFileBtn = document.getElementById("renameFileBtn");
   if (renameFileBtn) {
     renameFileBtn.addEventListener("click", async () => {
+      if (!canMutate()) return;
       if (!state.currentFile) return;
       const cur = state.currentFile.replace(/\.md$/i, "");
       const name = prompt("重命名简历：", cur);
       if (name == null || !name.trim() || name.trim() === cur) return;
-      if (state.dirty) await save();
+      if (!(await preserveCurrent())) return;
       const oldFile = state.currentFile;
       const r = await api.renameResume(oldFile, name.trim());
       if (r.error === "exists") { alert("同名文件已存在"); return; }
@@ -179,7 +200,7 @@ function bindFileControls() {
         if (data) { localStorage.setItem(KEYS.PHOTO + ":" + r.file, data); localStorage.removeItem(pk); }
       } catch (e) {}
       await loadFileList();
-      await loadResume(r.file);
+      if (!(await loadResume(r.file))) return;
       setStatus("已重命名为 " + r.file);
     });
   }
@@ -187,6 +208,7 @@ function bindFileControls() {
   const restoreBackupBtn = document.getElementById("restoreBackupBtn");
   if (restoreBackupBtn) {
     restoreBackupBtn.addEventListener("click", async () => {
+      if (!canMutate() || !(await preserveCurrent())) return;
       if (!state.currentFile) return;
       let backups = [];
       try { backups = await api.listBackups(state.currentFile); } catch (e) {}
@@ -195,7 +217,7 @@ function bindFileControls() {
       if (!confirm("确定用最近一次备份恢复「" + state.currentFile + "」吗？\n备份：" + latest)) return;
       const ok = await api.restoreBackup(state.currentFile, latest);
       if (!ok) { alert("恢复失败"); return; }
-      await loadResume(state.currentFile);
+      if (!(await loadResume(state.currentFile))) return;
       setStatus("已从备份恢复");
     });
   }
@@ -257,9 +279,9 @@ async function init() {
   renderSwatches();
   applySettings();
   syncEditableState();
-  populateSamples();
+  await populateSamples();
 
-  setStatus(state.hasServer ? "已连接 " + (state.currentFile || "本地") : "本地保存（未连接服务）");
+  setStatus(state.dirty ? "已恢复未保存草稿，请检查后保存" : (state.hasServer ? "已连接 " + (state.currentFile || "本地") : "本地保存（未连接服务）"));
 
   if (!new URLSearchParams(location.search).has("nosync")) {
     startAutoSave();

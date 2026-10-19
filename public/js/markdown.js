@@ -89,7 +89,7 @@ export function parseMarkdown(md) {
       } else if (item) {
         item.bullets.push(content);
       } else {
-        section.paragraphs.push(content);
+        section.paragraphs.push("- " + content);
       }
       continue;
     }
@@ -179,6 +179,11 @@ export function serialize() {
       return;
     }
 
+    sec.querySelectorAll(".section-paragraph").forEach((p) => {
+      const value = domToMd(p).trim();
+      if (value) out.push((p.dataset.bullet === "true" ? "- " : "") + value);
+    });
+    out.push("");
     sec.querySelectorAll(".item").forEach((item) => {
       const title = mdOf(".item-title", item);
       const sub = mdOf(".item-sub", item);

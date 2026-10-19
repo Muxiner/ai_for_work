@@ -4,7 +4,7 @@
 @media print {
   html, body { background: #fff; }
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-  .toolbar, .hint, .add-btn, .del-btn, .photo-del, .item-actions, .section-actions, .side-panel, .preview-banner { display: none !important; }
+  .toolbar, .hint, .add-btn, .del-btn, .photo-del, .item-actions, .section-actions, .honor-actions, .side-panel, .preview-banner { display: none !important; }
   .stage { padding: 0; display: block; }
   .page {
     width: auto;

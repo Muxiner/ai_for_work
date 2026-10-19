@@ -231,6 +231,7 @@ export function bindControls() {
   const sideList = document.getElementById("sideList");
   if (sideList) {
     sideList.addEventListener("change", (e) => {
+      if (state.samplePreview || new URLSearchParams(location.search).has("nosync")) { e.target.checked = !e.target.checked; return; }
       if (e.target.classList && e.target.classList.contains("side-order")) {
         moveSectionTo(e.target.dataset.title, e.target.value);
         scheduleSave();

@@ -158,7 +158,6 @@ export function renderResume(data) {
 
   html += `</div>`;
   page.innerHTML = html;
-  sortDatedSections(page);
   refreshTimeline();
   renderSidePanel();
   applyHiddenSections();
@@ -202,6 +201,10 @@ export function sectionMarkup(sec) {
     html += `<div class="intent-grid">${fields}</div>`;
     html += `<button class="add-btn" data-tpl="intent">+ 添加意向</button>`;
   } else {
+    html += (sec.paragraphs || []).map((p) => {
+      const bullet = p.startsWith("- ");
+      return `<p class="section-paragraph" data-bullet="${bullet}" contenteditable="true">${inlineMd(bullet ? p.slice(2) : p)}</p>`;
+    }).join("");
     html += sec.items.map(itemMarkup).join("");
     html += `<button class="add-btn" data-tpl="${esc(sec.key)}">+ 添加条目</button>`;
   }
@@ -239,7 +242,6 @@ export function addSection(title) {
   const content = getPage().querySelector(".content");
   if (!content) return;
   content.insertAdjacentHTML("beforeend", sectionMarkup(parsed));
-  sortDatedSections(getPage());
   refreshTimeline();
   renderSidePanel();
   applyHiddenSections();
@@ -305,41 +307,6 @@ export function moveSectionTo(title, pos) {
   renderSidePanel();
 }
 
-function parseStartKey(dateStr) {
-  const m = String(dateStr == null ? "" : dateStr).match(/^\s*(\d{4})[.\-/年]?(\d{1,2})?/);
-  if (!m) return null;
-  const y = parseInt(m[1], 10);
-  const mo = m[2] ? parseInt(m[2], 10) : 1;
-  return y * 100 + mo;
-}
-
-function sortOneSection(sec) {
-  const items = Array.from(sec.querySelectorAll(":scope > .item"));
-  if (items.length < 2) return;
-  const dated = items.filter((it) => {
-    const d = it.querySelector(".item-date");
-    return d && d.textContent.trim();
-  });
-  if (dated.length !== items.length) return;
-  const keyed = items.map((it) => ({
-    el: it,
-    key: parseStartKey(it.querySelector(".item-date").textContent),
-  }));
-  if (keyed.some((k) => k.key == null)) return;
-  keyed.sort((a, b) => b.key - a.key);
-  const addBtn = sec.querySelector(":scope > .add-btn");
-  keyed.forEach(({ el }) => sec.insertBefore(el, addBtn));
-}
-
-export function sortDatedSections(root) {
-  const scope = root || getPage();
-  if (!scope) return;
-  const sections = scope.classList && scope.classList.contains("section")
-    ? [scope]
-    : Array.from(scope.querySelectorAll(".content > section"));
-  sections.forEach(sortOneSection);
-}
-
 export function refreshTimeline() {
   const page = getPage();
   if (!page) return;
@@ -367,7 +334,8 @@ export function renderTimelineTypes() {
 export function syncEditableState() {
   const page = getPage();
   if (!page) return;
-  const editing = document.body.classList.contains("editing");
+  const editing = document.body.classList.contains("editing") && !state.samplePreview &&
+    !new URLSearchParams(location.search).has("nosync");
   page.querySelectorAll("[contenteditable]").forEach((el) => {
     if (el.tagName === "BUTTON") return;
     el.setAttribute("contenteditable", editing ? "true" : "false");

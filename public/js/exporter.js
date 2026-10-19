@@ -34,6 +34,7 @@ function collectCss() {
 }
 
 export async function renderImageDataUrl(type) {
+  await document.fonts.ready;
   const isJpg = type === "jpg";
   const pageEl = getPage();
   const w = Math.ceil(pageEl.getBoundingClientRect().width);
@@ -41,7 +42,7 @@ export async function renderImageDataUrl(type) {
   const css = collectCss();
 
   const clone = pageEl.cloneNode(true);
-  clone.querySelectorAll(".item-actions, .section-actions, .add-btn, .del-btn, .photo-del, .photo-ph").forEach((el) => el.remove());
+  clone.querySelectorAll(".item-actions, .section-actions, .honor-actions, .add-btn, .del-btn, .photo-del, .photo-ph").forEach((el) => el.remove());
   clone.querySelectorAll("[contenteditable]").forEach((el) => el.removeAttribute("contenteditable"));
   const photo = clone.querySelector("#photo");
   if (!photo || !photo.style.backgroundImage) {

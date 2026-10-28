@@ -9,6 +9,7 @@ const PUBLIC_DIR = path.join(ROOT, "public");
 const RESUMES_DIR = path.join(ROOT, "docs");
 const SAMPLES_DIR = path.join(ROOT, "samples");
 const BACKUP_DIR = path.join(RESUMES_DIR, ".backups");
+const MAX_BACKUPS_PER_FILE = 30;
 const DEFAULT_FILE = "readme.md";
 const IGNORED_MD = new Set(["agent.md", "agents.md"]);
 
@@ -132,6 +133,7 @@ function createBackup(file) {
   const name = backupName(file);
   try {
     fs.copyFileSync(src, path.join(BACKUP_DIR, name));
+    pruneBackups(file);
     return name;
   } catch (e) {
     return null;
@@ -147,6 +149,12 @@ function listBackups(file) {
       .reverse();
   } catch (e) {
     return [];
+  }
+}
+
+function pruneBackups(file) {
+  for (const name of listBackups(file).slice(MAX_BACKUPS_PER_FILE)) {
+    try { fs.unlinkSync(path.join(BACKUP_DIR, name)); } catch (e) {}
   }
 }
 

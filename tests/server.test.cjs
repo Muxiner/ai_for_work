@@ -132,6 +132,16 @@ test('oversized request returns 413 without creating a document', async t => {
   assert.equal(JSON.parse((await app.request('/api/resumes')).body).files.length, 0);
 });
 
+test('backup history is pruned to the most recent 30 per document', async t => {
+  const app = setup(t), created = await create(app, 'prune');
+  for (let i = 0; i < 35; i++) {
+    assert.equal((await app.request('/api/backup?file=' + encodeURIComponent(created.file), 'POST')).status, 200);
+  }
+  const backups = JSON.parse((await app.request('/api/backups?file=' + encodeURIComponent(created.file))).body).backups;
+  assert.equal(backups.length, 30);
+  assert.equal(fs.readdirSync(path.join(app.directory, 'docs/.backups')).length, 30);
+});
+
 test('backup names cannot cross document boundaries and restoration preserves the previous content', async t => {
   const app = setup(t), a = await create(app, 'a'), b = await create(app, 'a.b');
   await app.request('/api/backup?file=a.b.md', 'POST');

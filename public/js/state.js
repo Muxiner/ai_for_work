@@ -56,6 +56,7 @@ export function mergeSettings(saved) {
 export const state = {
   hasServer: false,
   dirty: false,
+  saveFailed: false,
   lastSaveAt: 0,
   currentFile: null,
   files: [],

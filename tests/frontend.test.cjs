@@ -64,12 +64,24 @@ test('failed saves keep dirty state, cache by file, and block switching and prev
   app.edit('# unsaved');
   assert.equal(await app.persist.save(), false);
   assert.equal(app.state.dirty, true);
+  assert.equal(app.state.saveFailed, true);
   assert.equal(app.cache.get('resume-md-v1:mine.md'), '# unsaved');
   await app.switchTo('other.md'); await app.app.enterSamplePreview('sample.md');
   assert.equal(app.state.currentFile, 'mine.md');
   assert.equal(app.state.samplePreview, null);
   assert.equal(app.view, '# unsaved');
   await app.persist.reloadPage(); assert.equal(app.location.reloaded, undefined);
+});
+
+test('a successful retry clears the save failure flag', async () => {
+  const app = await setup();
+  app.api.writeResume = async () => false;
+  app.edit('# retry me');
+  assert.equal(await app.persist.save(), false);
+  assert.equal(app.state.saveFailed, true);
+  app.api.writeResume = async (file, md) => { app.files.set(file, md); return true; };
+  assert.equal(await app.persist.save(), true);
+  assert.equal(app.state.saveFailed, false);
 });
 
 test('preview saves the user draft before replacing the DOM and cannot overwrite it', async () => {

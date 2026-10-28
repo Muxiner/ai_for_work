@@ -73,6 +73,7 @@ async function saveCurrent() {
   if (generation !== loadGeneration || file !== state.currentFile) return ok;
   if (ok) {
     state.dirty = serialize() !== md;
+    state.saveFailed = false;
     state.lastSaveAt = Date.now();
     try {
       if (state.hasServer && file && localStorage.getItem(cacheKey(file)) === md) localStorage.removeItem(cacheKey(file));
@@ -80,6 +81,7 @@ async function saveCurrent() {
     setStatus(state.dirty ? "仍有修改待保存" : (state.hasServer && file ? "已保存到 " + file : "已保存到本地"));
   } else {
     state.dirty = true;
+    state.saveFailed = true;
     const code = typeof api.lastError === "function" ? api.lastError(file) : 0;
     setStatus(code === 409 ? "保存被拒绝：当前内容为空，未覆盖原文件" :
       code === 412 ? "文件已被外部修改，请先导出当前内容再重新加载" :
@@ -111,6 +113,11 @@ export function flush() {
 }
 window.addEventListener("pagehide", flush);
 window.addEventListener("beforeunload", flush);
+window.addEventListener("beforeunload", (e) => {
+  if (!ready || !state.dirty || !state.saveFailed) return;
+  e.preventDefault();
+  e.returnValue = "";
+});
 
 export async function syncFromFile(file) {
   if (!state.hasServer || syncing || !state.currentFile || state.samplePreview) return;
@@ -222,6 +229,7 @@ export async function loadResume(file) {
   applyPhoto();
   syncEditableState();
   state.dirty = recovered;
+  state.saveFailed = false;
   ready = true;
   renderFileSelect();
   return true;

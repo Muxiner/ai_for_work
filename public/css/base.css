@@ -551,7 +551,8 @@ body.editing .c-wrap .del-btn { display: block; }
 .section-actions { top: 50%; right: 0; transform: translateY(-50%); }
 body.editing .item:hover > .item-actions,
 body.editing .item:focus-within > .item-actions,
-body.editing .section-head:hover .section-actions { display: flex; }
+body.editing .section-head:hover .section-actions,
+body.editing .section-head:focus-within .section-actions { display: flex; }
 .move-btn {
   width: 20px; height: 20px; padding: 0;
   display: inline-flex; align-items: center; justify-content: center;

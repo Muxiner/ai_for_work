@@ -3,10 +3,10 @@ import { parseMarkdown } from "./markdown.js";
 import { svgIcon, LABEL_ICON, SECTION_ICON } from "./icons.js";
 
 export const TEMPLATES = {
-  skill: `<span class="skill-text" contenteditable="true"><b>分类</b><span class="skill-tags"><span class="skill-tag">技能关键词</span></span></span><button class="del-btn" title="删除" contenteditable="false">×</button>`,
+  skill: `<span class="skill-text" contenteditable="true"><b>分类</b><span class="skill-tags"><span class="skill-tag">技能关键词</span></span></span><button class="del-btn" title="删除技能" aria-label="删除技能" contenteditable="false">×</button>`,
   honor: `<span class="honor-text" contenteditable="true">荣誉名称</span>` + honorActions(),
   selfeval: `<span class="honor-text" contenteditable="true">要点描述</span>` + honorActions(),
-  intent: `<span class="intent-label" contenteditable="true">意向岗位</span><span class="intent-value" contenteditable="true">工程师</span><button class="del-btn" title="删除" contenteditable="false">×</button>`,
+  intent: `<span class="intent-label" contenteditable="true">意向岗位</span><span class="intent-value" contenteditable="true">工程师</span><button class="del-btn" title="删除意向" aria-label="删除意向" contenteditable="false">×</button>`,
 };
 
 const NEW_ITEM_SEEDS = {
@@ -20,31 +20,31 @@ export function photoMarkup() {
   return `<div class="photo-wrap" id="photoWrap" title="点击上传照片">
     <div class="photo" id="photo"></div>
     <div class="photo-ph"><span class="plus">＋</span><span>照片</span></div>
-    <button class="photo-del" id="photoDel" title="移除照片">×</button>
+    <button class="photo-del" id="photoDel" title="移除照片" aria-label="移除照片">×</button>
     <input type="file" id="photoInput" accept="image/*" hidden />
   </div>`;
 }
 
 export function itemActions(allowMove) {
   const move = allowMove
-    ? `<button class="move-btn" data-move="up" title="上移">${svgIcon("up")}</button>` +
-      `<button class="move-btn" data-move="down" title="下移">${svgIcon("down")}</button>`
+    ? `<button class="move-btn" data-move="up" title="上移" aria-label="上移">${svgIcon("up")}</button>` +
+      `<button class="move-btn" data-move="down" title="下移" aria-label="下移">${svgIcon("down")}</button>`
     : "";
-  return `<div class="item-actions">${move}<button class="del-btn" title="删除">×</button></div>`;
+  return `<div class="item-actions">${move}<button class="del-btn" title="删除条目" aria-label="删除条目">×</button></div>`;
 }
 
 export function sectionActions() {
   return `<div class="section-actions">` +
-    `<button class="move-btn" data-move="up" title="上移">${svgIcon("up")}</button>` +
-    `<button class="move-btn" data-move="down" title="下移">${svgIcon("down")}</button>` +
+    `<button class="move-btn" data-move="up" title="上移" aria-label="上移">${svgIcon("up")}</button>` +
+    `<button class="move-btn" data-move="down" title="下移" aria-label="下移">${svgIcon("down")}</button>` +
     `</div>`;
 }
 
 function honorActions() {
   return `<span class="honor-actions">` +
-    `<button class="move-btn" data-move="up" title="上移">${svgIcon("up")}</button>` +
-    `<button class="move-btn" data-move="down" title="下移">${svgIcon("down")}</button>` +
-    `<button class="del-btn" title="删除">×</button>` +
+    `<button class="move-btn" data-move="up" title="上移" aria-label="上移">${svgIcon("up")}</button>` +
+    `<button class="move-btn" data-move="down" title="下移" aria-label="下移">${svgIcon("down")}</button>` +
+    `<button class="del-btn" title="删除荣誉" aria-label="删除荣誉">×</button>` +
     `</span>`;
 }
 
@@ -117,7 +117,7 @@ export function moveSibling(el, cls, dir) {
 export function renderResume(data) {
   const page = getPage();
   const contacts = data.contacts
-    .map((c) => `<span class="c-wrap">${svgIcon(LABEL_ICON[c.label] || "dot")}<span class="c" data-label="${esc(c.label)}" contenteditable="true">${esc(c.value)}</span><button class="del-btn" title="删除" contenteditable="false">×</button></span>`)
+    .map((c) => `<span class="c-wrap">${svgIcon(LABEL_ICON[c.label] || "dot")}<span class="c" data-label="${esc(c.label)}" contenteditable="true">${esc(c.value)}</span><button class="del-btn" title="删除联系方式" aria-label="删除联系方式" contenteditable="false">×</button></span>`)
     .join("");
 
   let html = `<header class="header">${photoMarkup()}
@@ -147,7 +147,7 @@ export function sectionMarkup(sec) {
 
   if (sec.key === "skills") {
     const skills = sec.skills
-      .map((s) => `<div class="skill"><span class="skill-text" contenteditable="true"><b>${esc(s.label)}</b><span class="skill-tags">${skillTagsHTML(s.value)}</span></span><button class="del-btn" title="删除" contenteditable="false">×</button></div>`)
+      .map((s) => `<div class="skill"><span class="skill-text" contenteditable="true"><b>${esc(s.label)}</b><span class="skill-tags">${skillTagsHTML(s.value)}</span></span><button class="del-btn" title="删除技能" aria-label="删除技能" contenteditable="false">×</button></div>`)
       .join("");
     html += `<div class="skills-grid">${skills}</div>`;
     html += `<button class="add-btn" data-tpl="skill">+ 添加技能</button>`;
@@ -171,7 +171,7 @@ export function sectionMarkup(sec) {
     html += `<button class="add-btn" data-tpl="selfeval">+ 添加要点</button>`;
   } else if (sec.key === "intent") {
     const fields = (sec.fields || []).map((f) =>
-      `<div class="intent-item"><span class="intent-label" contenteditable="true">${esc(f.label)}</span><span class="intent-value" contenteditable="true">${inlineMd(f.value)}</span><button class="del-btn" title="删除" contenteditable="false">×</button></div>`
+      `<div class="intent-item"><span class="intent-label" contenteditable="true">${esc(f.label)}</span><span class="intent-value" contenteditable="true">${inlineMd(f.value)}</span><button class="del-btn" title="删除意向" aria-label="删除意向" contenteditable="false">×</button></div>`
     ).join("");
     html += `<div class="intent-grid">${fields}</div>`;
     html += `<button class="add-btn" data-tpl="intent">+ 添加意向</button>`;

@@ -21,6 +21,7 @@ export function renderSwatches() {
   auto.className = "swatch auto";
   auto.dataset.color = "";
   auto.title = "跟随模板配色";
+  auto.setAttribute("aria-label", "跟随模板配色");
   box.appendChild(auto);
   SWATCHES.forEach((c) => {
     const b = document.createElement("button");
@@ -28,6 +29,7 @@ export function renderSwatches() {
     b.dataset.color = c;
     b.style.background = c;
     b.title = c;
+    b.setAttribute("aria-label", "强调色 " + c);
     box.appendChild(b);
   });
   updateSwatchActive();
@@ -38,7 +40,9 @@ export function updateSwatchActive() {
   const current = state.settings.accent || "";
   if (box) {
     box.querySelectorAll(".swatch").forEach((s) => {
-      s.classList.toggle("active", s.dataset.color === current);
+      const active = s.dataset.color === current;
+      s.classList.toggle("active", active);
+      s.setAttribute("aria-pressed", String(active));
     });
   }
   const picker = document.getElementById("accentPicker");

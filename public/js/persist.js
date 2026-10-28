@@ -5,6 +5,7 @@ import { applyPhoto } from "./photo.js";
 import * as api from "./api.js";
 
 let saveTimer = null;
+let draftTimer = null;
 let listTimer = null;
 let syncing = false;
 let saveTask = null;
@@ -37,10 +38,16 @@ function cacheDraft(file, md) {
   catch (e) { return false; }
 }
 
+function cacheCurrentDraft() {
+  if (!ready || !pageHasContent()) return;
+  cacheDraft(state.currentFile, serialize());
+}
+
 export function scheduleSave() {
   if (state.samplePreview || isNoSync()) return;
   state.dirty = true;
-  if (ready && pageHasContent()) cacheDraft(state.currentFile, serialize());
+  clearTimeout(draftTimer);
+  draftTimer = setTimeout(cacheCurrentDraft, 300);
   refreshTimeline();
   setStatus("保存中…");
   clearTimeout(saveTimer);
@@ -81,6 +88,7 @@ async function saveCurrent() {
 
 export async function save() {
   clearTimeout(saveTimer);
+  clearTimeout(draftTimer);
   if (saveTask) {
     const ok = await saveTask;
     return ok && state.dirty ? save() : ok;
@@ -202,6 +210,7 @@ export async function loadResume(file) {
   }
   if (md == null || !String(md).trim()) md = defaultMarkdown();
   clearTimeout(saveTimer);
+  clearTimeout(draftTimer);
   state.currentFile = target;
   if (target) {
     try { localStorage.setItem(KEYS.FILE, target); } catch (e) {}

@@ -191,6 +191,7 @@ function bindFileControls() {
       const editing = document.body.classList.toggle("editing");
       toggleBtn.textContent = editing ? "预览模式" : "编辑模式";
       toggleBtn.classList.toggle("active", !editing);
+      toggleBtn.setAttribute("aria-pressed", String(!editing));
       syncEditableState();
       if (!editing && state.dirty) save();
     });
@@ -246,21 +247,31 @@ function bindFileControls() {
 }
 
 function bindMenus() {
+  function closeMenus() {
+    document.querySelectorAll(".menu.open").forEach((m) => {
+      m.classList.remove("open");
+      const btn = m.querySelector(".menu-btn");
+      if (btn) btn.setAttribute("aria-expanded", "false");
+    });
+  }
+
   document.querySelectorAll(".menu-btn").forEach((btn) => {
+    btn.setAttribute("aria-expanded", "false");
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
       const menu = btn.closest(".menu");
       const wasOpen = menu.classList.contains("open");
-      document.querySelectorAll(".menu.open").forEach((m) => m.classList.remove("open"));
-      if (!wasOpen) menu.classList.add("open");
+      closeMenus();
+      if (!wasOpen) {
+        menu.classList.add("open");
+        btn.setAttribute("aria-expanded", "true");
+      }
     });
   });
   document.querySelectorAll(".menu-panel").forEach((p) => {
     p.addEventListener("click", (e) => e.stopPropagation());
   });
-  document.addEventListener("click", () => {
-    document.querySelectorAll(".menu.open").forEach((m) => m.classList.remove("open"));
-  });
+  document.addEventListener("click", closeMenus);
 }
 
 function syncToolbarHeight() {

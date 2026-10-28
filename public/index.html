@@ -15,7 +15,7 @@
     <div class="brand"><span class="dot"></span>在线简历编辑器</div>
 
     <div class="menu panel-menu" id="fileMenu">
-      <button class="btn ghost menu-btn">简历</button>
+      <button class="btn ghost menu-btn" aria-haspopup="true" aria-expanded="false">简历</button>
       <div class="menu-panel">
         <div class="panel-title">简历</div>
         <div class="file-list" id="fileList"></div>
@@ -33,7 +33,7 @@
     </div>
 
     <div class="menu panel-menu">
-      <button class="btn ghost menu-btn">样式</button>
+      <button class="btn ghost menu-btn" aria-haspopup="true" aria-expanded="false">样式</button>
       <div class="menu-panel">
         <label class="ctl">模板
           <select id="tplSelect">
@@ -91,18 +91,18 @@
           <span>自定义颜色</span>
         </label>
         <div class="size-group">
-          <div class="size-row"><label>一级</label><input type="range" id="szL1" min="10" max="22" step="0.5" /><span class="size-val" id="szL1v"></span></div>
-          <div class="size-row"><label>二级</label><input type="range" id="szL2" min="9" max="20" step="0.5" /><span class="size-val" id="szL2v"></span></div>
-          <div class="size-row"><label>三级</label><input type="range" id="szL3" min="8" max="18" step="0.5" /><span class="size-val" id="szL3v"></span></div>
-          <div class="size-row"><label>姓名</label><input type="range" id="szName" min="18" max="40" step="1" /><span class="size-val" id="szNamev"></span></div>
-          <div class="size-row"><label>职位</label><input type="range" id="szRole" min="10" max="22" step="0.5" /><span class="size-val" id="szRolev"></span></div>
-          <div class="size-row"><label>联系</label><input type="range" id="szContact" min="9" max="16" step="0.5" /><span class="size-val" id="szContactv"></span></div>
+          <div class="size-row"><label for="szL1">一级</label><input type="range" id="szL1" min="10" max="22" step="0.5" /><span class="size-val" id="szL1v"></span></div>
+          <div class="size-row"><label for="szL2">二级</label><input type="range" id="szL2" min="9" max="20" step="0.5" /><span class="size-val" id="szL2v"></span></div>
+          <div class="size-row"><label for="szL3">三级</label><input type="range" id="szL3" min="8" max="18" step="0.5" /><span class="size-val" id="szL3v"></span></div>
+          <div class="size-row"><label for="szName">姓名</label><input type="range" id="szName" min="18" max="40" step="1" /><span class="size-val" id="szNamev"></span></div>
+          <div class="size-row"><label for="szRole">职位</label><input type="range" id="szRole" min="10" max="22" step="0.5" /><span class="size-val" id="szRolev"></span></div>
+          <div class="size-row"><label for="szContact">联系</label><input type="range" id="szContact" min="9" max="16" step="0.5" /><span class="size-val" id="szContactv"></span></div>
         </div>
       </div>
     </div>
 
     <div class="menu panel-menu">
-      <button class="btn ghost menu-btn">时间轴</button>
+      <button class="btn ghost menu-btn" aria-haspopup="true" aria-expanded="false">时间轴</button>
       <div class="menu-panel">
         <div class="row">
           <button class="btn ghost" id="timelineToggle">时间轴排版</button>
@@ -136,12 +136,12 @@
       </div>
     </div>
 
-    <button class="btn ghost" id="panelToggle">项目列表</button>
-    <button class="btn ghost" id="kwToggle">隐藏关键词</button>
-    <button class="btn ghost" id="photoToggle">隐藏照片</button>
-    <button class="btn ghost" id="toggleEdit">预览模式</button>
+    <button class="btn ghost" id="panelToggle" aria-pressed="false">项目列表</button>
+    <button class="btn ghost" id="kwToggle" aria-pressed="false">隐藏关键词</button>
+    <button class="btn ghost" id="photoToggle" aria-pressed="false">隐藏照片</button>
+    <button class="btn ghost" id="toggleEdit" aria-pressed="false">预览模式</button>
 
-    <span class="save-state" id="saveState">加载中…</span>
+    <span class="save-state" id="saveState" role="status" aria-live="polite">加载中…</span>
 
     <label class="ctl">导出
       <select id="exportFormat">

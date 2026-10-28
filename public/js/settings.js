@@ -64,13 +64,20 @@ export function applySettings() {
   applyFont();
 
   const photoToggle = document.getElementById("photoToggle");
-  if (photoToggle) photoToggle.textContent = s.photoOff ? "显示照片" : "隐藏照片";
+  if (photoToggle) {
+    photoToggle.textContent = s.photoOff ? "显示照片" : "隐藏照片";
+    photoToggle.setAttribute("aria-pressed", String(!!s.photoOff));
+  }
   const kwToggle = document.getElementById("kwToggle");
-  if (kwToggle) kwToggle.textContent = s.keywords === false ? "显示关键词" : "隐藏关键词";
+  if (kwToggle) {
+    kwToggle.textContent = s.keywords === false ? "显示关键词" : "隐藏关键词";
+    kwToggle.setAttribute("aria-pressed", String(s.keywords === false));
+  }
   const timelineToggle = document.getElementById("timelineToggle");
   if (timelineToggle) {
     timelineToggle.textContent = s.timeline ? "普通排版" : "时间轴排版";
     timelineToggle.classList.toggle("active", !!s.timeline);
+    timelineToggle.setAttribute("aria-pressed", String(!!s.timeline));
   }
 
   document.body.dataset.tlline = s.timelineLine || "solid";
@@ -98,6 +105,7 @@ export function applySettings() {
   if (panelToggle) {
     panelToggle.textContent = s.panelOpen ? "收起项目列表" : "项目列表";
     panelToggle.classList.toggle("active", !!s.panelOpen);
+    panelToggle.setAttribute("aria-pressed", String(!!s.panelOpen));
   }
 
   const sz = s.sizes || {};

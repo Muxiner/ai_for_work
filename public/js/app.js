@@ -110,6 +110,31 @@ async function duplicateSample() {
   setStatus("已基于示例新建 " + r.file);
 }
 
+function localFileKeys(file) {
+  return [KEYS.MD + ":" + file, KEYS.PHOTO + ":" + file];
+}
+
+function clearLocalFileData(file) {
+  if (!file) return;
+  try {
+    for (const key of localFileKeys(file)) localStorage.removeItem(key);
+  } catch (e) {}
+}
+
+function migrateLocalFileData(from, to) {
+  if (!from || !to || from === to) return;
+  try {
+    const sources = localFileKeys(from);
+    const targets = localFileKeys(to);
+    sources.forEach((source, index) => {
+      const data = localStorage.getItem(source);
+      if (data == null) return;
+      localStorage.setItem(targets[index], data);
+      localStorage.removeItem(source);
+    });
+  } catch (e) {}
+}
+
 function bindFileControls() {
   const fileList = document.getElementById("fileList");
   const newFileBtn = document.getElementById("newFileBtn");
@@ -151,9 +176,10 @@ function bindFileControls() {
       if (!canMutate() || !(await preserveCurrent())) return;
       if (!state.currentFile) return;
       if (!confirm("确定删除 " + state.currentFile + " 吗？该操作不可撤销。")) return;
-      const ok = await api.deleteResume(state.currentFile);
+      const deletedFile = state.currentFile;
+      const ok = await api.deleteResume(deletedFile);
       if (!ok) { alert("删除失败"); return; }
-      try { localStorage.removeItem(KEYS.PHOTO + ":" + state.currentFile); } catch (e) {}
+      clearLocalFileData(deletedFile);
       await loadFileList();
       if (!(await loadResume(state.files[0] || null))) return;
       setStatus("已删除");
@@ -194,11 +220,7 @@ function bindFileControls() {
       const r = await api.renameResume(oldFile, name.trim());
       if (r.error === "exists") { alert("同名文件已存在"); return; }
       if (r.error) { alert("重命名失败"); return; }
-      try {
-        const pk = KEYS.PHOTO + ":" + oldFile;
-        const data = localStorage.getItem(pk);
-        if (data) { localStorage.setItem(KEYS.PHOTO + ":" + r.file, data); localStorage.removeItem(pk); }
-      } catch (e) {}
+      migrateLocalFileData(oldFile, r.file);
       await loadFileList();
       if (!(await loadResume(r.file))) return;
       setStatus("已重命名为 " + r.file);

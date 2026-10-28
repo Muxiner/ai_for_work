@@ -1,5 +1,5 @@
 import { state, splitKeywords, keywordsHTML, getPage } from "./state.js";
-import { TEMPLATES, moveSibling, renderSkillText } from "./render.js";
+import { TEMPLATES, newItemMarkup, moveSibling, renderSkillText } from "./render.js";
 import { scheduleSave } from "./persist.js";
 import { applyPhoto, photoKey, compressImage } from "./photo.js";
 
@@ -78,8 +78,8 @@ export function bindEditor() {
         container = ensure(".intent-grid", "div", "intent-grid");
       } else {
         node = document.createElement("div");
-        node.className = "item";
-        node.innerHTML = TEMPLATES[tpl] || TEMPLATES.experience;
+        node.innerHTML = newItemMarkup(tpl);
+        node = node.firstElementChild;
       }
       if (container) container.appendChild(node);
       else add.parentElement.insertBefore(node, add);

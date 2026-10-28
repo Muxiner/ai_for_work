@@ -3,53 +3,17 @@ import { parseMarkdown } from "./markdown.js";
 import { svgIcon, LABEL_ICON, SECTION_ICON } from "./icons.js";
 
 export const TEMPLATES = {
-  experience: `
-    <button class="del-btn" title="删除">×</button>
-    <div class="item-row">
-      <div>
-        <div class="item-title" contenteditable="true">公司名称</div>
-        <div class="item-sub" contenteditable="true">职位名称</div>
-      </div>
-      <div class="item-date" contenteditable="true">2024.01 – 至今</div>
-    </div>
-    <ul class="item-desc" contenteditable="true">
-      <li>在这里描述你的工作职责与成果。</li>
-    </ul>`,
-  projects: `
-    <button class="del-btn" title="删除">×</button>
-    <div class="item-row">
-      <div>
-        <div class="item-title" contenteditable="true">项目名称</div>
-        <div class="item-sub" contenteditable="true">担任角色</div>
-      </div>
-      <div class="item-date" contenteditable="true">2024.01 – 2024.06</div>
-    </div>
-    <ul class="item-desc" contenteditable="true">
-      <li>在这里描述项目背景、你的贡献与成果。</li>
-    </ul>`,
-  education: `
-    <button class="del-btn" title="删除">×</button>
-    <div class="item-row">
-      <div>
-        <div class="item-title" contenteditable="true">学校名称</div>
-        <div class="item-sub" contenteditable="true">专业 · 学历</div>
-      </div>
-      <div class="item-date" contenteditable="true">2015.09 – 2019.06</div>
-    </div>
-    <div class="item-kw"><span class="kw-label">关键词</span><span class="item-kw-text" contenteditable="true"><span class="kw">主修课程</span></span></div>`,
-  certificates: `
-    <button class="del-btn" title="删除">×</button>
-    <div class="item-row">
-      <div>
-        <div class="item-title" contenteditable="true">证书名称</div>
-        <div class="item-sub" contenteditable="true">颁发机构</div>
-      </div>
-      <div class="item-date" contenteditable="true">2024.06</div>
-    </div>`,
   skill: `<span class="skill-text" contenteditable="true"><b>分类</b><span class="skill-tags"><span class="skill-tag">技能关键词</span></span></span><button class="del-btn" title="删除" contenteditable="false">×</button>`,
   honor: `<span class="honor-text" contenteditable="true">荣誉名称</span>` + honorActions(),
   selfeval: `<span class="honor-text" contenteditable="true">要点描述</span>` + honorActions(),
   intent: `<span class="intent-label" contenteditable="true">意向岗位</span><span class="intent-value" contenteditable="true">工程师</span><button class="del-btn" title="删除" contenteditable="false">×</button>`,
+};
+
+const NEW_ITEM_SEEDS = {
+  experience: { title: "公司名称", sub: "职位名称", date: "2024.01 – 至今", bullets: ["在这里描述你的工作职责与成果。"] },
+  projects: { title: "项目名称", sub: "担任角色", date: "2024.01 – 2024.06", bullets: ["在这里描述项目背景、你的贡献与成果。"] },
+  education: { title: "学校名称", sub: "专业 · 学历", date: "2015.09 – 2019.06", keywords: ["主修课程"], bullets: [] },
+  certificates: { title: "证书名称", sub: "颁发机构", date: "2024.06", bullets: [] },
 };
 
 export function photoMarkup() {
@@ -129,6 +93,17 @@ export function itemMarkup(it) {
     ${kws}
     ${bullets}
   </div>`;
+}
+
+export function newItemMarkup(key) {
+  const seed = NEW_ITEM_SEEDS[key] || NEW_ITEM_SEEDS.experience;
+  return itemMarkup({
+    title: seed.title,
+    sub: seed.sub,
+    date: seed.date,
+    keywords: [...(seed.keywords || [])],
+    bullets: [...seed.bullets],
+  });
 }
 
 export function moveSibling(el, cls, dir) {

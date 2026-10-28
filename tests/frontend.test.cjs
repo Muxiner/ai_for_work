@@ -19,7 +19,7 @@ async function setup(options = {}) {
     async writeResume(file, md) { writes.push({ file, md }); files.set(file, md); return true; },
     async readSample() { return '# sample'; },
     async listResumes() { return [...files.keys()]; },
-    acceptRevision: noop, hasConflict: () => false, beacon: noop,
+    acceptRevision: noop, hasConflict: () => false, lastError: () => 0, beacon: noop,
   };
   const location = { search: '', reload() { location.reloaded = true; } };
   const document = {
@@ -161,9 +161,11 @@ test('API keeps the accepted revision until an external read is applied', async 
   revision = '"v2"'; reads = '# external'; await api.readResume('mine.md', false);
   assert.equal(await api.writeResume('mine.md', '# mine'), false);
   assert.equal(received, '"v1"'); assert.equal(api.hasConflict('mine.md'), true);
+  assert.equal(api.lastError('mine.md'), 412);
   api.acceptRevision('mine.md', '# external');
   assert.equal(await api.writeResume('mine.md', '# merged'), true);
   assert.equal(received, '"v2"'); assert.equal(api.hasConflict('mine.md'), false);
+  assert.equal(api.lastError('mine.md'), 0);
 });
 
 test('nosync blocks every API mutation, including beacon', async () => {

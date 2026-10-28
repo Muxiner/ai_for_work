@@ -80,7 +80,10 @@ async function saveCurrent() {
     setStatus(state.dirty ? "仍有修改待保存" : (state.hasServer && file ? "已保存到 " + file : "已保存到本地"));
   } else {
     state.dirty = true;
-    setStatus(api.hasConflict(file) ? "文件已被修改，请先导出当前内容再重新加载" :
+    const code = typeof api.lastError === "function" ? api.lastError(file) : 0;
+    setStatus(code === 409 ? "保存被拒绝：当前内容为空，未覆盖原文件" :
+      code === 412 ? "文件已被外部修改，请先导出当前内容再重新加载" :
+      code === 503 ? "无法连接本地服务，草稿已存本地，恢复连接后会重试" :
       (cached ? "保存失败，草稿已存本地，将重试" : "保存失败，草稿未能缓存，请勿关闭页面"));
   }
   return ok;

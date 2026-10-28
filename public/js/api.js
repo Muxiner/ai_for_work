@@ -1,6 +1,7 @@
 const revisions = new Map();
 const observed = new Map();
 const conflicts = new Set();
+const failures = new Map();
 
 async function request(url, options = {}) {
   if (options.method && options.method !== "GET" &&
@@ -13,11 +14,14 @@ async function request(url, options = {}) {
 
 export function hasConflict(file) { return conflicts.has(file); }
 
+export function lastError(file) { return failures.get(file) || 0; }
+
 export function acceptRevision(file, md) {
   const latest = observed.get(file);
   if (latest && latest.md === md) {
     revisions.set(file, latest.revision);
     conflicts.delete(file);
+    failures.delete(file);
   }
 }
 
@@ -78,8 +82,14 @@ export async function writeResume(file, md) {
     headers: { "Content-Type": "text/markdown; charset=utf-8", "If-Match": revisions.get(file) || "" },
     body: md,
   });
-  if (res.ok) { revisions.set(file, res.headers.get("ETag")); conflicts.delete(file); }
-  else if (res.status === 409 || res.status === 412) conflicts.add(file);
+  if (res.ok) {
+    revisions.set(file, res.headers.get("ETag"));
+    conflicts.delete(file);
+    failures.delete(file);
+  } else {
+    failures.set(file, res.status);
+    if (res.status === 409 || res.status === 412) conflicts.add(file);
+  }
   return res.ok;
 }
 

@@ -263,6 +263,24 @@ function bindMenus() {
   });
 }
 
+function syncToolbarHeight() {
+  const toolbar = document.querySelector(".toolbar");
+  if (!toolbar) return;
+  const height = Math.ceil(toolbar.getBoundingClientRect().height);
+  document.documentElement.style.setProperty("--toolbar-h", height + "px");
+}
+
+function watchToolbarHeight() {
+  syncToolbarHeight();
+  const toolbar = document.querySelector(".toolbar");
+  if (!toolbar) return;
+  if (typeof ResizeObserver === "function") {
+    new ResizeObserver(syncToolbarHeight).observe(toolbar);
+  } else {
+    window.addEventListener("resize", syncToolbarHeight);
+  }
+}
+
 async function init() {
   if (isNoSync()) {
     document.body.classList.remove("editing");
@@ -311,6 +329,7 @@ async function init() {
 
   renderSwatches();
   applySettings();
+  watchToolbarHeight();
   syncEditableState();
   await populateSamples();
 

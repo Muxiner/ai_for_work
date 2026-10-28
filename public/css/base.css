@@ -13,6 +13,7 @@
   --sz-1: 15px; --sz-2: 13px; --sz-3: 11.5px;
   --sz-name: 30px; --sz-role: 15px; --sz-contact: 12.5px;
   --fs-scale: 1;
+  --toolbar-h: 64px;
 }
 
 * { box-sizing: border-box; }
@@ -90,7 +91,7 @@ html, body {
 .menu.open .menu-panel { display: flex; }
 .menu.panel-menu .menu-panel {
   position: fixed;
-  top: 64px;
+  top: var(--toolbar-h);
   right: 0;
   bottom: 0;
   left: auto;
@@ -280,7 +281,7 @@ body.readonly .photo-del { display: none !important; }
 
 .side-panel {
   position: fixed;
-  top: 64px;
+  top: var(--toolbar-h);
   left: 0;
   bottom: 0;
   width: 220px;

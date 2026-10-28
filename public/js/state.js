@@ -6,8 +6,10 @@ export const KEYS = {
 };
 
 export const CUSTOM_FONT_FAMILY = "ResumeCustomFont";
+export const SETTINGS_VERSION = 1;
 
 export const DEFAULT_SETTINGS = {
+  version: SETTINGS_VERSION,
   template: "classic",
   fontLatin: "system",
   fontCJK: "system",
@@ -24,6 +26,33 @@ export const DEFAULT_SETTINGS = {
   sizes: { l1: 15, l2: 13, l3: 11.5, name: 30, role: 15, contact: 12.5 },
 };
 
+export function defaultSettings() {
+  return {
+    ...DEFAULT_SETTINGS,
+    timelineTypes: [...DEFAULT_SETTINGS.timelineTypes],
+    hiddenSections: [...DEFAULT_SETTINGS.hiddenSections],
+    sizes: { ...DEFAULT_SETTINGS.sizes },
+  };
+}
+
+export function mergeSettings(saved) {
+  const source = saved && typeof saved === "object" && !Array.isArray(saved) ? saved : {};
+  const base = defaultSettings();
+  const merged = { ...base, ...source };
+  merged.version = SETTINGS_VERSION;
+  merged.sizes = { ...base.sizes, ...(source.sizes && typeof source.sizes === "object" ? source.sizes : {}) };
+  Object.keys(base.sizes).forEach((key) => {
+    if (typeof merged.sizes[key] !== "number" || !Number.isFinite(merged.sizes[key])) merged.sizes[key] = base.sizes[key];
+  });
+  merged.timelineTypes = Array.isArray(source.timelineTypes)
+    ? source.timelineTypes.filter((key) => typeof key === "string")
+    : [...base.timelineTypes];
+  merged.hiddenSections = Array.isArray(source.hiddenSections)
+    ? source.hiddenSections.filter((title) => typeof title === "string")
+    : [...base.hiddenSections];
+  return merged;
+}
+
 export const state = {
   hasServer: false,
   dirty: false,
@@ -33,7 +62,7 @@ export const state = {
   sampleFiles: [],
   sampleFile: null,
   samplePreview: null,
-  settings: { ...DEFAULT_SETTINGS },
+  settings: defaultSettings(),
   hasCustomFont: false,
   customFontDataUrl: null,
 };
@@ -132,8 +161,4 @@ export function safeFileName(s) {
 export function setStatus(msg) {
   const el = document.getElementById("saveState");
   if (el) el.textContent = msg;
-}
-
-export function saveSettings() {
-  try { localStorage.setItem(KEYS.SETTINGS, JSON.stringify(state.settings)); } catch (e) {}
 }

@@ -1,4 +1,4 @@
-import { state, KEYS, setStatus, esc } from "./state.js";
+import { state, KEYS, setStatus, esc, defaultSettings, mergeSettings } from "./state.js";
 import * as api from "./api.js";
 import { parseMarkdown, serialize } from "./markdown.js";
 import { renderResume, syncEditableState } from "./render.js";
@@ -294,8 +294,10 @@ async function init() {
   }
 
   try {
-    state.settings = { ...state.settings, ...JSON.parse(localStorage.getItem(KEYS.SETTINGS) || "{}") };
-  } catch (e) {}
+    state.settings = mergeSettings(JSON.parse(localStorage.getItem(KEYS.SETTINGS) || "{}"));
+  } catch (e) {
+    state.settings = defaultSettings();
+  }
 
   try {
     state.files = await api.listResumes();

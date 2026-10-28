@@ -242,6 +242,17 @@ function bindMenus() {
 }
 
 async function init() {
+  if (isNoSync()) {
+    document.body.classList.remove("editing");
+    document.body.classList.add("readonly");
+    const banner = document.getElementById("readonlyBanner");
+    if (banner) banner.hidden = false;
+    ["toggleEdit", "newFileBtn", "renameFileBtn", "delFileBtn", "restoreBackupBtn", "dupSampleBtn"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.hidden = true;
+    });
+  }
+
   try {
     state.settings = { ...state.settings, ...JSON.parse(localStorage.getItem(KEYS.SETTINGS) || "{}") };
   } catch (e) {}

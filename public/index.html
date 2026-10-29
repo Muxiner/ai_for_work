@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="/css/timeline.css" />
 <link rel="stylesheet" href="/css/print.css" />
 <link rel="stylesheet" href="/css/backup.css" />
+<link rel="stylesheet" href="/css/dialog.css" />
 </head>
 <body class="editing" data-template="classic">
   <div class="toolbar">
@@ -200,6 +201,22 @@
       <button class="btn ghost" id="backupRefresh">刷新</button>
       <button class="btn primary" id="backupRestore" disabled>恢复此备份</button>
     </div>
+  </dialog>
+
+  <dialog class="app-dialog" id="appDialog" aria-labelledby="appDialogTitle" aria-describedby="appDialogMessage">
+    <form class="app-dialog-form" id="appDialogForm">
+      <h2 class="app-dialog-title" id="appDialogTitle"></h2>
+      <p class="app-dialog-message" id="appDialogMessage"></p>
+      <label class="app-dialog-field" id="appDialogField" hidden>
+        <span id="appDialogLabel"></span>
+        <input class="app-dialog-input" id="appDialogInput" type="text" autocomplete="off" spellcheck="false" />
+      </label>
+      <p class="app-dialog-error" id="appDialogError" role="alert" hidden></p>
+      <div class="app-dialog-actions">
+        <button class="btn ghost" type="button" id="appDialogCancel">取消</button>
+        <button class="btn primary" type="submit" id="appDialogOk">确定</button>
+      </div>
+    </form>
   </dialog>
 
   <script type="text/markdown" id="defaultResume">

@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="/css/templates.css" />
 <link rel="stylesheet" href="/css/timeline.css" />
 <link rel="stylesheet" href="/css/print.css" />
+<link rel="stylesheet" href="/css/backup.css" />
 </head>
 <body class="editing" data-template="classic">
   <div class="toolbar">
@@ -27,7 +28,7 @@
         <div class="panel-title">示例（点击预览）</div>
         <div class="file-list" id="sampleList"></div>
         <div class="row">
-          <button class="btn ghost" id="restoreBackupBtn">恢复备份</button>
+          <button class="btn ghost" id="backupHistoryBtn">备份历史</button>
         </div>
       </div>
     </div>
@@ -178,6 +179,28 @@
     <main class="page" id="page"></main>
     <p class="hint" id="hint">所有内容均可直接点击编辑 · 点击照片框可上传大头照 · 文本保存在 docs/ 目录 · 导出 PDF 时选择「另存为 PDF」</p>
   </div>
+
+  <dialog class="backup-dialog" id="backupDialog" aria-labelledby="backupTitle">
+    <div class="backup-head">
+      <div>
+        <h2 id="backupTitle">备份历史</h2>
+        <p class="backup-sub" id="backupSub"></p>
+      </div>
+      <button class="backup-close" id="backupClose" aria-label="关闭备份历史">×</button>
+    </div>
+    <div class="backup-body">
+      <div class="backup-list" id="backupList" aria-label="备份列表"></div>
+      <section class="backup-preview" aria-live="polite">
+        <h3 class="backup-preview-title" id="backupPreviewTitle">选择一份备份</h3>
+        <pre class="backup-preview-text" id="backupPreviewText"></pre>
+      </section>
+    </div>
+    <div class="backup-foot">
+      <span class="backup-hint" id="backupHint">恢复前会自动备份当前内容</span>
+      <button class="btn ghost" id="backupRefresh">刷新</button>
+      <button class="btn primary" id="backupRestore" disabled>恢复此备份</button>
+    </div>
+  </dialog>
 
   <script type="text/markdown" id="defaultResume">
 # 张三

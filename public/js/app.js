@@ -10,6 +10,7 @@ import { renderSwatches, applySettings, bindControls } from "./settings.js";
 import { bindEditor } from "./editor.js";
 import { bindExport, renderImageDataUrl } from "./exporter.js";
 import { bindHistoryControls } from "./undo.js";
+import { bindBackupHistory } from "./backups.js";
 
 window.__renderImageDataUrl = renderImageDataUrl;
 window.__serialize = serialize;
@@ -228,25 +229,7 @@ function bindFileControls() {
       setStatus("已重命名为 " + r.file);
     });
   }
-
-  const restoreBackupBtn = document.getElementById("restoreBackupBtn");
-  if (restoreBackupBtn) {
-    restoreBackupBtn.addEventListener("click", async () => {
-      if (!canMutate() || !(await preserveCurrent())) return;
-      if (!state.currentFile) return;
-      let backups = [];
-      try { backups = await api.listBackups(state.currentFile); } catch (e) {}
-      if (!backups.length) { alert("当前简历没有可用的备份。"); return; }
-      const latest = backups[0];
-      if (!confirm("确定用最近一次备份恢复「" + state.currentFile + "」吗？\n备份：" + latest)) return;
-      const ok = await api.restoreBackup(state.currentFile, latest);
-      if (!ok) { alert("恢复失败"); return; }
-      if (!(await loadResume(state.currentFile))) return;
-      setStatus("已从备份恢复");
-    });
-  }
 }
-
 function bindMenus() {
   function closeMenus() {
     document.querySelectorAll(".menu.open").forEach((m) => {
@@ -299,7 +282,7 @@ async function init() {
     document.body.classList.add("readonly");
     const banner = document.getElementById("readonlyBanner");
     if (banner) banner.hidden = false;
-    ["toggleEdit", "newFileBtn", "renameFileBtn", "delFileBtn", "restoreBackupBtn", "dupSampleBtn"].forEach((id) => {
+    ["toggleEdit", "newFileBtn", "renameFileBtn", "delFileBtn", "dupSampleBtn"].forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.hidden = true;
     });
@@ -361,4 +344,5 @@ bindControls();
 bindFileControls();
 bindMenus();
 bindHistoryControls();
+bindBackupHistory();
 init();

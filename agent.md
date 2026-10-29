@@ -47,6 +47,8 @@ npm run serve      # = node server.js，不自动重启
         ├── icons.js       # SVG 图标表
         ├── markdown.js    # parseMarkdown / serialize
         ├── render.js      # renderResume、条目模板、时间轴渲染、可编辑态
+        ├── history.js     # 撤销/重做快照栈（上限 100，保存时记录）
+        ├── undo.js        # 撤销/重做按钮、快捷键、选区恢复
         ├── api.js         # 服务端 API + SSE 订阅
         ├── persist.js     # 保存/同步/文件列表/加载简历
         ├── photo.js       # 照片读写与压缩
@@ -56,7 +58,7 @@ npm run serve      # = node server.js，不自动重启
         └── exporter.js    # PDF / PNG / JPG 导出
 ```
 
-模块依赖（单向，无环）：`state → icons → markdown → render → persist → editor`，`fonts/settings → render`，`exporter → persist`，`app` 汇总。
+模块依赖（单向，无环）：`state → icons → markdown → render → persist → editor`，`fonts/settings → render`，`exporter → persist`，`persist → history`，`undo → persist/history`，`app` 汇总。
 
 ## 数据流
 
@@ -163,6 +165,7 @@ index.html / public/** 被修改 ──fs.watch──► SSE {reload:true} ─�
   - 节点 `timelineNode`：dot / arrow / square / diamond / none（`data-tlnode`）
   - 布局 `timelineLayout`：right / dateLeft / stacked / card（`data-tllayout`）
 - **编辑交互**：所有文本 `contenteditable`；条目悬停出现 `↑ ↓ ×`；章节标题悬停出现 `↑ ↓`；各章节「+ 添加」；技能/联系方式可单独删除
+- **撤销 / 重做**：`history.js` 保存 Markdown 快照（保存时记录，上限 100 条）；`undo.js` 绑定顶栏 ↶ ↷ 与 `Ctrl/⌘+Z`、`Ctrl/⌘+Shift+Z`（`Ctrl+Y`），恢复时重新渲染并恢复光标；切换简历、外部同步或示例预览返回后重置历史；只读/预览模式禁用
 - **条目顺序**：遵循 Markdown / DOM 顺序，手动上下移动后持久化，不再自动按日期覆盖用户排序。
 - **多简历**：按钮列表切换、新建、**重命名**（`POST /api/rename`）、删除
 - **顶栏收纳**：分组按钮「简历 / 样式 / 时间轴」以**右侧滑出面板**呈现（`public/index.html` 中 `div.menu.panel-menu > .menu-panel`，CSS 用 `position: fixed` 定位到右侧，同一时刻仅展开一个）；「简历」面板把**简历列表（按钮切换/新建/重命名/删除）+ 示例（按钮预览/恢复备份）**合并在一起；「项目列表 / 隐藏关键词 / 隐藏照片 / 预览模式」直接内联在顶栏；「导出」为内联

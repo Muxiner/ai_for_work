@@ -50,13 +50,24 @@ async function setup(options = {}) {
   });
   const { state } = await load('state.js'); state.hasServer = true;
   const persist = await load('persist.js'); await persist.loadResume('mine.md');
+  const history = await load('history.js');
   const app = await load('app.js'); app.bindFileControls();
-  return { state, persist, app, api, files, cache, writes, listeners, location,
+  return { state, persist, app, api, files, cache, writes, listeners, location, history,
     get view() { return view; }, get status() { return status; },
     edit(md) { view = md; persist.scheduleSave(); },
     switchTo(file) { return listeners['fileList:click']({ target: { closest: () => ({ dataset: { file } }) } }); },
   };
 }
+
+test('loading a document resets history and saving creates undo points', async () => {
+  const app = await setup();
+  assert.equal(app.history.canUndo(), false);
+  app.edit('# changed');
+  assert.equal(await app.persist.save(), true);
+  assert.equal(app.history.canUndo(), true);
+  assert.equal(await app.persist.loadResume('other.md'), true);
+  assert.equal(app.history.canUndo(), false);
+});
 
 test('failed saves keep dirty state, cache by file, and block switching and preview', async () => {
   const app = await setup();

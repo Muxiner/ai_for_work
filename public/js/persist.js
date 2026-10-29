@@ -3,6 +3,7 @@ import { serialize, parseMarkdown } from "./markdown.js";
 import { renderResume, syncEditableState, refreshTimeline } from "./render.js";
 import { applyPhoto } from "./photo.js";
 import * as api from "./api.js";
+import * as history from "./history.js";
 
 let saveTimer = null;
 let draftTimer = null;
@@ -63,6 +64,7 @@ async function saveCurrent() {
   const file = state.currentFile;
   const generation = loadGeneration;
   const md = serialize();
+  history.record(md);
   const cached = cacheDraft(file, md);
   let ok = false;
   try {
@@ -139,6 +141,7 @@ export async function syncFromFile(file) {
     renderResume(parseMarkdown(md));
     applyPhoto();
     syncEditableState();
+    history.reset(serialize());
     setStatus("已从 " + state.currentFile + " 同步");
   } catch (e) {
   } finally {
@@ -228,6 +231,7 @@ export async function loadResume(file) {
   renderResume(parseMarkdown(md));
   applyPhoto();
   syncEditableState();
+  history.reset(serialize());
   state.dirty = recovered;
   state.saveFailed = false;
   ready = true;

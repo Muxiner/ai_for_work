@@ -41,6 +41,7 @@ npm run serve      # = node server.js，不自动重启
     │   ├── templates.css  # 模板：classic / modern / tech / gradient / minimal / center / card / compact / elegant / sidebar
     │   ├── timeline.css   # 时间轴：线条 / 节点 / 布局
     │   ├── backup.css     # 备份历史面板
+    │   ├── dialog.css     # 应用内确认/输入/提示对话框
     │   └── print.css      # @page 与打印样式
     └── js/                # ES Modules
         ├── app.js         # 入口：绑定、初始化
@@ -51,6 +52,7 @@ npm run serve      # = node server.js，不自动重启
         ├── history.js     # 撤销/重做快照栈（上限 100，保存时记录）
         ├── undo.js        # 撤销/重做按钮、快捷键、选区恢复
         ├── backups.js     # 备份历史面板（列表/预览/恢复）
+        ├── dialog.js      # 应用内 confirm / prompt / alert
         ├── api.js         # 服务端 API + SSE 订阅
         ├── persist.js     # 保存/同步/文件列表/加载简历
         ├── photo.js       # 照片读写与压缩
@@ -60,7 +62,7 @@ npm run serve      # = node server.js，不自动重启
         └── exporter.js    # PDF / PNG / JPG 导出
 ```
 
-模块依赖（单向，无环）：`state → icons → markdown → render → persist → editor`，`fonts/settings → render`，`exporter → persist`，`persist → history`，`undo → persist/history`，`app` 汇总。
+模块依赖（单向，无环）：`state → icons → markdown → render → persist → editor`，`fonts/settings → render`，`exporter → persist`，`persist → history`，`undo → persist/history`，`dialog` 无依赖，`app/persist/backups/editor/settings/exporter → dialog`，`app` 汇总。
 
 ## 数据流
 
@@ -168,6 +170,7 @@ index.html / public/** 被修改 ──fs.watch──► SSE {reload:true} ─�
   - 节点 `timelineNode`：dot / arrow / square / diamond / none（`data-tlnode`）
   - 布局 `timelineLayout`：right / dateLeft / stacked / card（`data-tllayout`）
 - **编辑交互**：所有文本 `contenteditable`；条目悬停出现 `↑ ↓ ×`；章节标题悬停出现 `↑ ↓`；各章节「+ 添加」；技能/联系方式可单独删除
+- **应用内对话框**：`dialog.js` 提供 Promise 化的 `confirmDialog / promptDialog / alertDialog`，共用 `#appDialog` 原生 `<dialog>`；输入框支持必填校验，Enter 提交、Esc/取消/遮罩关闭；没有对话框 DOM 时自动降级到浏览器原生 API（方便测试）
 - **撤销 / 重做**：`history.js` 保存 Markdown 快照（保存时记录，上限 100 条）；`undo.js` 绑定顶栏 ↶ ↷ 与 `Ctrl/⌘+Z`、`Ctrl/⌘+Shift+Z`（`Ctrl+Y`），恢复时重新渲染并恢复光标；切换简历、外部同步或示例预览返回后重置历史；只读/预览模式禁用
 - **条目顺序**：遵循 Markdown / DOM 顺序，手动上下移动后持久化，不再自动按日期覆盖用户排序。
 - **多简历**：按钮列表切换、新建、**重命名**（`POST /api/rename`）、删除

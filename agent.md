@@ -40,6 +40,7 @@ npm run serve      # = node server.js，不自动重启
     │   ├── base.css       # 变量/重置/工具栏/页面/页眉/照片/区块/编辑控件/标签
     │   ├── templates.css  # 模板：classic / modern / tech / gradient / minimal / center / card / compact / elegant / sidebar
     │   ├── timeline.css   # 时间轴：线条 / 节点 / 布局
+    │   ├── backup.css     # 备份历史面板
     │   └── print.css      # @page 与打印样式
     └── js/                # ES Modules
         ├── app.js         # 入口：绑定、初始化
@@ -49,6 +50,7 @@ npm run serve      # = node server.js，不自动重启
         ├── render.js      # renderResume、条目模板、时间轴渲染、可编辑态
         ├── history.js     # 撤销/重做快照栈（上限 100，保存时记录）
         ├── undo.js        # 撤销/重做按钮、快捷键、选区恢复
+        ├── backups.js     # 备份历史面板（列表/预览/恢复）
         ├── api.js         # 服务端 API + SSE 订阅
         ├── persist.js     # 保存/同步/文件列表/加载简历
         ├── photo.js       # 照片读写与压缩
@@ -85,6 +87,7 @@ index.html / public/** 被修改 ──fs.watch──► SSE {reload:true} ─�
 | GET | `/api/samples` | 列出 `samples/` 所有 `.md` → `{ files: [] }` |
 | GET | `/api/sample?file=x.md` | 读取示例内容（只读） |
 | POST | `/api/backup?file=x.md` | 备份当前简历到 `docs/.backups/`，返回备份名 |
+| GET | `/api/backup?file=x.md&backup=…` | 读取指定备份内容（仅限该简历自己的备份） |
 | GET | `/api/backups?file=x.md` | 列出该简历的备份（新→旧） |
 | POST | `/api/restore?file=x.md&backup=…` | 用备份覆盖恢复（恢复前会再备份一次） |
 | GET | `/api/events` | SSE 推送 `{ file, at }` 或 `{ reload: true }` |
@@ -168,14 +171,14 @@ index.html / public/** 被修改 ──fs.watch──► SSE {reload:true} ─�
 - **撤销 / 重做**：`history.js` 保存 Markdown 快照（保存时记录，上限 100 条）；`undo.js` 绑定顶栏 ↶ ↷ 与 `Ctrl/⌘+Z`、`Ctrl/⌘+Shift+Z`（`Ctrl+Y`），恢复时重新渲染并恢复光标；切换简历、外部同步或示例预览返回后重置历史；只读/预览模式禁用
 - **条目顺序**：遵循 Markdown / DOM 顺序，手动上下移动后持久化，不再自动按日期覆盖用户排序。
 - **多简历**：按钮列表切换、新建、**重命名**（`POST /api/rename`）、删除
-- **顶栏收纳**：分组按钮「简历 / 样式 / 时间轴」以**右侧滑出面板**呈现（`public/index.html` 中 `div.menu.panel-menu > .menu-panel`，CSS 用 `position: fixed` 定位到右侧，同一时刻仅展开一个）；「简历」面板把**简历列表（按钮切换/新建/重命名/删除）+ 示例（按钮预览/恢复备份）**合并在一起；「项目列表 / 隐藏关键词 / 隐藏照片 / 预览模式」直接内联在顶栏；「导出」为内联
+- **顶栏收纳**：分组按钮「简历 / 样式 / 时间轴」以**右侧滑出面板**呈现（`public/index.html` 中 `div.menu.panel-menu > .menu-panel`，CSS 用 `position: fixed` 定位到右侧，同一时刻仅展开一个）；「简历」面板把**简历列表（按钮切换/新建/重命名/删除）+ 示例（按钮预览）+ 备份历史**合并在一起；「项目列表 / 隐藏关键词 / 隐藏照片 / 预览模式」直接内联在顶栏；「导出」为内联
 - **项目列表（左侧面板）**：顶栏「显示 → 项目列表」展开左侧面板，列出**标准章节目录**（求职意向 / 个人简介 / 自我评价 / 工作经历 / 实习经历 / 项目经历 / 教育经历 / 资格证书 / 获得荣誉 / 技能特长 / 在校经历，均带图标）以及简历中已有的自定义章节。
   - 勾选**已有**章节 → 显示；取消 → 隐藏（按标题存于 `settings.hiddenSections`）
   - 勾选**缺失**章节 → 自动新增该章节（默认内容，`render.js` 的 `addSection`）
   - 每行左侧**序号输入框**：输入数字即可把该章节移动到对应位置（`render.js` 的 `moveSectionTo`），其余章节自动顺延
   - 面板开合状态存于 `settings.panelOpen`；隐藏项在预览/导出（PDF/PNG/JPG）中同样不显示
 - **示例简历（预览模式）**：「简历」面板的示例来自服务端 `samples/*.md`（嵌入式软件工程师 / 硬件工程师 / 软件工程师 / 行政职员 / 应届毕业生 / 外贸专员 / 外贸助理 等）。**点击示例 = 只读预览**（`state.samplePreview`）：仅内存渲染、不覆盖当前简历、不写文件、不备份；预览时顶部横幅提示并提供「基于示例新建」（输入文件名 → 在 `docs/` 创建副本并切换）与「返回我的简历」。预览期间保存被禁用（`persist.js` 中 `save/flush/scheduleSave` 均跳过）；新增职业示例只需往 `samples/` 放一个 `.md`
-- **覆盖保护**：删除简历前、以及写入覆盖前（每分钟最多一次）会自动备份到 `docs/.backups/<文件名>.<时间戳>.md`；「恢复备份」可用最近一次备份还原当前简历。每份简历最多保留最近 30 份备份，超出时自动清理最旧的；示例不参与备份
+- **覆盖保护**：删除简历前、以及写入覆盖前（每分钟最多一次）会自动备份到 `docs/.backups/<文件名>.<时间戳>.md`；「备份历史」面板按时间列出最近 30 份，可预览 Markdown 并恢复任意一份（恢复前会再备份当前内容）；示例不参与备份
 - **防空写/防丢失**：客户端首次渲染完成前（`ready`）不保存，页面无内容（无姓名且无章节）时 `save()/flush()` 跳过写入；`loadResume` 读到空内容时回退默认模板；服务端 `POST /api/resume` 拒绝以空内容覆盖非空文件（409），并在覆盖前按每分钟一次自动备份
 - **导出**：顶栏「导出格式」下拉选 PDF / PNG / JPG + 「导出」按钮
   - PDF：`window.print()`，导出前把 `document.title` 设为「姓名-岗位」作为默认文件名

@@ -12,6 +12,7 @@ let syncing = false;
 let saveTask = null;
 let loadGeneration = 0;
 let ready = false;
+let lastWritten = null;
 
 function pageHasContent() {
   const page = document.getElementById("page");
@@ -74,6 +75,7 @@ async function saveCurrent() {
   }
   if (generation !== loadGeneration || file !== state.currentFile) return ok;
   if (ok) {
+    lastWritten = { file, md };
     state.dirty = serialize() !== md;
     state.saveFailed = false;
     state.lastSaveAt = Date.now();
@@ -133,6 +135,10 @@ export async function syncFromFile(file) {
     if (generation !== loadGeneration || currentFile !== state.currentFile || state.samplePreview || saveTask) return;
     if (md == null) return;
     if (md.trim() === serialize().trim()) { api.acceptRevision(currentFile, md); return; }
+    if (lastWritten && lastWritten.file === currentFile && md === lastWritten.md) {
+      api.acceptRevision(currentFile, md);
+      return;
+    }
     if (state.dirty) {
       setStatus("文件被外部修改（本页有未保存改动）");
       return;
@@ -141,6 +147,7 @@ export async function syncFromFile(file) {
     renderResume(parseMarkdown(md));
     applyPhoto();
     syncEditableState();
+    lastWritten = null;
     history.reset(serialize());
     setStatus("已从 " + state.currentFile + " 同步");
   } catch (e) {
@@ -225,6 +232,7 @@ export async function loadResume(file) {
   clearTimeout(saveTimer);
   clearTimeout(draftTimer);
   state.currentFile = target;
+  lastWritten = null;
   if (target) {
     try { localStorage.setItem(KEYS.FILE, target); } catch (e) {}
   }

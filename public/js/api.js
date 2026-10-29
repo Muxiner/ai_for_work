@@ -59,6 +59,15 @@ export async function listBackups(file) {
   return data.backups || [];
 }
 
+export async function readBackup(file, backup) {
+  const res = await request(
+    "/api/backup?file=" + encodeURIComponent(file) + "&backup=" + encodeURIComponent(backup),
+    { cache: "no-store" }
+  );
+  if (!res.ok) return null;
+  return await res.text();
+}
+
 export async function restoreBackup(file, backup) {
   const res = await request(
     "/api/restore?file=" + encodeURIComponent(file) + "&backup=" + encodeURIComponent(backup),

@@ -401,11 +401,35 @@ function handleRequest(req, res) {
     return;
   }
 
-  if (url === "/api/backup" && req.method === "POST") {
+  if (url === "/api/backup") {
     const file = safeName(u.searchParams.get("file") || "");
-    if (!file) { res.writeHead(400); res.end("bad file"); return; }
-    const backup = createBackup(file);
-    sendJson(res, { ok: !!backup, backup }, backup ? 200 : 500);
+    if (req.method === "GET") {
+      const backup = safeName(u.searchParams.get("backup") || "");
+      if (!file || !backup || !isBackupFor(backup, file)) {
+        res.writeHead(400); res.end("bad backup"); return;
+      }
+      fs.readFile(path.join(BACKUP_DIR, backup), "utf8", (err, data) => {
+        if (err) {
+          res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+          res.end("not found");
+          return;
+        }
+        res.writeHead(200, {
+          "Content-Type": "text/markdown; charset=utf-8",
+          "Cache-Control": "no-store",
+        });
+        res.end(data);
+      });
+      return;
+    }
+    if (req.method === "POST") {
+      if (!file) { res.writeHead(400); res.end("bad file"); return; }
+      const backup = createBackup(file);
+      sendJson(res, { ok: !!backup, backup }, backup ? 200 : 500);
+      return;
+    }
+    res.writeHead(405);
+    res.end();
     return;
   }
 

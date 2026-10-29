@@ -142,6 +142,25 @@ test('backup history is pruned to the most recent 30 per document', async t => {
   assert.equal(fs.readdirSync(path.join(app.directory, 'docs/.backups')).length, 30);
 });
 
+test('backup content can only be read by its own document', async t => {
+  const app = setup(t), doc = await create(app, 'read'), other = await create(app, 'other');
+  const file = encodeURIComponent(doc.file);
+  const original = (await app.request('/api/resume?file=' + file)).body;
+  assert.equal((await app.request('/api/backup?file=' + file, 'POST')).status, 200);
+  const name = JSON.parse((await app.request('/api/backups?file=' + file)).body).backups[0];
+
+  const read = await app.request('/api/backup?file=' + file + '&backup=' + encodeURIComponent(name));
+  assert.equal(read.status, 200);
+  assert.equal(read.body, original);
+  assert.match(read.headers['content-type'] || '', /text\/markdown/);
+
+  const cross = await app.request('/api/backup?file=' + encodeURIComponent(other.file) + '&backup=' + encodeURIComponent(name));
+  assert.equal(cross.status, 400);
+  assert.equal((await app.request('/api/backup?file=' + file + '&backup=nope.md')).status, 400);
+  const missing = doc.file.replace(/\.md$/i, '') + '.2020-01-01T00-00-00-000Z-deadbeef.md';
+  assert.equal((await app.request('/api/backup?file=' + file + '&backup=' + encodeURIComponent(missing))).status, 404);
+});
+
 test('backup names cannot cross document boundaries and restoration preserves the previous content', async t => {
   const app = setup(t), a = await create(app, 'a'), b = await create(app, 'a.b');
   await app.request('/api/backup?file=a.b.md', 'POST');

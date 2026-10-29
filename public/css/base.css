@@ -71,6 +71,13 @@ html, body {
 .btn.active { border-color: var(--accent); color: var(--accent); }
 .save-state { font-size: 12px; color: var(--muted); white-space: nowrap; }
 
+.history-actions { display: inline-flex; gap: 4px; }
+.history-btn { width: 32px; padding: 8px 0; font-size: 15px; line-height: 1; }
+.history-btn:disabled { opacity: .4; cursor: default; }
+.history-btn:disabled:hover { border-color: var(--line); background: #fff; }
+body:not(.editing) .history-actions,
+body.readonly .history-actions { display: none; }
+
 .menu { position: relative; }
 .menu-btn::after { content: " ▾"; font-size: 9px; }
 .menu-panel {

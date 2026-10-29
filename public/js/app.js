@@ -9,6 +9,7 @@ import {
 import { renderSwatches, applySettings, bindControls } from "./settings.js";
 import { bindEditor } from "./editor.js";
 import { bindExport, renderImageDataUrl } from "./exporter.js";
+import { bindHistoryControls } from "./undo.js";
 
 window.__renderImageDataUrl = renderImageDataUrl;
 window.__serialize = serialize;
@@ -359,4 +360,5 @@ bindExport();
 bindControls();
 bindFileControls();
 bindMenus();
+bindHistoryControls();
 init();

@@ -141,6 +141,11 @@
     <button class="btn ghost" id="photoToggle" aria-pressed="false">隐藏照片</button>
     <button class="btn ghost" id="toggleEdit" aria-pressed="false">预览模式</button>
 
+    <div class="history-actions" role="group" aria-label="撤销与重做">
+      <button class="btn history-btn" id="undoBtn" title="撤销 (Ctrl/⌘+Z)" aria-label="撤销" disabled>↶</button>
+      <button class="btn history-btn" id="redoBtn" title="重做 (Ctrl/⌘+Shift+Z)" aria-label="重做" disabled>↷</button>
+    </div>
+
     <span class="save-state" id="saveState" role="status" aria-live="polite">加载中…</span>
 
     <label class="ctl">导出

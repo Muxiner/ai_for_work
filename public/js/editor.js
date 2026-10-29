@@ -2,6 +2,7 @@ import { state, splitKeywords, keywordsHTML, getPage } from "./state.js";
 import { TEMPLATES, newItemMarkup, moveSibling, renderSkillText } from "./render.js";
 import { scheduleSave } from "./persist.js";
 import { applyPhoto, photoKey, compressImage } from "./photo.js";
+import { alertDialog } from "./dialog.js";
 
 export function bindEditor() {
   const page = getPage();
@@ -126,7 +127,7 @@ export function bindEditor() {
       applyPhoto();
       scheduleSave();
     } catch (err) {
-      alert("图片读取失败，请重试。");
+      await alertDialog("图片读取失败，请重试。", { title: "图片读取失败" });
     }
   });
 }

@@ -3,6 +3,7 @@ import { applyFont, updateCustomFontOptions, registerCustomFont, idbSet, loadCus
 import { renderTimelineTypes, refreshTimeline, applyHiddenSections, addSection, sectionExists, moveSectionTo } from "./render.js";
 import { fileToDataURL } from "./photo.js";
 import { scheduleSave } from "./persist.js";
+import { alertDialog } from "./dialog.js";
 
 const SZ_CONTROLS = [
   ["szL1", "l1"], ["szL2", "l2"], ["szL3", "l3"],
@@ -159,9 +160,9 @@ export function bindControls() {
       await idbSet("custom", { name: file.name, dataUrl });
       state.hasCustomFont = true;
       updateCustomFontOptions();
-      alert("字体已加载：" + file.name + "\n可在「英文 / 中文」中选「自定义字体」，导出 PDF 时会嵌入该字体。");
+      await alertDialog("字体已加载：" + file.name + "\n可在「英文 / 中文」中选「自定义字体」，导出 PDF 时会嵌入该字体。", { title: "字体已加载" });
     } catch (err) {
-      alert("字体加载失败：" + (err && err.message ? err.message : err));
+      await alertDialog("字体加载失败：" + (err && err.message ? err.message : err), { title: "字体加载失败" });
     }
     e.target.value = "";
   });

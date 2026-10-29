@@ -1,7 +1,7 @@
 import { state, esc, setStatus } from "./state.js";
 import * as api from "./api.js";
 import { save, loadFileList, loadResume, isNoSync } from "./persist.js";
-import { confirmDialog } from "./dialog.js";
+import { alertDialog, confirmDialog } from "./dialog.js";
 
 let dialog = null;
 let listEl = null;
@@ -165,7 +165,7 @@ async function restore() {
   }
   const ok = await api.restoreBackup(file, selected);
   if (!ok) {
-    alert("恢复失败");
+    await alertDialog("恢复失败，请稍后重试。", { title: "恢复失败" });
     return;
   }
   dialog.close();

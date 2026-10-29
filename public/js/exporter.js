@@ -1,5 +1,6 @@
 import { state, txt, safeFileName, setStatus, CUSTOM_FONT_FAMILY, getPage } from "./state.js";
 import { save } from "./persist.js";
+import { alertDialog } from "./dialog.js";
 
 export function exportFileName() {
   const name = safeFileName(txt(".name")) || "简历";
@@ -92,7 +93,7 @@ export async function exportImage(type) {
     a.remove();
     setStatus("已导出图片");
   } catch (e) {
-    alert("图片导出失败：" + (e && e.message ? e.message : e));
+    await alertDialog("图片导出失败：" + (e && e.message ? e.message : e), { title: "导出失败" });
     setStatus("导出失败");
   }
 }

@@ -11,7 +11,7 @@ import { bindEditor } from "./editor.js";
 import { bindExport, renderImageDataUrl } from "./exporter.js";
 import { bindHistoryControls } from "./undo.js";
 import { bindBackupHistory } from "./backups.js";
-import { confirmDialog, promptDialog } from "./dialog.js";
+import { alertDialog, confirmDialog, promptDialog } from "./dialog.js";
 
 window.__renderImageDataUrl = renderImageDataUrl;
 window.__serialize = serialize;
@@ -83,7 +83,7 @@ async function enterSamplePreview(file) {
   let md = null;
   try { md = await api.readSample(file); } catch (e) {}
   if (request !== previewRequest || currentFile !== state.currentFile) return;
-  if (!md) { alert("示例读取失败"); return; }
+  if (!md) { await alertDialog("示例读取失败"); return; }
   if (!(await preserveCurrent()) || request !== previewRequest) return;
   if (!state.samplePreview) state._prevEditing = document.body.classList.contains("editing");
   state.samplePreview = file;
@@ -107,11 +107,11 @@ async function duplicateSample() {
   });
   if (name == null || !name) return;
   const md = await api.readSample(src);
-  if (!md) { alert("示例读取失败"); return; }
+  if (!md) { await alertDialog("示例读取失败"); return; }
   const r = await api.createResume(name.trim());
-  if (r.error === "exists") { alert("同名文件已存在"); return; }
-  if (r.error) { alert("创建失败"); return; }
-  if (!(await api.writeResume(r.file, md))) { alert("示例保存失败，请重试。"); return; }
+  if (r.error === "exists") { await alertDialog("同名文件已存在，请换一个文件名。", { title: "无法创建" }); return; }
+  if (r.error) { await alertDialog("创建失败", { title: "创建失败" }); return; }
+  if (!(await api.writeResume(r.file, md))) { await alertDialog("示例保存失败，请重试。", { title: "保存失败" }); return; }
   await loadFileList();
   if (!(await loadResume(r.file))) return;
   clearPreview();
@@ -176,8 +176,8 @@ function bindFileControls() {
       if (name == null || !name) return;
       if (!(await preserveCurrent())) return;
       const r = await api.createResume(name);
-      if (r.error === "exists") { alert("同名文件已存在"); return; }
-      if (r.error) { alert("创建失败"); return; }
+      if (r.error === "exists") { await alertDialog("同名文件已存在，请换一个文件名。", { title: "无法创建" }); return; }
+      if (r.error) { await alertDialog("创建失败", { title: "创建失败" }); return; }
       await loadFileList();
       if (!(await loadResume(r.file))) return;
       setStatus("已新建 " + r.file);
@@ -195,7 +195,7 @@ function bindFileControls() {
         danger: true,
       }))) return;
       const ok = await api.deleteResume(deletedFile);
-      if (!ok) { alert("删除失败"); return; }
+      if (!ok) { await alertDialog("删除失败", { title: "删除失败" }); return; }
       clearLocalFileData(deletedFile);
       await loadFileList();
       if (!(await loadResume(state.files[0] || null))) return;
@@ -241,8 +241,8 @@ function bindFileControls() {
       if (!(await preserveCurrent())) return;
       const oldFile = state.currentFile;
       const r = await api.renameResume(oldFile, name);
-      if (r.error === "exists") { alert("同名文件已存在"); return; }
-      if (r.error) { alert("重命名失败"); return; }
+      if (r.error === "exists") { await alertDialog("同名文件已存在，请换一个文件名。", { title: "无法创建" }); return; }
+      if (r.error) { await alertDialog("重命名失败", { title: "重命名失败" }); return; }
       migrateLocalFileData(oldFile, r.file);
       await loadFileList();
       if (!(await loadResume(r.file))) return;

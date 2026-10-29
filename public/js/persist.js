@@ -4,6 +4,7 @@ import { renderResume, syncEditableState, refreshTimeline } from "./render.js";
 import { applyPhoto } from "./photo.js";
 import * as api from "./api.js";
 import * as history from "./history.js";
+import { confirmDialog } from "./dialog.js";
 
 let saveTimer = null;
 let draftTimer = null;
@@ -222,7 +223,11 @@ export async function loadResume(file) {
     api.acceptRevision(target, md);
     try {
       const draft = localStorage.getItem(cacheKey(target));
-      if (draft && draft !== md && confirm("发现「" + target + "」的未保存草稿，是否恢复？")) {
+      if (draft && draft !== md && await confirmDialog("发现「" + target + "」的未保存草稿，是否恢复？", {
+        title: "恢复草稿",
+        okText: "恢复",
+        cancelText: "跳过",
+      })) {
         md = draft;
         recovered = true;
       }

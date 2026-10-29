@@ -1,6 +1,7 @@
 import { state, esc, setStatus } from "./state.js";
 import * as api from "./api.js";
 import { save, loadFileList, loadResume, isNoSync } from "./persist.js";
+import { confirmDialog } from "./dialog.js";
 
 let dialog = null;
 let listEl = null;
@@ -151,7 +152,10 @@ async function restore() {
   if (!selected || !canRestore()) return;
   const file = state.currentFile;
   const label = formatBackupTime(selected);
-  if (!confirm("确定用「" + label + "」的备份恢复「" + file + "」吗？\n恢复前会自动备份当前内容。")) return;
+  if (!(await confirmDialog("确定用「" + label + "」的备份恢复「" + file + "」吗？\n恢复前会自动备份当前内容。", {
+    title: "恢复备份",
+    okText: "恢复",
+  }))) return;
   if (state.dirty) {
     const ok = await save();
     if (!ok || state.dirty) {

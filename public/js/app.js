@@ -11,6 +11,7 @@ import { bindEditor } from "./editor.js";
 import { bindExport, renderImageDataUrl } from "./exporter.js";
 import { bindHistoryControls } from "./undo.js";
 import { bindBackupHistory } from "./backups.js";
+import { confirmDialog, promptDialog } from "./dialog.js";
 
 window.__renderImageDataUrl = renderImageDataUrl;
 window.__serialize = serialize;
@@ -98,8 +99,13 @@ async function duplicateSample() {
   if (isNoSync()) return;
   const src = state.samplePreview;
   if (!src) return;
-  const name = prompt("基于该示例新建简历，文件名：", src.replace(/\.md$/i, "") + "-副本");
-  if (name == null || !name.trim()) return;
+  const name = await promptDialog("基于该示例新建简历", {
+    title: "基于示例新建",
+    label: "文件名",
+    value: src.replace(/\.md$/i, "") + "-副本",
+    okText: "创建",
+  });
+  if (name == null || !name) return;
   const md = await api.readSample(src);
   if (!md) { alert("示例读取失败"); return; }
   const r = await api.createResume(name.trim());
@@ -161,10 +167,15 @@ function bindFileControls() {
   if (newFileBtn) {
     newFileBtn.addEventListener("click", async () => {
       if (!canMutate()) return;
-      const name = prompt("新建简历文件名（如：张三-嵌入式）：", "");
-      if (name == null || !name.trim()) return;
+      const name = await promptDialog("新建简历", {
+        title: "新建简历",
+        label: "文件名",
+        placeholder: "如：张三-嵌入式",
+        okText: "创建",
+      });
+      if (name == null || !name) return;
       if (!(await preserveCurrent())) return;
-      const r = await api.createResume(name.trim());
+      const r = await api.createResume(name);
       if (r.error === "exists") { alert("同名文件已存在"); return; }
       if (r.error) { alert("创建失败"); return; }
       await loadFileList();
@@ -176,9 +187,13 @@ function bindFileControls() {
   if (delFileBtn) {
     delFileBtn.addEventListener("click", async () => {
       if (!canMutate() || !(await preserveCurrent())) return;
-      if (!state.currentFile) return;
-      if (!confirm("确定删除 " + state.currentFile + " 吗？该操作不可撤销。")) return;
       const deletedFile = state.currentFile;
+      if (!deletedFile) return;
+      if (!(await confirmDialog("确定删除「" + deletedFile + "」吗？该操作不可撤销。", {
+        title: "删除简历",
+        okText: "删除",
+        danger: true,
+      }))) return;
       const ok = await api.deleteResume(deletedFile);
       if (!ok) { alert("删除失败"); return; }
       clearLocalFileData(deletedFile);
@@ -216,11 +231,16 @@ function bindFileControls() {
       if (!canMutate()) return;
       if (!state.currentFile) return;
       const cur = state.currentFile.replace(/\.md$/i, "");
-      const name = prompt("重命名简历：", cur);
-      if (name == null || !name.trim() || name.trim() === cur) return;
+      const name = await promptDialog("重命名简历", {
+        title: "重命名简历",
+        label: "文件名",
+        value: cur,
+        okText: "重命名",
+      });
+      if (name == null || !name || name === cur) return;
       if (!(await preserveCurrent())) return;
       const oldFile = state.currentFile;
-      const r = await api.renameResume(oldFile, name.trim());
+      const r = await api.renameResume(oldFile, name);
       if (r.error === "exists") { alert("同名文件已存在"); return; }
       if (r.error) { alert("重命名失败"); return; }
       migrateLocalFileData(oldFile, r.file);

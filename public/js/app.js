@@ -99,7 +99,7 @@ async function duplicateSample() {
   if (isNoSync()) return;
   const src = state.samplePreview;
   if (!src) return;
-  const name = await promptDialog("基于该示例新建简历", {
+  const name = await promptDialog("将基于当前示例创建一份副本", {
     title: "基于示例新建",
     label: "文件名",
     value: src.replace(/\.md$/i, "") + "-副本",
@@ -167,7 +167,7 @@ function bindFileControls() {
   if (newFileBtn) {
     newFileBtn.addEventListener("click", async () => {
       if (!canMutate()) return;
-      const name = await promptDialog("新建简历", {
+      const name = await promptDialog("请输入文件名（可省略 .md 后缀）", {
         title: "新建简历",
         label: "文件名",
         placeholder: "如：张三-嵌入式",
@@ -231,7 +231,7 @@ function bindFileControls() {
       if (!canMutate()) return;
       if (!state.currentFile) return;
       const cur = state.currentFile.replace(/\.md$/i, "");
-      const name = await promptDialog("重命名简历", {
+      const name = await promptDialog("请输入新的简历文件名（可省略 .md 后缀）", {
         title: "重命名简历",
         label: "文件名",
         value: cur,

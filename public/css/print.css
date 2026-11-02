@@ -34,4 +34,9 @@
   body[data-template="tech"] .header,
   body[data-template="gradient"] .header { margin: 0 -15mm 20px; padding: 8mm 15mm 12px; }
   body[data-template="sidebar"] .page { padding: 0; }
+  body[data-template="aurora"] .page,
+  body[data-template="neon"] .page { padding-top: 0; }
+  body[data-template="aurora"] .header,
+  body[data-template="neon"] .header { margin: 0 -15mm 20px; padding: 10mm 15mm 16px; }
+  body[data-template="geometric"] .page { border: none; }
 }

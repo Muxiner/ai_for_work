@@ -39,6 +39,7 @@ npm run serve      # = node server.js，不自动重启
     ├── css/
     │   ├── base.css       # 变量/重置/工具栏/页面/页眉/照片/区块/编辑控件/标签
     │   ├── templates.css  # 模板：classic / modern / tech / gradient / minimal / center / card / compact / elegant / sidebar / aurora / neon / magazine / geometric / glass / ribbon
+    │   ├── patterns.css   # 花纹模板：bloom / starry / marble / pop（内联 SVG 花纹与纹理）
     │   ├── timeline.css   # 时间轴：线条 / 节点 / 布局
     │   ├── backup.css     # 备份历史面板
     │   ├── dialog.css     # 应用内确认/输入/提示对话框
@@ -153,7 +154,7 @@ index.html / public/** 被修改 ──fs.watch──► SSE {reload:true} ─�
 
 ## 前端功能一览
 
-- **模板**：16 套，下拉分为「经典」（classic / modern / tech / gradient / minimal / center / card / compact / elegant / sidebar）和「花式」（aurora / neon / magazine / geometric / glass / ribbon）；花式模板用渐变页眉、编号章节、色块、玻璃卡片和装饰性伪元素，`body[data-template]` + `css/templates.css`；aurora/neon 为通栏页眉，打印时在 `print.css` 单独去掉首屏上边距，geometric 打印时去掉页面边框
+- **模板**：20 套，下拉分为「经典」「花式」「花纹」三组；花式用渐变页眉、编号章节、色块、玻璃卡片和装饰伪元素；花纹模板用内联 SVG data URI 叠加花卉、星点、大理石纹理，pop 用 CSS 半调网点与渐变，`body[data-template]` + `css/templates.css` / `css/patterns.css`；aurora/neon 通栏页眉和 starry 深色整页都做了打印适配，geometric 打印时去掉页面边框
 - **字号层级与自定义**：基础字号 `--sz-1/2/3`（章节标题 / 条目 / 详情要点）与 `--sz-name/role/contact`，再经模板 `--fs-scale` 缩放；「样式」菜单内有滑块可实时调整各层级及姓名/职位/联系方式字号，存于 `settings.sizes`。
   - **按深度取字号**：每个章节的**最深层**一律用第 3 级字号；无第三级的「二级章节」其条目行也用第 3 级（`.section.depth-2`），含第三级的「三级章节」条目行用第 2 级、详情用第 3 级（`.section.depth-3`）
 - **字体（中英文分开）**：英文 `fontLatin` + 中文 `fontCJK`，JS 组合成 `--font`（英文列表在前、中文在后、末尾通用族），`body.style.setProperty("--font", …)`

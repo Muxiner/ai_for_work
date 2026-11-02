@@ -1,0 +1,290 @@
+/* ================= Nature templates ================= */
+
+body[data-template="forest"] {
+  --accent: #16a34a;
+  --pad-y: 16mm;
+  --pattern-forest-leaf: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27260%27%20height%3D%27260%27%20viewBox%3D%270%200%20260%20260%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%234d7c0f%27%20stroke-width%3D%271.2%27%20opacity%3D%27.5%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M30%2048c32-18%2062%208%2068%2048-42%2012-72-10-68-48Z%27%2F%3E%3Cpath%20d%3D%27M50%2066c16%208%2030%2016%2044%2028%27%2F%3E%3Cpath%20d%3D%27M106%20142c34-10%2058%2024%2052%2064-40%202-66-24-52-64Z%27%2F%3E%3Cpath%20d%3D%27M122%20162c14%2012%2024%2026%2032%2042%27%2F%3E%3Cpath%20d%3D%27M182%2030c30%208%2044%2044%2024%2076-34-14-46-44-24-76Z%27%2F%3E%3Cpath%20d%3D%27M192%2054c8%2016%2012%2032%2012%2048%27%2F%3E%3Cpath%20d%3D%27M198%20196c28-6%2048%2018%2044%2048-34-2-54-20-44-48Z%27%2F%3E%3Cpath%20d%3D%27M58%20200c26-4%2044%2018%2038%2044-30-2-46-20-38-44Z%27%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%27%234d7c0f%27%20opacity%3D%27.2%27%3E%3Ccircle%20cx%3D%27148%27%20cy%3D%2784%27%20r%3D%272%27%2F%3E%3Ccircle%20cx%3D%2792%27%20cy%3D%27190%27%20r%3D%271.6%27%2F%3E%3Ccircle%20cx%3D%27226%27%20cy%3D%27150%27%20r%3D%271.8%27%2F%3E%3Ccircle%20cx%3D%2734%27%20cy%3D%27140%27%20r%3D%271.5%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+  --pattern-forest-scene: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27900%27%20height%3D%27260%27%20viewBox%3D%270%200%20900%20260%27%3E%3Cg%20fill%3D%27%23052e16%27%3E%3Cpath%20d%3D%27M0%20260V205l22-55%2024%2055v55z%27%2F%3E%3Cpath%20d%3D%27M54%20260v-45l18-56%2020%2056v45z%27%2F%3E%3Cpath%20d%3D%27M104%20260v-36l16-48%2018%2048v36z%27%2F%3E%3Cpath%20d%3D%27M145%20260v-58l24-66%2024%2066v58z%27%2F%3E%3Cpath%20d%3D%27M205%20260v-42l20-58%2022%2058v42z%27%2F%3E%3Cpath%20d%3D%27M260%20260v-70l28-72%2030%2072v70z%27%2F%3E%3Cpath%20d%3D%27M330%20260v-48l22-62%2024%2062v48z%27%2F%3E%3Cpath%20d%3D%27M390%20260v-36l18-50%2020%2050v36z%27%2F%3E%3Cpath%20d%3D%27M440%20260v-64l26-70%2028%2070v64z%27%2F%3E%3Cpath%20d%3D%27M508%20260v-42l20-56%2022%2056v42z%27%2F%3E%3Cpath%20d%3D%27M562%20260v-52l24-64%2026%2064v52z%27%2F%3E%3Cpath%20d%3D%27M626%20260v-38l18-52%2020%2052v38z%27%2F%3E%3Cpath%20d%3D%27M680%20260v-66l26-72%2028%2072v66z%27%2F%3E%3Cpath%20d%3D%27M752%20260v-44l20-58%2022%2058v44z%27%2F%3E%3Cpath%20d%3D%27M808%20260v-54l24-66%2026%2066v54z%27%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%27%2314532d%27%20opacity%3D%27.9%27%3E%3Ccircle%20cx%3D%2790%27%20cy%3D%27170%27%20r%3D%2728%27%2F%3E%3Ccircle%20cx%3D%27120%27%20cy%3D%27190%27%20r%3D%2734%27%2F%3E%3Ccircle%20cx%3D%27160%27%20cy%3D%27176%27%20r%3D%2724%27%2F%3E%3Ccircle%20cx%3D%27480%27%20cy%3D%27160%27%20r%3D%2730%27%2F%3E%3Ccircle%20cx%3D%27510%27%20cy%3D%27184%27%20r%3D%2734%27%2F%3E%3Ccircle%20cx%3D%27545%27%20cy%3D%27168%27%20r%3D%2724%27%2F%3E%3Ccircle%20cx%3D%27720%27%20cy%3D%27160%27%20r%3D%2730%27%2F%3E%3Ccircle%20cx%3D%27752%27%20cy%3D%27184%27%20r%3D%2734%27%2F%3E%3Ccircle%20cx%3D%27786%27%20cy%3D%27166%27%20r%3D%2724%27%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%27%23166534%27%20opacity%3D%27.65%27%3E%3Ccircle%20cx%3D%2790%27%20cy%3D%27158%27%20r%3D%2716%27%2F%3E%3Ccircle%20cx%3D%27120%27%20cy%3D%27178%27%20r%3D%2720%27%2F%3E%3Ccircle%20cx%3D%27480%27%20cy%3D%27148%27%20r%3D%2718%27%2F%3E%3Ccircle%20cx%3D%27510%27%20cy%3D%27172%27%20r%3D%2720%27%2F%3E%3Ccircle%20cx%3D%27720%27%20cy%3D%27148%27%20r%3D%2718%27%2F%3E%3Ccircle%20cx%3D%27752%27%20cy%3D%27172%27%20r%3D%2720%27%2F%3E%3C%2Fg%3E%3Crect%20x%3D%270%27%20y%3D%27252%27%20width%3D%27900%27%20height%3D%278%27%20fill%3D%27%23052e16%27%2F%3E%3C%2Fsvg%3E");
+}
+body[data-template="forest"] .page {
+  background-color: #f7f5ec;
+  background-image:
+    var(--pattern-forest-leaf),
+    radial-gradient(circle at 8% 4%, rgba(187, 247, 208, .6), transparent 28%),
+    radial-gradient(circle at 94% 92%, rgba(220, 252, 231, .55), transparent 30%),
+    linear-gradient(160deg, #fbfaf4 0%, #f5f2e8 100%);
+  background-size: 260px 260px, auto, auto, auto;
+}
+body[data-template="forest"] .header {
+  position: relative;
+  overflow: hidden;
+  align-items: center;
+  border: none;
+  border-radius: 18px;
+  padding: 18px 20px 120px;
+  margin-bottom: 24px;
+  background-image:
+    var(--pattern-forest-scene),
+    linear-gradient(135deg, #052e16 0%, #14532d 60%, #166534 100%);
+  background-size: 100% 120px, auto;
+  background-position: bottom center, center;
+  background-repeat: no-repeat;
+  color: #f0fdf4;
+  box-shadow: 0 16px 36px rgba(5, 46, 22, .22);
+}
+body[data-template="forest"] .header > * { position: relative; z-index: 1; }
+body[data-template="forest"] .name {
+  color: #f0fdf4;
+  font-family: Georgia, "Songti SC", "Times New Roman", serif;
+  letter-spacing: 1px;
+}
+body[data-template="forest"] .role { color: #bbf7d0; letter-spacing: .6px; }
+body[data-template="forest"] .contact { color: #dcfce7; gap: 7px 16px; }
+body[data-template="forest"] .contact .c::before { color: #86efac; }
+body[data-template="forest"] .contact .ico { color: #86efac; }
+body[data-template="forest"] .photo-wrap {
+  border: 3px solid rgba(240, 253, 244, .8);
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgba(2, 44, 34, .3);
+}
+body[data-template="forest"] .section {
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border: 1px solid rgba(187, 247, 208, .9);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .74);
+  box-shadow: 0 8px 22px rgba(5, 46, 22, .06);
+}
+body[data-template="forest"] .section-head { border-bottom: 0; margin-bottom: 10px; }
+body[data-template="forest"] .section-head::after {
+  height: 1px;
+  background: linear-gradient(90deg, #16a34a, #bbf7d0);
+  opacity: .7;
+}
+body[data-template="forest"] .section-title { color: #14532d; letter-spacing: .5px; }
+body[data-template="forest"] .sec-ico { color: #16a34a; }
+body[data-template="forest"] .item-sub { color: #15803d; }
+body[data-template="forest"] .item-date { color: #166534; }
+body[data-template="forest"] .kw { border: 1px solid #bbf7d0; background: #f0fdf4; color: #166534; }
+body[data-template="forest"] .skill b { color: #15803d; }
+body[data-template="forest"] .skill-tag { background: #ecfdf5; color: #166534; }
+
+body[data-template="garden"] {
+  --accent: #db2777;
+  --pattern-garden-flower: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27320%27%20height%3D%27320%27%20viewBox%3D%270%200%20320%20320%27%3E%3Cg%20opacity%3D%27.55%27%3E%3Cg%20transform%3D%27translate%2862%2066%29%27%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-16%27%20rx%3D%276%27%20ry%3D%2714%27%20fill%3D%27%23f9a8d4%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-16%27%20rx%3D%276%27%20ry%3D%2714%27%20fill%3D%27%23f9a8d4%27%20transform%3D%27rotate%2872%29%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-16%27%20rx%3D%276%27%20ry%3D%2714%27%20fill%3D%27%23f9a8d4%27%20transform%3D%27rotate%28144%29%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-16%27%20rx%3D%276%27%20ry%3D%2714%27%20fill%3D%27%23f9a8d4%27%20transform%3D%27rotate%28216%29%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-16%27%20rx%3D%276%27%20ry%3D%2714%27%20fill%3D%27%23f9a8d4%27%20transform%3D%27rotate%28288%29%27%2F%3E%3Ccircle%20cx%3D%270%27%20cy%3D%270%27%20r%3D%276%27%20fill%3D%27%23fbbf24%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27translate%28220%20112%29%27%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-18%27%20rx%3D%277%27%20ry%3D%2716%27%20fill%3D%27%23fb7185%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-18%27%20rx%3D%277%27%20ry%3D%2716%27%20fill%3D%27%23fb7185%27%20transform%3D%27rotate%2872%29%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-18%27%20rx%3D%277%27%20ry%3D%2716%27%20fill%3D%27%23fb7185%27%20transform%3D%27rotate%28144%29%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-18%27%20rx%3D%277%27%20ry%3D%2716%27%20fill%3D%27%23fb7185%27%20transform%3D%27rotate%28216%29%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-18%27%20rx%3D%277%27%20ry%3D%2716%27%20fill%3D%27%23fb7185%27%20transform%3D%27rotate%28288%29%27%2F%3E%3Ccircle%20cx%3D%270%27%20cy%3D%270%27%20r%3D%277%27%20fill%3D%27%23fde68a%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27translate%28130%20232%29%27%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-14%27%20rx%3D%275%27%20ry%3D%2712%27%20fill%3D%27%23c4b5fd%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-14%27%20rx%3D%275%27%20ry%3D%2712%27%20fill%3D%27%23c4b5fd%27%20transform%3D%27rotate%2872%29%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-14%27%20rx%3D%275%27%20ry%3D%2712%27%20fill%3D%27%23c4b5fd%27%20transform%3D%27rotate%28144%29%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-14%27%20rx%3D%275%27%20ry%3D%2712%27%20fill%3D%27%23c4b5fd%27%20transform%3D%27rotate%28216%29%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-14%27%20rx%3D%275%27%20ry%3D%2712%27%20fill%3D%27%23c4b5fd%27%20transform%3D%27rotate%28288%29%27%2F%3E%3Ccircle%20cx%3D%270%27%20cy%3D%270%27%20r%3D%275%27%20fill%3D%27%23fef08a%27%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%234d7c0f%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M62%2084c20%2022%2042%2032%2068%2038%27%2F%3E%3Cpath%20d%3D%27M220%20130c-18%2026-38%2044-62%2058%27%2F%3E%3Cpath%20d%3D%27M130%20246c-6-22-4-44%206-64%27%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%27%2386efac%27%20opacity%3D%27.8%27%3E%3Cpath%20d%3D%27M158%2092c18-6%2034%200%2044%2014-18%208-36%202-44-14Z%27%2F%3E%3Cpath%20d%3D%27M204%20158c18%202%2030%2014%2032%2032-20-2-32-14-32-32Z%27%2F%3E%3Cpath%20d%3D%27M104%20206c-16-6-28-20-28-38%2018%204%2030%2018%2028%2038Z%27%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+}
+body[data-template="garden"] .page {
+  background-color: #fff9f5;
+  background-image:
+    var(--pattern-garden-flower),
+    radial-gradient(circle at 8% 5%, rgba(252, 231, 243, .9), transparent 28%),
+    radial-gradient(circle at 92% 90%, rgba(220, 252, 231, .8), transparent 30%),
+    linear-gradient(150deg, #fffaf5 0%, #fff7fb 50%, #f7fef9 100%);
+  background-size: 320px 320px, auto, auto, auto;
+}
+body[data-template="garden"] .header {
+  align-items: center;
+  border: 1px solid #fbcfe8;
+  border-radius: 18px;
+  padding: 18px 20px;
+  margin-bottom: 22px;
+  background-image:
+    var(--pattern-garden-flower),
+    linear-gradient(135deg, rgba(255, 255, 255, .95), rgba(252, 231, 243, .92) 55%, rgba(220, 252, 231, .9));
+  background-size: 320px 320px, auto;
+  box-shadow: 0 14px 34px rgba(219, 39, 119, .12);
+}
+body[data-template="garden"] .name { color: #9d174d; letter-spacing: .5px; }
+body[data-template="garden"] .role { color: #db2777; letter-spacing: .5px; }
+body[data-template="garden"] .contact { color: #831843; gap: 6px 9px; }
+body[data-template="garden"] .contact .c {
+  padding: 2px 9px;
+  border: 1px solid rgba(251, 207, 232, .95);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .72);
+}
+body[data-template="garden"] .contact .c::before { color: #db2777; }
+body[data-template="garden"] .contact .ico { color: #db2777; }
+body[data-template="garden"] .photo-wrap {
+  width: 29mm;
+  height: 36mm;
+  border-radius: 50% 50% 10px 10px;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 2px #f472b6, 7px 7px 0 #fce7f3;
+}
+body[data-template="garden"] .section {
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border: 1px solid rgba(251, 207, 232, .9);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .78);
+  box-shadow: 0 8px 22px rgba(219, 39, 119, .06);
+}
+body[data-template="garden"] .section-head { border-bottom: 0; margin-bottom: 10px; }
+body[data-template="garden"] .section-head::after {
+  height: 1px;
+  background: linear-gradient(90deg, #ec4899, #86efac);
+  opacity: .65;
+}
+body[data-template="garden"] .section-title { color: #9d174d; letter-spacing: .4px; }
+body[data-template="garden"] .sec-ico { color: #db2777; }
+body[data-template="garden"] .item-sub { color: #be185d; }
+body[data-template="garden"] .item-date { color: #be185d; }
+body[data-template="garden"] .kw { border: 1px solid #fbcfe8; background: #fff1f2; color: #9f1239; }
+body[data-template="garden"] .skill b { color: #be185d; }
+body[data-template="garden"] .skill-tag { background: #fdf2f8; color: #9f1239; }
+
+body[data-template="leaves"] {
+  --accent: #6b8e23;
+  --pad-y: 16mm;
+  --pattern-botanical: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27300%27%20height%3D%27300%27%20viewBox%3D%270%200%20300%20300%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%236b8e23%27%20stroke-width%3D%271.3%27%20opacity%3D%27.45%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M40%20282C92%20216%20104%20144%2086%2054%27%2F%3E%3Cellipse%20cx%3D%2762%27%20cy%3D%27232%27%20rx%3D%2720%27%20ry%3D%278%27%20transform%3D%27rotate%28-32%2062%20232%29%27%2F%3E%3Cellipse%20cx%3D%2746%27%20cy%3D%27204%27%20rx%3D%2720%27%20ry%3D%278%27%20transform%3D%27rotate%28-26%2046%20204%29%27%2F%3E%3Cellipse%20cx%3D%2772%27%20cy%3D%27174%27%20rx%3D%2718%27%20ry%3D%277%27%20transform%3D%27rotate%28-30%2072%20174%29%27%2F%3E%3Cellipse%20cx%3D%2762%27%20cy%3D%27144%27%20rx%3D%2718%27%20ry%3D%277%27%20transform%3D%27rotate%28-24%2062%20144%29%27%2F%3E%3Cellipse%20cx%3D%2782%27%20cy%3D%27106%27%20rx%3D%2716%27%20ry%3D%276%27%20transform%3D%27rotate%28-28%2082%20106%29%27%2F%3E%3Cpath%20d%3D%27M226%20288c-24-70-18-144%2014-214%27%2F%3E%3Cellipse%20cx%3D%27230%27%20cy%3D%27230%27%20rx%3D%2720%27%20ry%3D%278%27%20transform%3D%27rotate%2830%20230%20230%29%27%2F%3E%3Cellipse%20cx%3D%27242%27%20cy%3D%27202%27%20rx%3D%2720%27%20ry%3D%278%27%20transform%3D%27rotate%2824%20242%20202%29%27%2F%3E%3Cellipse%20cx%3D%27222%27%20cy%3D%27172%27%20rx%3D%2718%27%20ry%3D%277%27%20transform%3D%27rotate%2830%20222%20172%29%27%2F%3E%3Cellipse%20cx%3D%27236%27%20cy%3D%27140%27%20rx%3D%2718%27%20ry%3D%277%27%20transform%3D%27rotate%2824%20236%20140%29%27%2F%3E%3Cpath%20d%3D%27M140%2048c30%2024%2046%2058%2044%2096-30-24-46-58-44-96Z%27%2F%3E%3Cpath%20d%3D%27M140%2048c-30%2024-46%2058-44%2096%2030-24%2046-58%2044-96Z%27%2F%3E%3Cpath%20d%3D%27M140%2052v88%27%2F%3E%3Cpath%20d%3D%27M150%20236c22-18%2048-26%2076-22-22%2020-50%2028-76%2022Z%27%2F%3E%3Cpath%20d%3D%27M150%20236c-22-18-48-26-76-22%2022%2020%2050%2028%2076%2022Z%27%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%27%236b8e23%27%20opacity%3D%27.16%27%3E%3Ccircle%20cx%3D%27110%27%20cy%3D%2770%27%20r%3D%272%27%2F%3E%3Ccircle%20cx%3D%27196%27%20cy%3D%2788%27%20r%3D%271.6%27%2F%3E%3Ccircle%20cx%3D%27250%27%20cy%3D%27250%27%20r%3D%271.8%27%2F%3E%3Ccircle%20cx%3D%2736%27%20cy%3D%2760%27%20r%3D%271.5%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+}
+body[data-template="leaves"] .page {
+  background-color: #f7f4ea;
+  background-image:
+    linear-gradient(rgba(247, 244, 234, .72), rgba(247, 244, 234, .72)),
+    var(--pattern-botanical),
+    linear-gradient(160deg, #faf8f0 0%, #f4f0e4 100%);
+  background-size: auto, 300px 300px, auto;
+}
+body[data-template="leaves"] .header {
+  position: relative;
+  align-items: center;
+  border-bottom: 1px solid #d6d3d1;
+  padding-bottom: 20px;
+  margin-bottom: 22px;
+}
+body[data-template="leaves"] .header::after {
+  content: "BOTANICAL";
+  position: absolute;
+  right: 0;
+  top: 0;
+  color: #6b8e23;
+  font-size: 8px;
+  letter-spacing: .22em;
+}
+body[data-template="leaves"] .name {
+  font-family: Georgia, "Songti SC", "Times New Roman", serif;
+  color: #1f2937;
+  letter-spacing: 2px;
+}
+body[data-template="leaves"] .role { color: #6b8e23; letter-spacing: .16em; text-transform: uppercase; font-size: calc(var(--sz-role) * .92); }
+body[data-template="leaves"] .contact { color: #57534e; gap: 5px 14px; }
+body[data-template="leaves"] .contact .c::before { color: #78716c; }
+body[data-template="leaves"] .contact .ico { color: #6b8e23; }
+body[data-template="leaves"] .photo-wrap {
+  width: 29mm;
+  height: 37mm;
+  border-radius: 50% 50% 0 0;
+  border: 1px solid #6b8e23;
+  box-shadow: 5px 5px 0 rgba(107, 142, 35, .12);
+}
+body[data-template="leaves"] .section {
+  margin-bottom: 18px;
+  padding: 10px 0 0;
+  border-top: 1px solid #d6d3d1;
+}
+body[data-template="leaves"] .section-head { border-bottom: 0; margin-bottom: 10px; }
+body[data-template="leaves"] .section-head::after {
+  height: 1px;
+  background: linear-gradient(90deg, #6b8e23, rgba(107, 142, 35, 0));
+  opacity: .55;
+}
+body[data-template="leaves"] .section-title {
+  font-family: Georgia, "Songti SC", "Times New Roman", serif;
+  color: #365314;
+  letter-spacing: .06em;
+}
+body[data-template="leaves"] .sec-ico { color: #6b8e23; }
+body[data-template="leaves"] .item-title { font-family: Georgia, "Songti SC", "Times New Roman", serif; }
+body[data-template="leaves"] .item-sub { color: #6b8e23; }
+body[data-template="leaves"] .item-date {
+  color: #78716c;
+  font-family: Georgia, "Songti SC", "Times New Roman", serif;
+  font-style: italic;
+}
+body[data-template="leaves"] .kw { border: 1px solid #d6d3d1; background: rgba(255, 255, 255, .5); color: #57534e; border-radius: 2px; }
+body[data-template="leaves"] .skill b { color: #6b8e23; }
+body[data-template="leaves"] .skill-tag { background: rgba(255, 255, 255, .55); border: 1px solid #e7e5e4; color: #57534e; }
+
+body[data-template="sakura"] {
+  --accent: #db2777;
+  --pattern-sakura: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27420%27%20height%3D%27420%27%20viewBox%3D%270%200%20420%20420%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%239d174d%27%20stroke-width%3D%272%27%20opacity%3D%27.28%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M-20%2078C90%2092%20170%2060%20250%20-10%27%2F%3E%3Cpath%20d%3D%27M132%2076c-6%2040-30%2066-70%2078%27%2F%3E%3Cpath%20d%3D%27M232%2044c30%2010%2060%2010%2092%200%27%2F%3E%3Cpath%20d%3D%27M40%20360c70-64%20150-90%20240-80%27%2F%3E%3Cpath%20d%3D%27M190%20322c-18%2028-44%2046-78%2056%27%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%27%23f9a8d4%27%20opacity%3D%27.65%27%3E%3Cg%20transform%3D%27translate%2878%2044%29%20scale%28.8%29%27%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-13%27%20rx%3D%275%27%20ry%3D%2711%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-13%27%20rx%3D%275%27%20ry%3D%2711%27%20transform%3D%27rotate%2872%29%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-13%27%20rx%3D%275%27%20ry%3D%2711%27%20transform%3D%27rotate%28144%29%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-13%27%20rx%3D%275%27%20ry%3D%2711%27%20transform%3D%27rotate%28216%29%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-13%27%20rx%3D%275%27%20ry%3D%2711%27%20transform%3D%27rotate%28288%29%27%2F%3E%3Ccircle%20cx%3D%270%27%20cy%3D%270%27%20r%3D%274%27%20fill%3D%27%23fde68a%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27translate%28252%2012%29%20scale%28.7%29%27%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-13%27%20rx%3D%275%27%20ry%3D%2711%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-13%27%20rx%3D%275%27%20ry%3D%2711%27%20transform%3D%27rotate%2872%29%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-13%27%20rx%3D%275%27%20ry%3D%2711%27%20transform%3D%27rotate%28144%29%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-13%27%20rx%3D%275%27%20ry%3D%2711%27%20transform%3D%27rotate%28216%29%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-13%27%20rx%3D%275%27%20ry%3D%2711%27%20transform%3D%27rotate%28288%29%27%2F%3E%3Ccircle%20cx%3D%270%27%20cy%3D%270%27%20r%3D%274%27%20fill%3D%27%23fde68a%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27translate%2844%20160%29%20scale%28.9%29%27%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-13%27%20rx%3D%275%27%20ry%3D%2711%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-13%27%20rx%3D%275%27%20ry%3D%2711%27%20transform%3D%27rotate%2872%29%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-13%27%20rx%3D%275%27%20ry%3D%2711%27%20transform%3D%27rotate%28144%29%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-13%27%20rx%3D%275%27%20ry%3D%2711%27%20transform%3D%27rotate%28216%29%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-13%27%20rx%3D%275%27%20ry%3D%2711%27%20transform%3D%27rotate%28288%29%27%2F%3E%3Ccircle%20cx%3D%270%27%20cy%3D%270%27%20r%3D%274%27%20fill%3D%27%23fde68a%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27translate%28330%20320%29%20scale%28.85%29%27%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-13%27%20rx%3D%275%27%20ry%3D%2711%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-13%27%20rx%3D%275%27%20ry%3D%2711%27%20transform%3D%27rotate%2872%29%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-13%27%20rx%3D%275%27%20ry%3D%2711%27%20transform%3D%27rotate%28144%29%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-13%27%20rx%3D%275%27%20ry%3D%2711%27%20transform%3D%27rotate%28216%29%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-13%27%20rx%3D%275%27%20ry%3D%2711%27%20transform%3D%27rotate%28288%29%27%2F%3E%3Ccircle%20cx%3D%270%27%20cy%3D%270%27%20r%3D%274%27%20fill%3D%27%23fde68a%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27translate%28180%20300%29%20scale%28.7%29%27%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-13%27%20rx%3D%275%27%20ry%3D%2711%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-13%27%20rx%3D%275%27%20ry%3D%2711%27%20transform%3D%27rotate%2872%29%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-13%27%20rx%3D%275%27%20ry%3D%2711%27%20transform%3D%27rotate%28144%29%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-13%27%20rx%3D%275%27%20ry%3D%2711%27%20transform%3D%27rotate%28216%29%27%2F%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-13%27%20rx%3D%275%27%20ry%3D%2711%27%20transform%3D%27rotate%28288%29%27%2F%3E%3Ccircle%20cx%3D%270%27%20cy%3D%270%27%20r%3D%274%27%20fill%3D%27%23fde68a%27%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3Cg%20fill%3D%27%23fbcfe8%27%20opacity%3D%27.55%27%3E%3Cellipse%20cx%3D%27120%27%20cy%3D%2796%27%20rx%3D%275%27%20ry%3D%273%27%20transform%3D%27rotate%28-30%20120%2096%29%27%2F%3E%3Cellipse%20cx%3D%27294%27%20cy%3D%2770%27%20rx%3D%275%27%20ry%3D%273%27%20transform%3D%27rotate%2825%20294%2070%29%27%2F%3E%3Cellipse%20cx%3D%2770%27%20cy%3D%27272%27%20rx%3D%275%27%20ry%3D%273%27%20transform%3D%27rotate%2840%2070%20272%29%27%2F%3E%3Cellipse%20cx%3D%27368%27%20cy%3D%27214%27%20rx%3D%275%27%20ry%3D%273%27%20transform%3D%27rotate%28-20%20368%20214%29%27%2F%3E%3Cellipse%20cx%3D%27230%27%20cy%3D%27382%27%20rx%3D%275%27%20ry%3D%273%27%20transform%3D%27rotate%2830%20230%20382%29%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+}
+body[data-template="sakura"] .page {
+  background-color: #fff8fb;
+  background-image:
+    var(--pattern-sakura),
+    radial-gradient(circle at 86% 5%, rgba(251, 207, 232, .85), transparent 28%),
+    linear-gradient(155deg, #fffafc 0%, #fff1f7 55%, #fff7fb 100%);
+  background-size: 420px 420px, auto, auto;
+}
+body[data-template="sakura"] .header {
+  position: relative;
+  align-items: center;
+  border-bottom: 1px solid #fbcfe8;
+  padding-bottom: 20px;
+  margin-bottom: 22px;
+}
+body[data-template="sakura"] .header::after {
+  content: "桜";
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #9d174d;
+  border-radius: 4px;
+  color: #9d174d;
+  font-family: Georgia, "Songti SC", "Times New Roman", serif;
+  font-size: 15px;
+  background: rgba(255, 255, 255, .65);
+}
+body[data-template="sakura"] .name {
+  color: #831843;
+  font-family: Georgia, "Songti SC", "Times New Roman", serif;
+  letter-spacing: 2px;
+}
+body[data-template="sakura"] .role { color: #be185d; letter-spacing: .14em; }
+body[data-template="sakura"] .contact { color: #57534e; gap: 5px 14px; }
+body[data-template="sakura"] .contact .c::before { color: #db2777; }
+body[data-template="sakura"] .contact .ico { color: #db2777; }
+body[data-template="sakura"] .photo-wrap {
+  width: 29mm;
+  height: 36mm;
+  border-radius: 50% 50% 8px 8px;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 1px #f9a8d4, 6px 6px 0 #fce7f3;
+}
+body[data-template="sakura"] .section {
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border: 1px solid rgba(251, 207, 232, .9);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .68);
+  box-shadow: 0 8px 22px rgba(190, 24, 93, .06);
+}
+body[data-template="sakura"] .section-head { border-bottom: 0; margin-bottom: 10px; }
+body[data-template="sakura"] .section-head::after {
+  height: 1px;
+  background: linear-gradient(90deg, #db2777, #fbcfe8);
+  opacity: .65;
+}
+body[data-template="sakura"] .section-title { color: #831843; letter-spacing: .05em; }
+body[data-template="sakura"] .sec-ico { color: #db2777; }
+body[data-template="sakura"] .item-sub { color: #be185d; }
+body[data-template="sakura"] .item-date { color: #be185d; }
+body[data-template="sakura"] .kw { border: 1px solid #fbcfe8; background: #fff1f2; color: #9f1239; }
+body[data-template="sakura"] .skill b { color: #be185d; }
+body[data-template="sakura"] .skill-tag { background: #fdf2f8; color: #9f1239; }
+
+@media print {
+  body[data-template="forest"] .header {
+    margin: 0 -15mm 20px;
+    padding: 10mm 15mm 110px;
+    border-radius: 0;
+  }
+}

@@ -114,9 +114,11 @@ body[data-template="newspaper"] .page {
 }
 body[data-template="newspaper"] .header {
   position: relative;
-  flex-direction: column;
-  align-items: stretch;
-  text-align: center;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 8px 18px;
+  text-align: left;
   border-top: 8px double #1c1917;
   border-bottom: 3px double #1c1917;
   padding: 12px 0;
@@ -125,6 +127,7 @@ body[data-template="newspaper"] .header {
 body[data-template="newspaper"] .header::before {
   content: "THE RESUME TIMES · 简历日报";
   display: block;
+  grid-column: 1 / -1;
   padding-bottom: 8px;
   margin-bottom: 10px;
   border-bottom: 1px solid #a8a29e;
@@ -159,8 +162,13 @@ body[data-template="newspaper"] .role {
   letter-spacing: .2em;
   font-size: calc(var(--sz-role) * .9);
 }
+body[data-template="newspaper"] .head-main {
+  grid-column: 1;
+  grid-row: 2;
+  min-width: 0;
+}
 body[data-template="newspaper"] .contact {
-  justify-content: center;
+  justify-content: flex-start;
   gap: 4px 12px;
   border-top: 1px solid #a8a29e;
   padding-top: 8px;
@@ -171,12 +179,16 @@ body[data-template="newspaper"] .contact {
 body[data-template="newspaper"] .contact .c::before { color: #991b1b; }
 body[data-template="newspaper"] .contact .ico { color: #991b1b; }
 body[data-template="newspaper"] .photo-wrap {
+  grid-column: 2;
+  grid-row: 2;
   width: 26mm;
   height: 32mm;
-  align-self: center;
+  align-self: start;
+  justify-self: end;
+  margin-top: 2px;
   border: 1px solid #1c1917;
   border-radius: 0;
-  filter: grayscale(100%) contrast(1.05);
+  box-shadow: 4px 4px 0 rgba(28, 25, 23, .16);
 }
 body[data-template="newspaper"] .content > .section {
   counter-increment: paper;
@@ -481,7 +493,6 @@ body[data-template="night"].editing [contenteditable]:focus {
 }
 
 @media print {
-  body[data-template="newspaper"] .photo-wrap { filter: grayscale(100%); }
   body[data-template="collage"] .header,
   body[data-template="collage"] .section {
     transform: none;
